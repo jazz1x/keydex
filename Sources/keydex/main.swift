@@ -23,22 +23,44 @@ struct List: AsyncParsableCommand {
 
   func run() async throws {
     let records = try await EmptyMetadataStore().listCredentials()
-    if records.isEmpty {
+    let projections = InventoryGraph(records: records).credentialProjections
+    if projections.isEmpty {
       print("keydex: no credentials indexed yet")
+    } else {
+      for projection in projections {
+        print(
+          "\(projection.ref.service)\t\(projection.ref.account)\t\(stateLabels(projection.states))\t\(projection.locations.count) sources"
+        )
+      }
     }
   }
 }
 
-struct Where: ParsableCommand {
+struct Where: AsyncParsableCommand {
   static let configuration = CommandConfiguration(
     abstract: "Show where a credential resolves from.")
 
   @Argument(help: "Service name, such as openai or bitbucket.")
   var service: String
 
-  func run() throws {
-    _ = try NonEmptyText.parse(service, field: "service")
-    print("keydex: where \(service) is not indexed yet")
+  func run() async throws {
+    let parsedService = try NonEmptyText.parse(service, field: "service")
+    let records = try await EmptyMetadataStore().listCredentials()
+    let projections = InventoryGraph(records: records).credentialProjections(
+      service: parsedService)
+
+    if projections.isEmpty {
+      print("keydex: where \(parsedService) is not indexed yet")
+    } else {
+      for projection in projections {
+        print(
+          "\(projection.ref.service)/\(projection.ref.account): \(stateLabels(projection.states))"
+        )
+        for location in projection.locations {
+          print("  \(locationLabel(location))")
+        }
+      }
+    }
   }
 }
 
@@ -62,6 +84,27 @@ struct Doctor: AsyncParsableCommand {
         )
       }
     }
+  }
+}
+
+private func stateLabels(_ states: [CredentialState]) -> String {
+  if states.isEmpty {
+    "no-state-edge"
+  } else {
+    states.map(\.rawValue).joined(separator: ",")
+  }
+}
+
+private func locationLabel(_ location: CredentialLocation) -> String {
+  switch location {
+  case .keychain(let service, let account):
+    "keychain \(service)/\(account)"
+  case .environment(let name):
+    "env \(name)"
+  case .shellProfile(let path):
+    "shell \(path)"
+  case .configFile(let path):
+    "config \(path)"
   }
 }
 

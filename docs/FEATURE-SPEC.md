@@ -67,6 +67,9 @@ stable acceptance criteria here before expanding scope.
 | `keydex where SERVICE` | Show graph-derived source relationships. | Output includes locations and state without secret values. |
 | `keydex doctor` | Print graph-derived findings. | Every issue includes severity, credential, state, cause, action. |
 
+The first M3 CLI boundary uses `CredentialProjection` from `InventoryGraph` so `list` and
+`where` do not maintain separate credential truth.
+
 ## Store
 
 | Feature | Behavior | Acceptance Criteria |

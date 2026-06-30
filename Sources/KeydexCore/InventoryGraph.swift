@@ -36,6 +36,22 @@ public struct InventoryGraphSummary: Equatable, Sendable {
   }
 }
 
+public struct CredentialProjection: Equatable, Sendable {
+  public let ref: CredentialRef
+  public let states: [CredentialState]
+  public let locations: [CredentialLocation]
+
+  public init(
+    ref: CredentialRef,
+    states: [CredentialState],
+    locations: [CredentialLocation]
+  ) {
+    self.ref = ref
+    self.states = states
+    self.locations = locations
+  }
+}
+
 public struct InventoryGraph: Equatable, Sendable {
   public let nodes: Set<InventoryNode>
   public let edges: [InventoryEdge]
@@ -104,6 +120,31 @@ public struct InventoryGraph: Equatable, Sendable {
     )
   }
 
+  public var credentialProjections: [CredentialProjection] {
+    let refs = nodes.compactMap { node in
+      if case .credential(let ref) = node {
+        ref
+      } else {
+        nil
+      }
+    }
+
+    return refs.sorted(by: credentialSort).map { ref in
+      let node = InventoryNode.credential(ref)
+      return CredentialProjection(
+        ref: ref,
+        states: states(for: node),
+        locations: locations(for: node)
+      )
+    }
+  }
+
+  public func credentialProjections(service: NonEmptyText) -> [CredentialProjection] {
+    credentialProjections.filter { projection in
+      projection.ref.service == service
+    }
+  }
+
   private static func insert(
     ref: CredentialRef,
     state: CredentialState,
@@ -144,6 +185,39 @@ public struct InventoryGraph: Equatable, Sendable {
       .storedIn
     case .environment, .shellProfile, .configFile:
       .observedIn
+    }
+  }
+
+  private func states(for node: InventoryNode) -> [CredentialState] {
+    outgoingEdges(from: node).compactMap { edge in
+      if edge.kind == .hasState, case .state(let state) = edge.to {
+        state
+      } else {
+        nil
+      }
+    }
+  }
+
+  private func locations(for node: InventoryNode) -> [CredentialLocation] {
+    outgoingEdges(from: node).compactMap { edge in
+      switch edge.kind {
+      case .storedIn, .observedIn:
+        if case .location(let location) = edge.to {
+          location
+        } else {
+          nil
+        }
+      case .hasState:
+        nil
+      }
+    }
+  }
+
+  private func credentialSort(_ left: CredentialRef, _ right: CredentialRef) -> Bool {
+    if left.service.value == right.service.value {
+      left.account.value < right.account.value
+    } else {
+      left.service.value < right.service.value
     }
   }
 }
