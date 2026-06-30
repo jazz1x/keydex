@@ -46,6 +46,17 @@ Keydex owns that inventory graph.
 | M4 Mac App | Native SwiftUI inventory table, sidebar, inspector, and doctor panel | design review, accessibility pass |
 | M5 Distribution | Signed downloadable app archive or DMG outside the App Store | release checklist, security scan |
 
+## Total Completion Gates
+
+| Gate | Required Document | Required Evidence |
+| --- | --- | --- |
+| Product goal | `PRODUCT-PLAN.md` | Total goal questions have working CLI/UI answers. |
+| Feature behavior | `FEATURE-SPEC.md` | Acceptance criteria pass for each feature. |
+| Functional validation | `VALIDATION-SCENARIOS.md` | Required scenarios pass. |
+| Screen validation | `SCREEN-VALIDATION.md` | Screenshots and accessibility evidence pass. |
+| Release validation | `RELEASE-READINESS.md` | Release candidate checklist is complete. |
+| Test strategy | `TESTING-STRATEGY.md` | Tests exist at the closest stable boundary. |
+
 ## Acceptance Rules
 
 - Every new state label is added to philosophy, design, verification, CLI help, and tests.
@@ -53,4 +64,5 @@ Keydex owns that inventory graph.
 - Every doctor finding has `severity`, `state`, `message`, and `action`.
 - Every UI surface reads from the graph or a graph-derived projection.
 - Every metadata field must be safe to commit to a repository.
+- Every milestone has explicit feature and validation evidence.
 - Every release candidate passes `make guard` and `make quality`.
