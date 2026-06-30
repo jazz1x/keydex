@@ -29,6 +29,10 @@ The first source-level accessibility contract is `scripts/app-accessibility-cont
 It proves required SwiftUI surfaces expose stable accessibility labels and identifiers
 before permissioned screenshot or VoiceOver evidence is attached.
 
+The first source-level HIG and Liquid Glass contract is `scripts/app-design-contract.sh`.
+It proves the app keeps native Mac utility structure, graph-derived repair surfaces,
+and anti-theater visual rules wired before manual design review evidence is attached.
+
 ## Required Screens
 
 | Screen | Purpose |
@@ -95,6 +99,7 @@ before permissioned screenshot or VoiceOver evidence is attached.
 | Local screen evidence | `scripts/app-screen-evidence.sh --list` and `make app-screen-evidence SCENARIO=<name>` | Captures local screenshot and manifest for manual screen review evidence in `tmp/screen-evidence` (not CI required). |
 | Local screen review | `make app-screen-evidence-review` | Verifies the local screenshot and manifest set for all required script scenarios. |
 | Accessibility contract | `scripts/app-accessibility-contract.sh` | Required app surfaces expose stable labels and identifiers. |
+| App design contract | `scripts/app-design-contract.sh` | Native Mac utility structure, graph repair surfaces, and anti-theater rules remain wired. |
 | Doctor shell | App source uses `CredentialDoctor().inspect(graph)` | The repair queue surface is graph-derived. |
 | Search shell | App source filters `CredentialProjection` rows | Search narrows graph projections without separate list truth. |
 | Settings shell | App source exposes `SettingsPanel` | Permission, scan path, and unmanaged source controls are reachable. |

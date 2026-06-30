@@ -56,4 +56,7 @@ echo "7) CLI smoke scenarios..."
 echo "8) app accessibility contract..."
 ./scripts/app-accessibility-contract.sh
 
+echo "9) app design contract..."
+./scripts/app-design-contract.sh
+
 echo "quality gate clean"
