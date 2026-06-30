@@ -66,6 +66,7 @@ stable acceptance criteria here before expanding scope.
 | `keydex list` | List graph-derived credentials. | Rows include service, account, state, source count. |
 | `keydex where SERVICE` | Show graph-derived source relationships. | Output includes locations and state without secret values. |
 | `keydex doctor` | Print graph-derived findings. | Every issue includes severity, credential, state, cause, action. |
+| `--metadata PATH` | Load metadata fixture/store input. | `list`, `where`, and `doctor` share the same file-backed store path. |
 
 The first M3 CLI boundary uses `CredentialProjection` from `InventoryGraph` so `list` and
 `where` do not maintain separate credential truth.
@@ -75,6 +76,7 @@ The first M3 CLI boundary uses `CredentialProjection` from `InventoryGraph` so `
 | Feature | Behavior | Acceptance Criteria |
 | --- | --- | --- |
 | Metadata persistence | Store references, tags, notes, ignore rules, expiry metadata. | Tests prove no secret value field is persisted. |
+| Metadata fixture | Load safe JSON metadata records for CLI scenarios. | File store tests prove parsing and invalid states. |
 | Graph reconstruction | Load metadata and observations into graph. | Store fixture creates deterministic graph. |
 | Ignore rules | Mark source or credential as intentionally unmanaged. | Doctor respects ignore metadata. |
 | Expiry metadata | Track rotation dates without secret values. | Doctor emits expiring/expired states. |
