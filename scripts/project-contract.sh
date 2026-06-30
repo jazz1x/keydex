@@ -33,6 +33,7 @@ for path in \
   docs/SCREEN-VALIDATION.md \
   docs/RELEASE-READINESS.md \
   docs/RELEASE-CANDIDATE.md \
+  docs/SIGNING-NOTARIZATION.md \
   docs/TESTING-STRATEGY.md; do
   expect_file "$path"
 done
@@ -52,6 +53,7 @@ for document in \
   SCREEN-VALIDATION.md \
   RELEASE-READINESS.md \
   RELEASE-CANDIDATE.md \
+  SIGNING-NOTARIZATION.md \
   TESTING-STRATEGY.md; do
   expect_file_contains README.md "$document"
   expect_file_contains docs/GOALS.md "$document"
@@ -129,6 +131,9 @@ expect_file_contains docs/SCREEN-VALIDATION.md "Accessibility Rules"
 expect_file_contains docs/RELEASE-READINESS.md "Release Gates"
 expect_file_contains docs/RELEASE-CANDIDATE.md "Release Notes Draft"
 expect_file_contains docs/RELEASE-CANDIDATE.md "Publish Blockers"
+expect_file_contains docs/SIGNING-NOTARIZATION.md "xcrun notarytool submit"
+expect_file_contains docs/SIGNING-NOTARIZATION.md "xcrun stapler validate"
+expect_file_contains docs/SIGNING-NOTARIZATION.md "Developer ID Application"
 expect_file_contains Makefile "cli-smoke"
 expect_file_contains scripts/quality.sh "scripts/cli-smoke.sh"
 expect_file_contains scripts/cli-smoke.sh "Tests/Fixtures/metadata.json"

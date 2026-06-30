@@ -101,4 +101,5 @@ Keydex ships outside the App Store:
 | `SCREEN-VALIDATION.md` | Mac app visual and accessibility verification. |
 | `RELEASE-READINESS.md` | Release evidence, packaging, and distribution checks. |
 | `RELEASE-CANDIDATE.md` | Current release notes draft, evidence, limits, and publish blockers. |
+| `SIGNING-NOTARIZATION.md` | Developer ID signing and notarization runbook. |
 | `TESTING-STRATEGY.md` | Test layers and evidence rules. |

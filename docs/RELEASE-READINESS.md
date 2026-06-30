@@ -57,6 +57,7 @@ signing or notarization.
 | Release smoke | `make release-smoke` output manifest, checksums, DMG, and archive file list. |
 | Artifact inspection | Confirm archive/DMG contains expected files only. |
 | Release notes | `RELEASE-CANDIDATE.md` is current. |
+| Signing runbook | `SIGNING-NOTARIZATION.md` is current. |
 | Publish | GitHub release created from protected `main`. |
 
 ## Release Notes Template
