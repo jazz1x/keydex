@@ -2199,13 +2199,24 @@ private struct KeydexGlassButtonModifier: ViewModifier {
 
   @ViewBuilder
   func body(content: Content) -> some View {
-    if #available(macOS 26.0, *) {
-      if prominent {
-        content.buttonStyle(.glassProminent)
+    #if compiler(>=6.2)
+      if #available(macOS 26.0, *) {
+        if prominent {
+          content.buttonStyle(.glassProminent)
+        } else {
+          content.buttonStyle(.glass)
+        }
       } else {
-        content.buttonStyle(.glass)
+        fallback(content: content)
       }
-    } else if prominent {
+    #else
+      fallback(content: content)
+    #endif
+  }
+
+  @ViewBuilder
+  private func fallback(content: Content) -> some View {
+    if prominent {
       content.buttonStyle(.borderedProminent)
     } else {
       content.buttonStyle(.bordered)
@@ -2222,19 +2233,28 @@ private struct KeydexGlassCardModifier: ViewModifier {
   func body(content: Content) -> some View {
     let shape = RoundedRectangle(cornerRadius: 8, style: .continuous)
 
-    if #available(macOS 26.0, *) {
-      content
-        .glassEffect(.regular.tint(tint).interactive(), in: shape)
-        .overlay {
-          shape.stroke(stroke, lineWidth: selected ? 2 : 1)
-        }
-    } else {
-      content
-        .background(.regularMaterial, in: shape)
-        .overlay {
-          shape.stroke(stroke, lineWidth: selected ? 2 : 1)
-        }
-    }
+    #if compiler(>=6.2)
+      if #available(macOS 26.0, *) {
+        content
+          .glassEffect(.regular.tint(tint).interactive(), in: shape)
+          .overlay {
+            shape.stroke(stroke, lineWidth: selected ? 2 : 1)
+          }
+      } else {
+        fallback(content: content, in: shape)
+      }
+    #else
+      fallback(content: content, in: shape)
+    #endif
+  }
+
+  @ViewBuilder
+  private func fallback(content: Content, in shape: RoundedRectangle) -> some View {
+    content
+      .background(.regularMaterial, in: shape)
+      .overlay {
+        shape.stroke(stroke, lineWidth: selected ? 2 : 1)
+      }
   }
 }
 
@@ -2246,19 +2266,28 @@ private struct KeydexFloatingGlassPanelModifier: ViewModifier {
   func body(content: Content) -> some View {
     let shape = RoundedRectangle(cornerRadius: 22, style: .continuous)
 
-    if #available(macOS 26.0, *) {
-      content
-        .glassEffect(.regular.tint(tint).interactive(), in: shape)
-        .overlay {
-          shape.stroke(stroke, lineWidth: 1)
-        }
-    } else {
-      content
-        .background(.ultraThinMaterial, in: shape)
-        .overlay {
-          shape.stroke(stroke, lineWidth: 1)
-        }
-    }
+    #if compiler(>=6.2)
+      if #available(macOS 26.0, *) {
+        content
+          .glassEffect(.regular.tint(tint).interactive(), in: shape)
+          .overlay {
+            shape.stroke(stroke, lineWidth: 1)
+          }
+      } else {
+        fallback(content: content, in: shape)
+      }
+    #else
+      fallback(content: content, in: shape)
+    #endif
+  }
+
+  @ViewBuilder
+  private func fallback(content: Content, in shape: RoundedRectangle) -> some View {
+    content
+      .background(.ultraThinMaterial, in: shape)
+      .overlay {
+        shape.stroke(stroke, lineWidth: 1)
+      }
   }
 }
 

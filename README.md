@@ -11,7 +11,7 @@ secret store; Keydex stores references, metadata, graph edges, and doctor findin
 
 ## Status
 
-CLI workflows now cover env, shell, config file, and Keychain discovery with metadata-backed list/where/doctor flows.
+CLI workflows now cover env, shell, config file, Keychain discovery, registered-vs-observed reconciliation, and metadata-backed expiry reminders.
 
 ## Commands
 
@@ -22,6 +22,8 @@ keydex where openai
 keydex where openai --metadata ./metadata.json
 keydex doctor
 keydex doctor --metadata ./metadata.json
+keydex reminders --metadata ./metadata.json
+keydex reminders --metadata ./metadata.json --now 2026-07-01
 keydex scan env
 keydex scan shell
 keydex scan config --path ./credentials.env
@@ -36,6 +38,12 @@ When `--include-keychain` is used, Keydex reconciles metadata against live Keych
 - matched metadata-keychain pairs become `registered`
 - missing metadata references become `missing-keychain-item`
 - unmatched live Keychain references become `orphan`
+
+Expiry reminders are metadata-only and never store secret values:
+
+- `expiresAt` stores the rotation date as `YYYY-MM-DD`
+- `notifyBeforeDays` stores when Keydex should surface the reminder
+- `keydex reminders` reports scheduled, due, and expired reminder states
 
 ## Guard
 

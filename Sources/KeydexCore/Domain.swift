@@ -67,15 +67,145 @@ public struct CredentialObservation: Equatable, Hashable, Sendable {
   }
 }
 
+public struct CredentialExpiry: Equatable, Sendable {
+  public let expiresAt: Date
+  public let notifyBeforeDays: Int?
+
+  public init(expiresAt: Date, notifyBeforeDays: Int? = nil) {
+    self.expiresAt = expiresAt
+    self.notifyBeforeDays = notifyBeforeDays
+  }
+
+  public var notifyAt: Date? {
+    guard let notifyBeforeDays else {
+      return nil
+    }
+
+    return expiresAt.addingTimeInterval(TimeInterval(-notifyBeforeDays * 24 * 60 * 60))
+  }
+}
+
 public struct CredentialRecord: Equatable, Sendable {
   public let ref: CredentialRef
   public let state: CredentialState
   public let locations: [CredentialLocation]
+  public let expiry: CredentialExpiry?
 
-  public init(ref: CredentialRef, state: CredentialState, locations: [CredentialLocation]) {
+  public init(
+    ref: CredentialRef,
+    state: CredentialState,
+    locations: [CredentialLocation],
+    expiry: CredentialExpiry? = nil
+  ) {
     self.ref = ref
     self.state = state
     self.locations = locations
+    self.expiry = expiry
+  }
+}
+
+public enum CredentialExpiryReminderStatus: String, Equatable, Sendable {
+  case scheduled
+  case due
+  case expired
+}
+
+public struct CredentialExpiryReminder: Equatable, Sendable {
+  public let credential: CredentialRef
+  public let expiresAt: Date
+  public let notifyAt: Date
+  public let notifyBeforeDays: Int
+  public let status: CredentialExpiryReminderStatus
+
+  public init(
+    credential: CredentialRef,
+    expiresAt: Date,
+    notifyAt: Date,
+    notifyBeforeDays: Int,
+    status: CredentialExpiryReminderStatus
+  ) {
+    self.credential = credential
+    self.expiresAt = expiresAt
+    self.notifyAt = notifyAt
+    self.notifyBeforeDays = notifyBeforeDays
+    self.status = status
+  }
+}
+
+public struct CredentialExpiryReminderPlanner: Sendable {
+  public init() {}
+
+  public func reminders(
+    from records: [CredentialRecord],
+    currentDate: Date = Date()
+  ) -> [CredentialExpiryReminder] {
+    records.compactMap { record in
+      guard let expiry = record.expiry,
+        let notifyBeforeDays = expiry.notifyBeforeDays,
+        let notifyAt = expiry.notifyAt
+      else {
+        return nil
+      }
+
+      return CredentialExpiryReminder(
+        credential: record.ref,
+        expiresAt: expiry.expiresAt,
+        notifyAt: notifyAt,
+        notifyBeforeDays: notifyBeforeDays,
+        status: reminderStatus(
+          expiresAt: expiry.expiresAt,
+          notifyAt: notifyAt,
+          currentDate: currentDate
+        )
+      )
+    }
+    .sorted(by: reminderSort)
+  }
+
+  private func reminderStatus(
+    expiresAt: Date,
+    notifyAt: Date,
+    currentDate: Date
+  ) -> CredentialExpiryReminderStatus {
+    if currentDate >= expiresAt {
+      return .expired
+    }
+
+    if currentDate >= notifyAt {
+      return .due
+    }
+
+    return .scheduled
+  }
+
+  private func reminderSort(
+    _ left: CredentialExpiryReminder,
+    _ right: CredentialExpiryReminder
+  ) -> Bool {
+    if left.status != right.status {
+      return statusOrder(left.status) < statusOrder(right.status)
+    }
+
+    if left.notifyAt != right.notifyAt {
+      return left.notifyAt < right.notifyAt
+    }
+
+    if left.credential.service.value == right.credential.service.value {
+      return left.credential.account.value < right.credential.account.value
+    }
+
+    return left.credential.service.value < right.credential.service.value
+  }
+
+  private func statusOrder(_ status: CredentialExpiryReminderStatus) -> Int {
+    switch status {
+    case .expired:
+      0
+    case .due:
+      1
+    case .scheduled:
+      2
+    }
   }
 }
 

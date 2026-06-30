@@ -52,4 +52,9 @@ config_output="$(swift run keydex scan config --path "$config_file")"
 expect_output_contains "$config_output" "keydex scan config: 2 credential hints"
 expect_output_contains "$config_output" "graph: 1 sources, 4 edges"
 
+echo "5) reminders read expiry notification fixture..."
+reminder_output="$(swift run keydex reminders --metadata "$metadata" --now 2026-07-01)"
+expect_output_contains "$reminder_output" "expired: aws/jongyun expires 2026-01-01"
+expect_output_contains "$reminder_output" "notify: 2025-12-02 (30d before)"
+
 echo "cli smoke clean"

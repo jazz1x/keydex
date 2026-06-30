@@ -58,6 +58,7 @@ doctor findings, security boundaries, and future UI.
 | F13 | Doctor issue shape | Every issue includes severity, credential, state, locations, cause, action. |
 | F14 | Store persistence | Store persists metadata only. |
 | F15 | Ignore rule | Ignored source or credential is excluded from active repair queue. |
+| F16 | Expiry reminder | Store fixture with `notifyBeforeDays` produces scheduled/due/expired reminder evidence. |
 
 ## CLI Scenario Matrix
 
@@ -70,6 +71,7 @@ doctor findings, security boundaries, and future UI.
 | `list --metadata fixture.json` | Store fixture | Prints service/account/state/source count. |
 | `where openai --metadata fixture.json` | Store fixture | Prints env/shell/config/Keychain locations. |
 | `doctor --metadata fixture.json` | Store fixture with unhealthy states | Prints severity, credential, state, cause, action. |
+| `reminders --metadata fixture.json --now YYYY-MM-DD` | Store fixture with expiry reminder metadata | Prints reminder status, expiry date, and notification date. |
 
 Metadata-Keychain reconciliation scenarios must prove matched references become
 `registered`, missing metadata references become `missing-keychain-item`, and unmatched

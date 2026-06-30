@@ -29,6 +29,7 @@ CLI, app, and release evidence.
 | Cause/action | Doctor issues explain repair. |
 | UI fit | Screens do not overlap or truncate critical text. |
 | Keychain reconciliation | Registered, missing, and orphan states are derived from metadata-Keychain relationships. |
+| Expiry reminders | `expiresAt` and `notifyBeforeDays` create deterministic scheduled/due/expired reminder evidence. |
 
 ## Test Data Rules
 
@@ -49,6 +50,7 @@ CLI, app, and release evidence.
 | `list` | Metadata fixture graph prints rows. |
 | `where` | Metadata fixture graph prints source relationships. |
 | `doctor` | Metadata fixture graph prints findings. |
+| `reminders` | Metadata fixture prints expiry notification schedule. |
 | `--include-keychain` | Metadata and Keychain references reconcile to registered/missing/orphan states. |
 
 The first CLI smoke gate is `scripts/cli-smoke.sh`. It uses tracked fixtures in

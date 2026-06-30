@@ -20,6 +20,7 @@
       "account": "jongyun",
       "state": "registered",
       "expiresAt": "2026-01-01",
+      "notifyBeforeDays": 30,
       "locations": [
         { "kind": "config-file", "path": "Tests/Fixtures/credentials.env" }
       ]

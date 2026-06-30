@@ -14,6 +14,7 @@ struct Keydex: AsyncParsableCommand {
       List.self,
       Where.self,
       Doctor.self,
+      Reminders.self,
       Scan.self,
     ]
   )
@@ -112,6 +113,39 @@ struct Doctor: AsyncParsableCommand {
   }
 }
 
+struct Reminders: AsyncParsableCommand {
+  static let configuration = CommandConfiguration(
+    abstract: "Show configured expiry reminder notifications.")
+
+  @Option(help: "Path to a Keydex metadata JSON file.")
+  var metadata: String?
+
+  @Option(help: "Override current date for evidence runs, formatted as YYYY-MM-DD.")
+  var now: String?
+
+  func run() async throws {
+    let currentDate = try currentDateOverride(now)
+    let records = try await credentialRecords(metadataPath: metadata, currentDate: currentDate)
+    let reminders = CredentialExpiryReminderPlanner().reminders(
+      from: records,
+      currentDate: currentDate
+    )
+
+    if reminders.isEmpty {
+      print("keydex reminders: no expiry reminders configured")
+    } else {
+      for reminder in reminders {
+        print(
+          """
+          \(reminder.status.rawValue): \(reminder.credential.service)/\(reminder.credential.account) expires \(fullDateString(reminder.expiresAt))
+            notify: \(fullDateString(reminder.notifyAt)) (\(reminder.notifyBeforeDays)d before)
+          """
+        )
+      }
+    }
+  }
+}
+
 private func credentialGraph(
   metadataPath: String?,
   includeKeychain: Bool
@@ -130,14 +164,17 @@ private func credentialGraph(
   return InventoryGraph(records: records)
 }
 
-private func credentialRecords(metadataPath: String?) async throws -> [CredentialRecord] {
+private func credentialRecords(
+  metadataPath: String?,
+  currentDate: Date = Date()
+) async throws -> [CredentialRecord] {
   guard let metadataPath else {
     return try await EmptyMetadataStore().listCredentials()
   }
 
   let path = try NonEmptyText.parse(metadataPath, field: "metadata")
   let url = URL(fileURLWithPath: path.value)
-  return try await FileMetadataStore(url: url).listCredentials()
+  return try await FileMetadataStore(url: url, currentDate: currentDate).listCredentials()
 }
 
 private func ignoredCredentials(metadataPath: String?) async throws -> Set<CredentialRef> {
@@ -156,6 +193,28 @@ private func stateLabels(_ states: [CredentialState]) -> String {
   } else {
     states.map(\.rawValue).joined(separator: ",")
   }
+}
+
+private func currentDateOverride(_ value: String?) throws -> Date {
+  guard let value else {
+    return Date()
+  }
+
+  guard let date = fullDateFormatter().date(from: value) else {
+    throw ValidationError("--now must be formatted as YYYY-MM-DD")
+  }
+
+  return date
+}
+
+private func fullDateString(_ date: Date) -> String {
+  fullDateFormatter().string(from: date)
+}
+
+private func fullDateFormatter() -> ISO8601DateFormatter {
+  let formatter = ISO8601DateFormatter()
+  formatter.formatOptions = [.withFullDate]
+  return formatter
 }
 
 private func locationLabel(_ location: CredentialLocation) -> String {

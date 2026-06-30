@@ -24,6 +24,7 @@ Keydex owns that inventory graph.
 | G6 | Keep CLI and UI behavior aligned | State labels, doctor language, and scan scope stay shared across app and CLI. |
 | G7 | Make workflow dynamic through graph traversal | Views and commands filter the same inventory graph instead of maintaining separate lists. |
 | G8 | Ship behind guardrails | Local hooks and CI verify code, docs, security, and project-contract drift. |
+| G9 | Make expiry operational | Metadata can carry expiry dates and notification lead days without storing secret values. |
 
 ## Non-Goals
 
