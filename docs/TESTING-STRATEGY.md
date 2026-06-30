@@ -24,6 +24,7 @@ CLI, app, and release evidence.
 | State truth | Canonical state names stay stable. |
 | Cause/action | Doctor issues explain repair. |
 | UI fit | Screens do not overlap or truncate critical text. |
+| Keychain reconciliation | Registered, missing, and orphan states are derived from metadata-Keychain relationships. |
 
 ## Test Data Rules
 
@@ -44,6 +45,7 @@ CLI, app, and release evidence.
 | `list` | Metadata fixture graph prints rows. |
 | `where` | Metadata fixture graph prints source relationships. |
 | `doctor` | Metadata fixture graph prints findings. |
+| `--include-keychain` | Metadata and Keychain references reconcile to registered/missing/orphan states. |
 
 The first CLI smoke gate is `scripts/cli-smoke.sh`. It uses tracked fixtures in
 `Tests/Fixtures` and runs through `make quality`.

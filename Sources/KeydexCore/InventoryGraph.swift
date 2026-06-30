@@ -92,6 +92,34 @@ public struct InventoryGraph: Equatable, Sendable {
     self.edges = edges
   }
 
+  public init(records: [CredentialRecord], observations: [CredentialObservation]) {
+    var nodes = Set<InventoryNode>()
+    var edges: [InventoryEdge] = []
+
+    for record in records {
+      Self.insert(
+        ref: record.ref,
+        state: record.state,
+        locations: record.locations,
+        nodes: &nodes,
+        edges: &edges
+      )
+    }
+
+    for observation in observations {
+      Self.insert(
+        ref: observation.ref,
+        state: observation.state,
+        locations: [observation.location],
+        nodes: &nodes,
+        edges: &edges
+      )
+    }
+
+    self.nodes = nodes
+    self.edges = edges
+  }
+
   public func outgoingEdges(from node: InventoryNode) -> [InventoryEdge] {
     edges.filter { $0.from == node }
   }

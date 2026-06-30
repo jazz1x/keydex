@@ -25,9 +25,14 @@ struct List: AsyncParsableCommand {
   @Option(help: "Path to a Keydex metadata JSON file.")
   var metadata: String?
 
+  @Flag(help: "Include live Keychain item references.")
+  var includeKeychain = false
+
   func run() async throws {
-    let records = try await credentialRecords(metadataPath: metadata)
-    let projections = InventoryGraph(records: records).credentialProjections
+    let projections = try await credentialGraph(
+      metadataPath: metadata,
+      includeKeychain: includeKeychain
+    ).credentialProjections
     if projections.isEmpty {
       print("keydex: no credentials indexed yet")
     } else {
@@ -50,11 +55,15 @@ struct Where: AsyncParsableCommand {
   @Option(help: "Path to a Keydex metadata JSON file.")
   var metadata: String?
 
+  @Flag(help: "Include live Keychain item references.")
+  var includeKeychain = false
+
   func run() async throws {
     let parsedService = try NonEmptyText.parse(service, field: "service")
-    let records = try await credentialRecords(metadataPath: metadata)
-    let projections = InventoryGraph(records: records).credentialProjections(
-      service: parsedService)
+    let projections = try await credentialGraph(
+      metadataPath: metadata,
+      includeKeychain: includeKeychain
+    ).credentialProjections(service: parsedService)
 
     if projections.isEmpty {
       print("keydex: where \(parsedService) is not indexed yet")
@@ -77,9 +86,14 @@ struct Doctor: AsyncParsableCommand {
   @Option(help: "Path to a Keydex metadata JSON file.")
   var metadata: String?
 
+  @Flag(help: "Include live Keychain item references.")
+  var includeKeychain = false
+
   func run() async throws {
-    let records = try await credentialRecords(metadataPath: metadata)
-    let graph = InventoryGraph(records: records)
+    let graph = try await credentialGraph(
+      metadataPath: metadata,
+      includeKeychain: includeKeychain
+    )
     let issues = CredentialDoctor().inspect(graph)
     if issues.isEmpty {
       print("keydex doctor: no issues found")
@@ -95,6 +109,24 @@ struct Doctor: AsyncParsableCommand {
       }
     }
   }
+}
+
+private func credentialGraph(
+  metadataPath: String?,
+  includeKeychain: Bool
+) async throws -> InventoryGraph {
+  let records = try await credentialRecords(metadataPath: metadataPath)
+
+  if includeKeychain {
+    let keychainReferences = try MacOSKeychain().inventoryReferences()
+    let keychainObservations = KeychainInventoryScanner().observations(from: keychainReferences)
+    return CredentialInventoryReconciler().graph(
+      metadataRecords: records,
+      keychainObservations: keychainObservations
+    )
+  }
+
+  return InventoryGraph(records: records)
 }
 
 private func credentialRecords(metadataPath: String?) async throws -> [CredentialRecord] {

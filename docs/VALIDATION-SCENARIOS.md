@@ -68,6 +68,10 @@ doctor findings, security boundaries, and future UI.
 | `where openai --metadata fixture.json` | Store fixture | Prints env/shell/config/Keychain locations. |
 | `doctor --metadata fixture.json` | Store fixture with unhealthy states | Prints severity, credential, state, cause, action. |
 
+Metadata-Keychain reconciliation scenarios must prove matched references become
+`registered`, missing metadata references become `missing-keychain-item`, and unmatched
+Keychain references become `orphan`.
+
 Tracked CLI fixtures live under `Tests/Fixtures`. `scripts/cli-smoke.sh` executes the
 first scenario set for `list`, `where`, `doctor`, and `scan config`.
 
