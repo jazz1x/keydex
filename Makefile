@@ -1,4 +1,4 @@
-.PHONY: guard format test app-build forbidden quality contract cli-smoke
+.PHONY: guard format test app-build forbidden quality contract cli-smoke app-window-smoke
 
 SWIFT_FORMAT ?= /Library/Developer/CommandLineTools/usr/bin/swift-format
 
@@ -24,3 +24,6 @@ contract:
 
 cli-smoke:
 	./scripts/cli-smoke.sh
+
+app-window-smoke:
+	./scripts/app-window-smoke.sh

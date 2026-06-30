@@ -26,6 +26,7 @@ doctor findings, security boundaries, and future UI.
 | B5 | Project contract remains linked. | `scripts/project-contract.sh`. |
 | B6 | CLI scenarios remain executable. | `scripts/cli-smoke.sh`. |
 | B7 | Mac app shell compiles. | `swift build --product KeydexApp`. |
+| B8 | Mac app shell launches. | `scripts/app-window-smoke.sh`. |
 
 ## Philosophy Scenarios
 
