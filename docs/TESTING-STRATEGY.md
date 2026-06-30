@@ -44,6 +44,9 @@ CLI, app, and release evidence.
 | `where` | Metadata fixture graph prints source relationships. |
 | `doctor` | Metadata fixture graph prints findings. |
 
+The first CLI smoke gate is `scripts/cli-smoke.sh`. It uses tracked fixtures in
+`Tests/Fixtures` and runs through `make quality`.
+
 ## App Test Targets
 
 | Surface | Minimum Test |

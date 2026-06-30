@@ -24,6 +24,7 @@ doctor findings, security boundaries, and future UI.
 | B3 | Unit tests pass. | `swift test`. |
 | B4 | CLI help remains documented. | `make quality` command inventory drift check. |
 | B5 | Project contract remains linked. | `scripts/project-contract.sh`. |
+| B6 | CLI scenarios remain executable. | `scripts/cli-smoke.sh`. |
 
 ## Philosophy Scenarios
 
@@ -65,6 +66,9 @@ doctor findings, security boundaries, and future UI.
 | `list --metadata fixture.json` | Store fixture | Prints service/account/state/source count. |
 | `where openai --metadata fixture.json` | Store fixture | Prints env/shell/config/Keychain locations. |
 | `doctor --metadata fixture.json` | Store fixture with unhealthy states | Prints severity, credential, state, cause, action. |
+
+Tracked CLI fixtures live under `Tests/Fixtures`. `scripts/cli-smoke.sh` executes the
+first scenario set for `list`, `where`, `doctor`, and `scan config`.
 
 ## Security Scenarios
 
