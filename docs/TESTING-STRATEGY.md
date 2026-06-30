@@ -11,6 +11,7 @@ CLI, app, and release evidence.
 | Source parser tests | Prove scanner inputs become observations without secret values. |
 | Store fixture tests | Prove metadata input excludes secret values and rejects invalid states. |
 | CLI scenario tests | Prove commands use graph projections and stable output. |
+| App build tests | Prove the SwiftUI shell compiles against graph projections. |
 | App screen tests | Prove SwiftUI surfaces render the graph truth. |
 | Release smoke tests | Prove packaged artifacts run. |
 

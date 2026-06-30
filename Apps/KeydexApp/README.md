@@ -1,6 +1,22 @@
 # KeydexApp
 
-SwiftUI macOS app surface.
+SwiftUI macOS app surface shell.
 
-The app will share KeydexCore with the CLI. It should follow `docs/DESIGN-FOUNDATION.md`
-before adding screens.
+`KeydexApp` is a local SwiftPM executable target under
+`/Apps/KeydexApp/Sources/KeydexApp`.
+
+## What it is
+
+An app-shell-only interface that renders graph-derived credential projections
+from `KeydexCore.InventoryGraph` and `CredentialProjection`.
+
+## Local Run
+
+From the repository root:
+
+- `swift run KeydexApp`
+
+Notes:
+
+- This shell uses sample graph data only.
+- It does not read secrets and does not access the live keychain.

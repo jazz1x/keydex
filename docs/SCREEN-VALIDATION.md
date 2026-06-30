@@ -77,5 +77,6 @@ M4 and release candidates.
 
 ## Completion Rule
 
-M4 is not complete until every required screen has screenshot evidence, accessibility
-evidence, and a passing review against this document.
+The first M4 shell is complete when the SwiftUI app target builds from `make guard`.
+M4 itself is not complete until every required screen has screenshot evidence,
+accessibility evidence, and a passing review against this document.
