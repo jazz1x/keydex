@@ -68,7 +68,13 @@ struct Scan: ParsableCommand {
     case "env":
       let observations = try EnvironmentScanner().observations(
         from: ProcessInfo.processInfo.environment)
-      print("keydex scan env: \(observations.count) credential hints")
+      let summary = InventoryGraph(observations: observations).summary
+      print(
+        """
+        keydex scan env: \(summary.credentialCount) credential hints
+        graph: \(summary.locationCount) sources, \(summary.edgeCount) edges
+        """
+      )
     case "shell", "config":
       print("keydex scan \(parsedTarget): not implemented yet")
     default:

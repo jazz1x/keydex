@@ -103,3 +103,34 @@ func inventoryGraphDoesNotDuplicateEquivalentEdges() throws {
 
   #expect(graph.outgoingEdges(from: credentialNode).count == 2)
 }
+
+@Test
+func inventoryGraphSummaryCountsGraphProjection() throws {
+  let ref = try CredentialRef.parse(service: "openai", account: "jongyun")
+  let service = try NonEmptyText.parse("openai", field: "service")
+  let account = try NonEmptyText.parse("jongyun", field: "account")
+  let envName = try NonEmptyText.parse("OPENAI_API_KEY", field: "name")
+  let graph = InventoryGraph(
+    observations: [
+      CredentialObservation(
+        ref: ref,
+        state: .plaintextFallback,
+        location: .keychain(service: service, account: account)
+      ),
+      CredentialObservation(
+        ref: ref,
+        state: .plaintextFallback,
+        location: .environment(name: envName)
+      ),
+    ]
+  )
+
+  let summary = InventoryGraphSummary(
+    credentialCount: 1,
+    locationCount: 2,
+    stateCount: 1,
+    edgeCount: 3
+  )
+
+  #expect(graph.summary == summary)
+}
