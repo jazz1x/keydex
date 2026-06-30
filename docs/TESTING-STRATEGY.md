@@ -39,7 +39,7 @@ CLI, app, and release evidence.
 | --- | --- |
 | `scan env` | Fixture environment produces graph summary. |
 | `scan shell` | Fixture profile produces graph summary. |
-| `scan config` | Fixture config produces graph summary. |
+| `scan config` | Fixture config file produces graph summary. |
 | `list` | Metadata fixture graph prints rows. |
 | `where` | Metadata fixture graph prints source relationships. |
 | `doctor` | Metadata fixture graph prints findings. |
