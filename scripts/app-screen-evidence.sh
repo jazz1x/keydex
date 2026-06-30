@@ -41,8 +41,24 @@ window_report() {
   ' "$pid"
 }
 
+list_scenarios() {
+  printf '%s\n' \
+    default-window \
+    empty-inventory \
+    search-filter \
+    inspector \
+    settings \
+    compact-window
+}
+
 scenario="${1:-default-window}"
 inventory_mode="sample"
+window_preset="default"
+
+if [[ "$scenario" == "--list" ]]; then
+  list_scenarios
+  exit 0
+fi
 
 case "$scenario" in
   default-window)
@@ -51,8 +67,15 @@ case "$scenario" in
   empty-inventory)
     inventory_mode="empty"
     ;;
+  search-filter | inspector | settings)
+    inventory_mode="sample"
+    ;;
+  compact-window)
+    inventory_mode="sample"
+    window_preset="compact"
+    ;;
   *)
-    fail "unknown screen evidence scenario: $scenario"
+    fail "unknown screen evidence scenario: $scenario. Supported scenarios: default-window, empty-inventory, search-filter, inspector, settings, compact-window"
     ;;
 esac
 
@@ -61,7 +84,10 @@ mkdir -p "$output_dir"
 
 swift build --product KeydexApp
 
-KEYDEX_APP_INVENTORY_MODE="$inventory_mode" swift run KeydexApp &
+KEYDEX_APP_INVENTORY_MODE="$inventory_mode" \
+  KEYDEX_APP_SCREEN_SCENARIO="$scenario" \
+  KEYDEX_APP_WINDOW_PRESET="$window_preset" \
+  swift run KeydexApp &
 app_pid="$!"
 
 cleanup() {
@@ -95,6 +121,7 @@ test -s "$capture_path" || fail "empty screenshot artifact: $capture_path"
 {
   printf 'scenario=%s\n' "$scenario"
   printf 'inventory_mode=%s\n' "$inventory_mode"
+  printf 'window_preset=%s\n' "$window_preset"
   printf 'captured_at=%s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
   printf 'git_sha=%s\n' "$(git rev-parse --short HEAD)"
   printf '%s\n' "$report"

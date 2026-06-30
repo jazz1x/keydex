@@ -1,33 +1,96 @@
+import AppKit
 import KeydexCore
 import SwiftUI
 
 @main
 struct KeydexApp: App {
+  private static var windowPresetSize: CGSize? {
+    guard let rawPreset = ProcessInfo.processInfo.environment["KEYDEX_APP_WINDOW_PRESET"] else {
+      return nil
+    }
+
+    switch rawPreset {
+    case "default":
+      return CGSize(width: 1080, height: 680)
+    case "compact":
+      return CGSize(width: 900, height: 620)
+    default:
+      preconditionFailure(
+        "Unsupported KEYDEX_APP_WINDOW_PRESET value: \(rawPreset). Expected 'default' or 'compact'."
+      )
+    }
+  }
+
+  private static var defaultWindowSize: CGSize {
+    windowPresetSize ?? CGSize(width: 1080, height: 680)
+  }
+
   var body: some Scene {
     WindowGroup("Keydex") {
       CredentialInventoryShellView()
+        .background(WindowPresetApplier(size: Self.windowPresetSize))
         .accessibilityIdentifier("keydex.shell")
         .accessibilityLabel("Keydex credential inventory")
     }
-    .defaultSize(width: 1080, height: 680)
+    .defaultSize(
+      width: Self.defaultWindowSize.width,
+      height: Self.defaultWindowSize.height
+    )
+  }
+}
+
+private struct WindowPresetApplier: NSViewRepresentable {
+  let size: CGSize?
+
+  func makeNSView(context _: Context) -> NSView {
+    let view = NSView()
+    DispatchQueue.main.async {
+      apply(to: view)
+    }
+    return view
+  }
+
+  func updateNSView(_ nsView: NSView, context _: Context) {
+    DispatchQueue.main.async {
+      apply(to: nsView)
+    }
+  }
+
+  private func apply(to view: NSView) {
+    guard let size, let window = view.window else {
+      return
+    }
+
+    var frame = window.frame
+    frame.size = size
+    window.setFrame(frame, display: true)
   }
 }
 
 struct CredentialInventoryShellView: View {
-  @State private var selectedSidebar = SidebarSelection.all
+  @State private var selectedSidebar: SidebarSelection
   @State private var selectedCredentialID: CredentialRow.ID?
-  @State private var searchText = ""
-  @State private var isShowingSettings = false
+  @State private var searchText: String
+  @State private var isShowingSettings: Bool
   @State private var inventoryMode: InventoryMode
 
   init() {
-    let initialMode = Self.inventoryModeFromEnvironment()
+    let initialScenario = Self.screenScenarioFromEnvironment()
+    let initialMode = Self.inventoryModeFromEnvironment(
+      defaultingTo: initialScenario.inventoryMode
+    )
+    _selectedSidebar = State(initialValue: initialScenario.sidebarSelection)
+    _selectedCredentialID = State(initialValue: initialScenario.selectedCredentialID)
+    _searchText = State(initialValue: initialScenario.searchText)
+    _isShowingSettings = State(initialValue: initialScenario.showsSettings)
     _inventoryMode = State(initialValue: initialMode)
   }
 
-  fileprivate static func inventoryModeFromEnvironment() -> InventoryMode {
+  fileprivate static func inventoryModeFromEnvironment(
+    defaultingTo defaultMode: InventoryMode
+  ) -> InventoryMode {
     guard let rawMode = ProcessInfo.processInfo.environment["KEYDEX_APP_INVENTORY_MODE"] else {
-      return .sample
+      return defaultMode
     }
 
     switch rawMode {
@@ -40,6 +103,21 @@ struct CredentialInventoryShellView: View {
         "Unsupported KEYDEX_APP_INVENTORY_MODE value: \(rawMode). Expected 'sample' or 'empty'."
       )
     }
+  }
+
+  fileprivate static func screenScenarioFromEnvironment() -> AppScreenScenario {
+    guard let rawScenario = ProcessInfo.processInfo.environment["KEYDEX_APP_SCREEN_SCENARIO"]
+    else {
+      return .defaultWindow
+    }
+
+    guard let scenario = AppScreenScenario(rawValue: rawScenario) else {
+      preconditionFailure(
+        "Unsupported KEYDEX_APP_SCREEN_SCENARIO value: \(rawScenario). Expected one of: \(AppScreenScenario.supportedValues)."
+      )
+    }
+
+    return scenario
   }
 
   private var graph: InventoryGraph {
@@ -134,7 +212,7 @@ struct CredentialInventoryShellView: View {
             text: $searchText,
             prompt: isEmptyMode
               ? "No credentials to search"
-              : "Find service, account, state, location"
+              : "Find credentials"
           )
           .navigationTitle(selectedSidebar.title)
           .font(.system(.body, design: .monospaced))
@@ -280,6 +358,64 @@ private enum InventoryMode: String, CaseIterable, Identifiable {
       "Sample"
     case .empty:
       "Empty"
+    }
+  }
+}
+
+private enum AppScreenScenario: String, CaseIterable {
+  case defaultWindow = "default-window"
+  case emptyInventory = "empty-inventory"
+  case searchFilter = "search-filter"
+  case inspector
+  case settings
+  case compactWindow = "compact-window"
+
+  static var supportedValues: String {
+    allCases.map(\.rawValue).joined(separator: ", ")
+  }
+
+  var inventoryMode: InventoryMode {
+    switch self {
+    case .emptyInventory:
+      .empty
+    case .defaultWindow, .searchFilter, .inspector, .settings, .compactWindow:
+      .sample
+    }
+  }
+
+  var sidebarSelection: SidebarSelection {
+    switch self {
+    case .searchFilter:
+      .state(.plaintextFallback)
+    case .defaultWindow, .emptyInventory, .inspector, .settings, .compactWindow:
+      .all
+    }
+  }
+
+  var selectedCredentialID: CredentialRow.ID? {
+    switch self {
+    case .inspector:
+      "hashicorp-vault|infra"
+    case .defaultWindow, .emptyInventory, .searchFilter, .settings, .compactWindow:
+      nil
+    }
+  }
+
+  var searchText: String {
+    switch self {
+    case .searchFilter:
+      "github"
+    case .defaultWindow, .emptyInventory, .inspector, .settings, .compactWindow:
+      ""
+    }
+  }
+
+  var showsSettings: Bool {
+    switch self {
+    case .settings:
+      true
+    case .defaultWindow, .emptyInventory, .searchFilter, .inspector, .compactWindow:
+      false
     }
   }
 }

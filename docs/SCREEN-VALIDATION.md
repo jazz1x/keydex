@@ -17,8 +17,9 @@ manual validation runs. It requires macOS Screen Recording permission and must b
 outside CI. The command writes a screenshot PNG plus a manifest into
 `tmp/screen-evidence`.
 
-Use `make app-screen-evidence` for the default inventory screen and
-`make app-screen-evidence SCENARIO=empty-inventory` for the empty inventory screen.
+Use `scripts/app-screen-evidence.sh --list` to inspect supported local capture
+scenarios. Use `make app-screen-evidence SCENARIO=<name>` to capture a specific
+scenario.
 
 The first source-level accessibility contract is `scripts/app-accessibility-contract.sh`.
 It proves required SwiftUI surfaces expose stable accessibility labels and identifiers
@@ -68,18 +69,18 @@ before permissioned screenshot or VoiceOver evidence is attached.
 
 ## Screenshot Scenarios
 
-| ID | Scenario | Evidence |
-| --- | --- | --- |
-| UI1 | Empty state | Screenshot plus note of next action. |
-| UI2 | Healthy inventory | Screenshot with registered state rows. |
-| UI3 | Plaintext fallback | Screenshot with warning label and source. |
-| UI4 | Missing Keychain item | Screenshot with error label and action. |
-| UI5 | Duplicate credential | Screenshot with duplicate state and relationship evidence. |
-| UI6 | Inspector sources | Screenshot showing stored/observed source relationships. |
-| UI7 | Doctor queue | Screenshot with grouped cause/action findings. |
-| UI8 | Settings permissions | Screenshot of Keychain access and scan path settings. |
-| UI9 | Search/filter | Screenshot before and after graph projection filter. |
-| UI10 | Compact viewport | Screenshot proving no overlap. |
+| ID | Scenario | Script Scenario | Evidence |
+| --- | --- | --- | --- |
+| UI1 | Empty state | `empty-inventory` | Screenshot plus note of next action. |
+| UI2 | Healthy inventory | `default-window` | Screenshot with registered state rows. |
+| UI3 | Plaintext fallback | `default-window` | Screenshot with warning label and source. |
+| UI4 | Missing Keychain item | `default-window` | Screenshot with error label and action. |
+| UI5 | Duplicate credential | `default-window` | Screenshot with duplicate state and relationship evidence. |
+| UI6 | Inspector sources | `inspector` | Screenshot showing stored/observed source relationships. |
+| UI7 | Doctor queue | `default-window` | Screenshot with grouped cause/action findings. |
+| UI8 | Settings permissions | `settings` | Screenshot of Keychain access and scan path settings. |
+| UI9 | Search/filter | `search-filter` | Screenshot after graph projection filtering; compare with `default-window`. |
+| UI10 | Compact viewport | `compact-window` | Screenshot proving no overlap. |
 
 ## Smoke Evidence
 
@@ -87,7 +88,7 @@ before permissioned screenshot or VoiceOver evidence is attached.
 | --- | --- | --- |
 | Build shell | `swift build --product KeydexApp` | The SwiftUI app compiles against graph projections. |
 | Window shell | `scripts/app-window-smoke.sh` | The app launches and publishes the default window. |
-| Local screen evidence | `scripts/app-screen-evidence.sh` | Captures local screenshot and manifest for manual screen review evidence in `tmp/screen-evidence` (not CI required). |
+| Local screen evidence | `scripts/app-screen-evidence.sh --list` and `make app-screen-evidence SCENARIO=<name>` | Captures local screenshot and manifest for manual screen review evidence in `tmp/screen-evidence` (not CI required). |
 | Accessibility contract | `scripts/app-accessibility-contract.sh` | Required app surfaces expose stable labels and identifiers. |
 | Doctor shell | App source uses `CredentialDoctor().inspect(graph)` | The repair queue surface is graph-derived. |
 | Search shell | App source filters `CredentialProjection` rows | Search narrows graph projections without separate list truth. |
