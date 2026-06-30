@@ -1,4 +1,10 @@
 {
+  "ignoredCredentials": [
+    {
+      "service": "bitbucket",
+      "account": "jongyun"
+    }
+  ],
   "records": [
     {
       "service": "openai",
@@ -15,6 +21,14 @@
       "state": "expired",
       "locations": [
         { "kind": "config-file", "path": "Tests/Fixtures/credentials.env" }
+      ]
+    },
+    {
+      "service": "bitbucket",
+      "account": "jongyun",
+      "state": "plaintext-fallback",
+      "locations": [
+        { "kind": "shell-profile", "path": "~/.zshrc" }
       ]
     }
   ]

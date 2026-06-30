@@ -94,7 +94,8 @@ struct Doctor: AsyncParsableCommand {
       metadataPath: metadata,
       includeKeychain: includeKeychain
     )
-    let issues = CredentialDoctor().inspect(graph)
+    let ignoredCredentials = try await ignoredCredentials(metadataPath: metadata)
+    let issues = CredentialDoctor().inspect(graph, ignoring: ignoredCredentials)
     if issues.isEmpty {
       print("keydex doctor: no issues found")
     } else {
@@ -137,6 +138,16 @@ private func credentialRecords(metadataPath: String?) async throws -> [Credentia
   let path = try NonEmptyText.parse(metadataPath, field: "metadata")
   let url = URL(fileURLWithPath: path.value)
   return try await FileMetadataStore(url: url).listCredentials()
+}
+
+private func ignoredCredentials(metadataPath: String?) async throws -> Set<CredentialRef> {
+  guard let metadataPath else {
+    return try await EmptyMetadataStore().ignoredCredentials()
+  }
+
+  let path = try NonEmptyText.parse(metadataPath, field: "metadata")
+  let url = URL(fileURLWithPath: path.value)
+  return try await FileMetadataStore(url: url).ignoredCredentials()
 }
 
 private func stateLabels(_ states: [CredentialState]) -> String {

@@ -9,8 +9,7 @@ public struct FileMetadataStore: MetadataStore {
   }
 
   public func listCredentials() async throws -> [CredentialRecord] {
-    let data = try Data(contentsOf: url)
-    let document = try JSONDecoder().decode(MetadataDocument.self, from: data)
+    let document = try loadDocument()
 
     return try document.records.map { record in
       CredentialRecord(
@@ -20,10 +19,33 @@ public struct FileMetadataStore: MetadataStore {
       )
     }
   }
+
+  public func ignoredCredentials() async throws -> Set<CredentialRef> {
+    let document = try loadDocument()
+    return Set(try document.ignoredCredentials.map { try $0.credentialRef() })
+  }
+
+  private func loadDocument() throws -> MetadataDocument {
+    let data = try Data(contentsOf: url)
+    return try JSONDecoder().decode(MetadataDocument.self, from: data)
+  }
 }
 
 private struct MetadataDocument: Decodable {
   let records: [MetadataRecord]
+  let ignoredCredentials: [MetadataCredentialRef]
+
+  private enum CodingKeys: String, CodingKey {
+    case records
+    case ignoredCredentials
+  }
+
+  init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    records = try container.decode([MetadataRecord].self, forKey: .records)
+    ignoredCredentials =
+      try container.decodeIfPresent([MetadataCredentialRef].self, forKey: .ignoredCredentials) ?? []
+  }
 }
 
 private struct MetadataRecord: Decodable {
@@ -38,6 +60,15 @@ private struct MetadataRecord: Decodable {
     }
 
     return credentialState
+  }
+}
+
+private struct MetadataCredentialRef: Decodable {
+  let service: String
+  let account: String
+
+  func credentialRef() throws -> CredentialRef {
+    try CredentialRef.parse(service: service, account: account)
   }
 }
 

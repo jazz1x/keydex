@@ -16,6 +16,15 @@ expect_output_contains() {
     fail "missing expected output: $needle"
 }
 
+expect_output_omits() {
+  local output="$1"
+  local needle="$2"
+
+  if printf '%s\n' "$output" | rg --fixed-strings --quiet -- "$needle"; then
+    fail "unexpected output: $needle"
+  fi
+}
+
 metadata="Tests/Fixtures/metadata.json"
 config_file="Tests/Fixtures/credentials.env"
 
@@ -34,6 +43,7 @@ echo "3) doctor reads metadata fixture..."
 doctor_output="$(swift run keydex doctor --metadata "$metadata")"
 expect_output_contains "$doctor_output" "warning: openai/jongyun plaintext-fallback"
 expect_output_contains "$doctor_output" "error: aws/jongyun expired"
+expect_output_omits "$doctor_output" "bitbucket/jongyun"
 expect_output_contains "$doctor_output" "cause: credential is expired"
 expect_output_contains "$doctor_output" "action: rotate or remove the credential"
 
