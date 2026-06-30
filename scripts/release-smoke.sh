@@ -8,6 +8,7 @@ fail() {
 
 command -v rg >/dev/null 2>&1 || fail "missing dependency: rg (ripgrep)"
 command -v swift >/dev/null 2>&1 || fail "missing dependency: swift"
+command -v shasum >/dev/null 2>&1 || fail "missing dependency: shasum"
 command -v tar >/dev/null 2>&1 || fail "missing dependency: tar"
 
 sha="$(git rev-parse --short HEAD)"
@@ -16,6 +17,7 @@ output_root="${KEYDEX_RELEASE_SMOKE_DIR:-tmp/release-smoke}"
 payload_name="keydex-$sha-$platform"
 payload_dir="$output_root/$payload_name"
 archive_path="$output_root/$payload_name.tar.gz"
+checksum_path="$archive_path.sha256"
 file_list_path="$output_root/$payload_name.files"
 
 mkdir -p "$payload_dir/bin"
@@ -41,6 +43,8 @@ chmod +x "$payload_dir/bin/keydex" "$payload_dir/bin/KeydexApp"
 } >"$payload_dir/manifest.txt"
 
 tar -czf "$archive_path" -C "$output_root" "$payload_name"
+shasum -a 256 "$archive_path" >"$checksum_path"
+shasum -a 256 -c "$checksum_path" >/dev/null
 tar -tzf "$archive_path" >"$file_list_path"
 
 while IFS= read -r archived_path; do
@@ -79,5 +83,6 @@ fi
 
 printf 'payload=%s\n' "$payload_dir"
 printf 'archive=%s\n' "$archive_path"
+printf 'checksum=%s\n' "$checksum_path"
 printf 'file_list=%s\n' "$file_list_path"
 echo "release smoke clean"
