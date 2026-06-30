@@ -68,6 +68,7 @@ stable acceptance criteria here before expanding scope.
 | `keydex where SERVICE` | Show graph-derived source relationships. | Output includes locations and state without secret values. |
 | `keydex doctor` | Print graph-derived findings. | Every issue includes severity, credential, state, cause, action. |
 | `--metadata PATH` | Load metadata fixture/store input. | `list`, `where`, and `doctor` share the same file-backed store path. |
+| `--include-keychain` | Include live Keychain item references. | Metadata-keychain matches become `registered`; missing metadata references become `missing-keychain-item`; unmatched Keychain references become `orphan`. |
 
 The first M3 CLI boundary uses `CredentialProjection` from `InventoryGraph` so `list` and
 `where` do not maintain separate credential truth.
@@ -90,6 +91,9 @@ The first M3 CLI boundary uses `CredentialProjection` from `InventoryGraph` so `
 | Registered state | Match metadata to Keychain item. | Graph has `stored-in` edge and `registered` state. |
 | Missing item | Detect stale metadata reference. | Doctor emits `missing-keychain-item`. |
 | Orphan item | Detect unmanaged Keychain item. | Doctor emits `orphan`. |
+
+The first Keychain reconciliation boundary treats raw Keychain scans as orphan candidates
+until metadata proves that a reference is registered.
 
 ## Mac App
 

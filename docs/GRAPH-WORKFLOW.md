@@ -74,5 +74,6 @@ The first graph implementation is intentionally small:
 - `scan keychain` projects item references through `InventoryGraph`
 - `list` and `where` project credentials through `CredentialProjection`
 - doctor findings through `CredentialDoctor.inspect(InventoryGraph)`
+- metadata-Keychain reconciliation through `CredentialInventoryReconciler`
 
 Findings, tags, and duplicate edges can be added when the doctor and UI need them.
