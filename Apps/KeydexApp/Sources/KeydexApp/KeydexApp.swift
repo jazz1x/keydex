@@ -63,6 +63,7 @@ struct CredentialInventoryShellView: View {
       .state(.plaintextFallback),
       .state(.orphan),
       .state(.expired),
+      .state(.duplicate),
     ] + services.map { .service($0) }
   }
 
@@ -336,6 +337,8 @@ private enum SidebarSelection: Hashable {
       "person.crop.circle.badge.exclamationmark"
     case .state(.expired):
       "exclamationmark.octagon"
+    case .state(.duplicate):
+      "doc.on.doc"
     case .state:
       "circle.dashed"
     case .service:
