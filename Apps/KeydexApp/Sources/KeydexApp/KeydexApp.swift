@@ -16,8 +16,20 @@ struct CredentialInventoryShellView: View {
   @State private var selectedCredentialID: CredentialRow.ID?
   @State private var searchText = ""
   @State private var isShowingSettings = false
+  @State private var inventoryMode: InventoryMode = .sample
 
-  private let graph = sampleCredentialGraph()
+  private var graph: InventoryGraph {
+    switch inventoryMode {
+    case .sample:
+      sampleCredentialGraph()
+    case .empty:
+      InventoryGraph(records: [])
+    }
+  }
+
+  private var isEmptyMode: Bool {
+    inventoryMode == .empty
+  }
 
   private var sidebarSelectionItems: [SidebarSelection] {
     let services = Set(graph.credentialProjections.map { $0.ref.service.value }).sorted()
@@ -71,31 +83,51 @@ struct CredentialInventoryShellView: View {
       .navigationTitle("Scopes")
     } content: {
       VStack(spacing: 0) {
-        Table(rows, selection: $selectedCredentialID) {
-          TableColumn("Service") { row in
-            Text(row.service)
-          }
+        ZStack {
+          Table(rows, selection: $selectedCredentialID) {
+            TableColumn("Service") { row in
+              Text(row.service)
+            }
 
-          TableColumn("Account") { row in
-            Text(row.account)
-          }
+            TableColumn("Account") { row in
+              Text(row.account)
+            }
 
-          TableColumn("State") { row in
-            Text(canonicalStateLabel(row.states))
-          }
+            TableColumn("State") { row in
+              Text(canonicalStateLabel(row.states))
+            }
 
-          TableColumn("Sources") { row in
-            Text("\(row.locations.count)")
+            TableColumn("Sources") { row in
+              Text("\(row.locations.count)")
+            }
+          }
+          .searchable(
+            text: $searchText,
+            prompt: isEmptyMode
+              ? "No credentials to search"
+              : "Find service, account, state, location"
+          )
+          .navigationTitle(selectedSidebar.title)
+          .font(.system(.body, design: .monospaced))
+          .frame(minHeight: 320)
+
+          if rows.isEmpty {
+            EmptyStatePanel(
+              title: "No credentials",
+              systemImage: "tray",
+              description: isEmptyMode
+                ? "This dataset is intentionally empty."
+                : "No matching rows for the selected scope.",
+              secondaryText: isEmptyMode
+                ? "Scan sources or add metadata to populate credentials."
+                : "Try adjusting your scope or search query."
+            )
           }
         }
-        .searchable(text: $searchText, prompt: "Find service, account, state, location")
-        .navigationTitle(selectedSidebar.title)
-        .font(.system(.body, design: .monospaced))
-        .frame(minHeight: 320)
 
         Divider()
 
-        DoctorPanel(issues: doctorIssues)
+        DoctorPanel(issues: doctorIssues, isEmptyMode: isEmptyMode)
       }
     } detail: {
       VStack(alignment: .leading, spacing: 14) {
@@ -133,7 +165,10 @@ struct CredentialInventoryShellView: View {
             "Select a credential",
             systemImage: "list.bullet.indent",
             description: Text(
-              "Choose an item from the table to inspect its graph-derived metadata.")
+              isEmptyMode
+                ? "Scan sources or add metadata to create new credentials."
+                : "Choose an item from the table to inspect its graph-derived metadata."
+            )
           )
         }
       }
@@ -141,6 +176,17 @@ struct CredentialInventoryShellView: View {
       .frame(minWidth: 260)
     }
     .toolbar {
+      ToolbarItem(placement: .status) {
+        Picker("Sample mode", selection: $inventoryMode) {
+          ForEach(InventoryMode.allCases) { mode in
+            Text(mode.title).tag(mode)
+          }
+        }
+        .pickerStyle(.segmented)
+        .frame(width: 160)
+        .help("Switch sample credential dataset")
+      }
+
       ToolbarItem(placement: .primaryAction) {
         Button {
           isShowingSettings = true
@@ -149,6 +195,9 @@ struct CredentialInventoryShellView: View {
         }
         .help("Open app settings sample")
       }
+    }
+    .onChange(of: inventoryMode) { _, _ in
+      selectedCredentialID = nil
     }
     .sheet(isPresented: $isShowingSettings) {
       SettingsPanel(sample: sampleSettingsData())
@@ -180,6 +229,46 @@ struct CredentialInventoryShellView: View {
     .lowercased()
 
     return trimmed.isEmpty || searchHaystack.contains(normalizedQuery)
+  }
+}
+
+private enum InventoryMode: String, CaseIterable, Identifiable {
+  case sample
+  case empty
+
+  var id: String { rawValue }
+
+  var title: String {
+    switch self {
+    case .sample:
+      "Sample"
+    case .empty:
+      "Empty"
+    }
+  }
+}
+
+private struct EmptyStatePanel: View {
+  let title: String
+  let systemImage: String
+  let description: String
+  let secondaryText: String
+
+  var body: some View {
+    VStack(alignment: .center, spacing: 4) {
+      Image(systemName: systemImage)
+        .font(.system(size: 30))
+        .foregroundStyle(.secondary)
+      Text(title)
+        .font(.headline)
+      Text(description)
+        .foregroundStyle(.secondary)
+      Text(secondaryText)
+        .font(.caption)
+        .foregroundStyle(.secondary)
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .multilineTextAlignment(.center)
   }
 }
 
@@ -262,6 +351,7 @@ private struct DoctorIssueRow: Identifiable {
 
 private struct DoctorPanel: View {
   let issues: [DoctorIssue]
+  let isEmptyMode: Bool
 
   var body: some View {
     VStack(alignment: .leading, spacing: 6) {
@@ -271,11 +361,21 @@ private struct DoctorPanel: View {
         .padding(.top, 10)
 
       if issues.isEmpty {
-        Text("No issues found")
-          .font(.subheadline)
-          .foregroundStyle(.secondary)
-          .padding(.horizontal, 12)
-          .padding(.bottom, 8)
+        VStack(alignment: .leading, spacing: 4) {
+          Text(isEmptyMode ? "No issues" : "No issues found")
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 12)
+            .padding(.bottom, 2)
+
+          if isEmptyMode {
+            Text("Next action: scan sources or add metadata to inventory.")
+              .font(.caption)
+              .foregroundStyle(.secondary)
+              .padding(.horizontal, 12)
+              .padding(.bottom, 8)
+          }
+        }
       } else {
         List(issues.map(DoctorIssueRow.init)) { row in
           VStack(alignment: .leading, spacing: 4) {

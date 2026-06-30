@@ -30,9 +30,14 @@ From the repository root:
 
 Notes:
 
-- This shell uses sample graph data only.
+- This shell uses graph-derived sample data by default and supports an empty dataset mode.
 - It does not read secrets and does not access the live keychain.
 - It now renders a native Doctor panel in the shell (`CredentialDoctor().inspect(graph)`) showing
   severity, credential, state, cause, and action for each detected issue.
 - It also exposes a toolbar search to filter graph-derived credential rows by service, account,
   state raw value, and source location labels.
+
+The toolbar includes a native segmented `Sample / Empty` control that swaps between:
+
+- Sample: populated `InventoryGraph` produced by `sampleCredentialGraph()`
+- Empty: empty `InventoryGraph(records: [])`, producing no credentials and no doctor issues

@@ -129,6 +129,7 @@ expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift "Credentia
 expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift "CredentialProjection"
 expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift "searchText"
 expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift "SettingsPanel"
+expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift "InventoryGraph(records: [])"
 expect_file_contains Sources/KeydexCore/Doctor.swift "inspect(_ graph: InventoryGraph)"
 expect_file_contains Sources/KeydexCore/Doctor.swift "credential: CredentialRef"
 expect_file_contains Sources/keydex/main.swift "CredentialDoctor().inspect(graph)"

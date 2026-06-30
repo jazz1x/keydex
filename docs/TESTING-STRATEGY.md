@@ -68,6 +68,8 @@ The first search shell must filter `CredentialProjection` rows by service, accou
 state, and source label without creating a separate list source of truth.
 The first settings shell must expose Keychain permission, scan source, and unmanaged
 source controls without performing mutations.
+The first empty inventory shell must render an empty `InventoryGraph` rather than a
+separate hardcoded list.
 
 ## Completion Rule
 
