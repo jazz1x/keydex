@@ -147,9 +147,10 @@ Rules:
 
 ## Commands
 
-CLI output follows [CLI-INTERFACE.md](docs/CLI-INTERFACE.md): `▶` for command summaries,
-`ⓘ` for informational states, `✅` for clean/registered, `⚠️` for warnings, `❌` for
-errors, and bracket scopes such as `[graph]`, `[env]`, `[shell]`, and `[keychain]`.
+CLI output follows [CLI-INTERFACE.md](docs/CLI-INTERFACE.md): `◇` for command summaries
+and informational states, `✓` for clean/registered, `⚠` for warnings, `■` for errors,
+and bracket scopes such as `[graph]`, `[env]`, `[shell]`, and `[keychain]` under a `│`
+detail rail.
 ANSI color is TTY-only and respects `NO_COLOR`.
 
 | Command | Description |
@@ -193,8 +194,8 @@ swift run keydex reminders \
 Expected fixture output:
 
 ```text
-❌ expired: aws/jongyun expires 2026-01-01
-  notify: 2025-12-02 (30d before)
+■ expired: aws/jongyun expires 2026-01-01
+│  notify: 2025-12-02 (30d before)
 ```
 
 ---

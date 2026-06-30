@@ -75,7 +75,7 @@ struct Where: AsyncParsableCommand {
           "\(stateSymbol(projection.states)) \(projection.ref.service)/\(projection.ref.account): \(stateLabels(projection.states))"
         )
         for location in projection.locations {
-          print("  \(locationLabel(location))")
+          print(CLIStyle.detail(locationLabel(location)))
         }
       }
     }
@@ -105,8 +105,8 @@ struct Doctor: AsyncParsableCommand {
         print(
           """
           \(severitySymbol(issue.severity)) \(issue.severity.rawValue): \(issue.credential.service)/\(issue.credential.account) \(issue.state.rawValue)
-            cause: \(issue.message)
-            action: \(issue.action)
+          \(CLIStyle.detail("cause: \(issue.message)"))
+          \(CLIStyle.detail("action: \(issue.action)"))
           """
         )
       }
@@ -139,7 +139,7 @@ struct Reminders: AsyncParsableCommand {
         print(
           """
           \(reminderSymbol(reminder.status)) \(reminder.status.rawValue): \(reminder.credential.service)/\(reminder.credential.account) expires \(fullDateString(reminder.expiresAt))
-            notify: \(fullDateString(reminder.notifyAt)) (\(reminder.notifyBeforeDays)d before)
+          \(CLIStyle.detail("notify: \(fullDateString(reminder.notifyAt)) (\(reminder.notifyBeforeDays)d before)"))
           """
         )
       }
@@ -203,13 +203,13 @@ private func stateSymbol(_ states: [CredentialState]) -> String {
 private func stateSymbol(_ state: CredentialState?) -> String {
   switch state {
   case .registered:
-    CLIStyle.successTone("✅")
+    CLIStyle.successTone("✓")
   case .missingKeychainItem, .expired:
-    CLIStyle.error("❌")
+    CLIStyle.error("■")
   case .plaintextFallback, .orphan, .expiring, .duplicate:
-    CLIStyle.warning("⚠️")
+    CLIStyle.warning("⚠")
   case nil:
-    CLIStyle.infoTone("ⓘ")
+    CLIStyle.infoTone("◇")
   }
 }
 
@@ -231,22 +231,22 @@ private func stateSeverityOrder(_ state: CredentialState) -> Int {
 private func severitySymbol(_ severity: DoctorSeverity) -> String {
   switch severity {
   case .info:
-    CLIStyle.infoTone("ⓘ")
+    CLIStyle.infoTone("◇")
   case .warning:
-    CLIStyle.warning("⚠️")
+    CLIStyle.warning("⚠")
   case .error:
-    CLIStyle.error("❌")
+    CLIStyle.error("■")
   }
 }
 
 private func reminderSymbol(_ status: CredentialExpiryReminderStatus) -> String {
   switch status {
   case .scheduled:
-    CLIStyle.infoTone("ⓘ")
+    CLIStyle.infoTone("◇")
   case .due:
-    CLIStyle.warning("⚠️")
+    CLIStyle.warning("⚠")
   case .expired:
-    CLIStyle.error("❌")
+    CLIStyle.error("■")
   }
 }
 
@@ -306,7 +306,7 @@ struct Scan: ParsableCommand {
       print(
         """
         \(CLIStyle.run("keydex scan env: \(summary.credentialCount) credential hints"))
-          [graph] sources \(summary.locationCount) · edges \(summary.edgeCount)
+        \(CLIStyle.detail("[graph] sources \(summary.locationCount) · edges \(summary.edgeCount)"))
         """
       )
     case "shell":
@@ -315,7 +315,7 @@ struct Scan: ParsableCommand {
       print(
         """
         \(CLIStyle.run("keydex scan shell: \(summary.credentialCount) credential hints"))
-          [graph] sources \(summary.locationCount) · edges \(summary.edgeCount)
+        \(CLIStyle.detail("[graph] sources \(summary.locationCount) · edges \(summary.edgeCount)"))
         """
       )
     case "config":
@@ -325,7 +325,7 @@ struct Scan: ParsableCommand {
       print(
         """
         \(CLIStyle.run("keydex scan config: \(summary.credentialCount) credential hints"))
-          [graph] sources \(summary.locationCount) · edges \(summary.edgeCount)
+        \(CLIStyle.detail("[graph] sources \(summary.locationCount) · edges \(summary.edgeCount)"))
         """
       )
     case "keychain":
@@ -335,7 +335,7 @@ struct Scan: ParsableCommand {
       print(
         """
         \(CLIStyle.run("keydex scan keychain: \(summary.credentialCount) credential references"))
-          [graph] sources \(summary.locationCount) · edges \(summary.edgeCount)
+        \(CLIStyle.detail("[graph] sources \(summary.locationCount) · edges \(summary.edgeCount)"))
         """
       )
     default:
@@ -377,10 +377,11 @@ struct Scan: ParsableCommand {
 private enum CLIStyle {
   private enum ANSI: String {
     case reset = "\u{001B}[0m"
-    case cyan = "\u{001B}[1;36m"
-    case green = "\u{001B}[1;32m"
-    case yellow = "\u{001B}[1;33m"
-    case red = "\u{001B}[1;31m"
+    case cyan = "\u{001B}[36m"
+    case green = "\u{001B}[32m"
+    case yellow = "\u{001B}[33m"
+    case red = "\u{001B}[31m"
+    case dim = "\u{001B}[38;5;245m"
   }
 
   private static var colorEnabled: Bool {
@@ -391,15 +392,19 @@ private enum CLIStyle {
   }
 
   static func run(_ text: String) -> String {
-    color("▶ \(text)", .cyan)
+    "\(infoTone("◇"))  \(text)"
   }
 
   static func info(_ text: String) -> String {
-    color("ⓘ \(text)", .yellow)
+    "\(infoTone("◇"))  \(text)"
   }
 
   static func success(_ text: String) -> String {
-    color("✅ \(text)", .green)
+    "\(successTone("✓"))  \(text)"
+  }
+
+  static func detail(_ text: String) -> String {
+    "\(color("│", .dim))  \(text)"
   }
 
   static func infoTone(_ text: String) -> String {
