@@ -78,6 +78,7 @@ required screenshot and accessibility evidence below.
 | Doctor shell | App source uses `CredentialDoctor().inspect(graph)` | The repair queue surface is graph-derived. |
 | Search shell | App source filters `CredentialProjection` rows | Search narrows graph projections without separate list truth. |
 | Settings shell | App source exposes `SettingsPanel` | Permission, scan path, and unmanaged source controls are reachable. |
+| Empty shell | App source exposes empty `InventoryGraph` mode | Empty inventory is an honest graph projection state. |
 
 ## Screen Review Checklist
 
