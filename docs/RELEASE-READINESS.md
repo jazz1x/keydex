@@ -20,7 +20,7 @@ artifact.
 | Local verification | `make guard` and `make quality` pass. |
 | Functional scenarios | Required scenarios in `VALIDATION-SCENARIOS.md` pass. |
 | Screen validation | Required scenarios in `SCREEN-VALIDATION.md` pass for app releases. |
-| Release smoke | `make release-smoke` creates, checksums, and inspects a local archive with an unsigned app bundle. |
+| Release smoke | `make release-smoke` creates, checksums, and inspects a local archive, unsigned app bundle, and unsigned DMG. |
 | Secret boundary | Release artifacts contain no secret-bearing metadata. |
 | Documentation | README, product plan, feature spec, and release notes match behavior. |
 
@@ -31,15 +31,15 @@ artifact.
 | App Store | Out of scope for first release. |
 | Developer ID signing | Required before public Mac app release if feasible. |
 | Notarization | Required before public Mac app release if feasible. |
-| DMG | Preferred user-facing app download format. |
+| DMG | Preferred user-facing app download format; unsigned DMG smoke is a pre-signing gate. |
 | Zip archive | Acceptable for early internal app builds. |
 | CLI install | GitHub release artifact first; Homebrew formula can come later. |
 
 The first local release smoke is `scripts/release-smoke.sh`. It builds release-mode
-SwiftPM products, writes a local archive and SHA-256 checksum under `tmp/release-smoke`,
-validates an unsigned app bundle, runs the packaged CLI, and verifies fixture metadata is
-not included. It is not a substitute for Developer ID signing, notarization, or the final
-DMG gate.
+SwiftPM products, writes a local archive, unsigned DMG, and SHA-256 checksums under
+`tmp/release-smoke`, validates an unsigned app bundle, runs the packaged CLI, and verifies
+fixture metadata is not included. It is not a substitute for Developer ID signing or
+notarization.
 
 ## Release Candidate Checklist
 
@@ -54,7 +54,7 @@ DMG gate.
 | CLI smoke | `keydex --help`, `scan env`, `scan shell`, `doctor`. |
 | App build | Xcode, SwiftPM app build, or unsigned app bundle smoke evidence. |
 | Screen proof | Required screenshots and accessibility notes. |
-| Release smoke | `make release-smoke` output manifest, checksum, and archive file list. |
+| Release smoke | `make release-smoke` output manifest, checksums, DMG, and archive file list. |
 | Artifact inspection | Confirm archive/DMG contains expected files only. |
 | Publish | GitHub release created from protected `main`. |
 

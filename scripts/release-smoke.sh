@@ -10,6 +10,7 @@ command -v rg >/dev/null 2>&1 || fail "missing dependency: rg (ripgrep)"
 command -v swift >/dev/null 2>&1 || fail "missing dependency: swift"
 command -v shasum >/dev/null 2>&1 || fail "missing dependency: shasum"
 command -v tar >/dev/null 2>&1 || fail "missing dependency: tar"
+command -v hdiutil >/dev/null 2>&1 || fail "missing dependency: hdiutil"
 command -v plutil >/dev/null 2>&1 || fail "missing dependency: plutil"
 
 sha="$(git rev-parse --short HEAD)"
@@ -20,6 +21,8 @@ payload_dir="$output_root/$payload_name"
 archive_path="$output_root/$payload_name.tar.gz"
 checksum_path="$archive_path.sha256"
 file_list_path="$output_root/$payload_name.files"
+dmg_path="$output_root/$payload_name.dmg"
+dmg_checksum_path="$dmg_path.sha256"
 
 mkdir -p "$payload_dir/bin"
 
@@ -67,9 +70,16 @@ chmod +x "$payload_dir/bin/keydex" "$payload_dir/bin/KeydexApp" "$payload_dir/Ke
   printf 'cli=bin/keydex\n'
   printf 'app=bin/KeydexApp\n'
   printf 'app_bundle=Keydex.app\n'
+  printf 'dmg=%s\n' "$dmg_path"
+  printf 'dmg_checksum=%s\n' "$dmg_checksum_path"
   printf 'archive=%s\n' "$archive_path"
-  printf 'known_limits=unsigned SwiftPM executable products and app bundle; DMG and notarization remain future gates\n'
+  printf 'known_limits=unsigned app bundle and unsigned DMG; signing/notarization remain future gates\n'
 } >"$payload_dir/manifest.txt"
+
+hdiutil create -volname "Keydex" -srcfolder "$payload_dir/Keydex.app" -ov -format UDZO "$dmg_path"
+hdiutil verify "$dmg_path"
+shasum -a 256 "$dmg_path" >"$dmg_checksum_path"
+shasum -a 256 -c "$dmg_checksum_path" >/dev/null
 
 tar -czf "$archive_path" -C "$output_root" "$payload_name"
 shasum -a 256 "$archive_path" >"$checksum_path"
@@ -120,5 +130,7 @@ fi
 printf 'payload=%s\n' "$payload_dir"
 printf 'archive=%s\n' "$archive_path"
 printf 'checksum=%s\n' "$checksum_path"
+printf 'dmg=%s\n' "$dmg_path"
+printf 'dmg_checksum=%s\n' "$dmg_checksum_path"
 printf 'file_list=%s\n' "$file_list_path"
 echo "release smoke clean"
