@@ -14,10 +14,12 @@ public struct FileMetadataStore: MetadataStore {
     let document = try loadDocument()
 
     return try document.records.map { record in
-      CredentialRecord(
+      let expiry = try record.credentialExpiry()
+      return CredentialRecord(
         ref: try CredentialRef.parse(service: record.service, account: record.account),
-        state: try record.credentialState(currentDate: currentDate),
-        locations: try record.locations.map { try $0.credentialLocation() }
+        state: try record.credentialState(currentDate: currentDate, expiry: expiry),
+        locations: try record.locations.map { try $0.credentialLocation() },
+        expiry: expiry
       )
     }
   }
@@ -55,16 +57,16 @@ private struct MetadataRecord: Decodable {
   let account: String
   let state: String
   let expiresAt: String?
+  let notifyBeforeDays: Int?
   let locations: [MetadataLocation]
 
-  func credentialState(currentDate: Date) throws -> CredentialState {
-    if let expiresAt {
-      let expiryDate = try Self.expiryDate(from: expiresAt)
-      if expiryDate <= currentDate {
+  func credentialState(currentDate: Date, expiry: CredentialExpiry?) throws -> CredentialState {
+    if let expiry {
+      if expiry.expiresAt <= currentDate {
         return .expired
       }
 
-      if expiryDate <= currentDate.addingTimeInterval(30 * 24 * 60 * 60) {
+      if expiry.expiresAt <= currentDate.addingTimeInterval(30 * 24 * 60 * 60) {
         return .expiring
       }
     }
@@ -74,6 +76,23 @@ private struct MetadataRecord: Decodable {
     }
 
     return credentialState
+  }
+
+  func credentialExpiry() throws -> CredentialExpiry? {
+    guard let expiresAt else {
+      if let notifyBeforeDays {
+        throw MetadataStoreError.notificationRequiresExpiry(notifyBeforeDays)
+      }
+
+      return nil
+    }
+
+    let expiryDate = try Self.expiryDate(from: expiresAt)
+    if let notifyBeforeDays, notifyBeforeDays < 0 {
+      throw MetadataStoreError.invalidNotificationLeadDays(notifyBeforeDays)
+    }
+
+    return CredentialExpiry(expiresAt: expiryDate, notifyBeforeDays: notifyBeforeDays)
   }
 
   private static func expiryDate(from value: String) throws -> Date {
@@ -133,6 +152,8 @@ private struct MetadataLocation: Decodable {
 public enum MetadataStoreError: Error, Equatable, LocalizedError {
   case invalidState(String)
   case invalidExpiryDate(String)
+  case invalidNotificationLeadDays(Int)
+  case notificationRequiresExpiry(Int)
   case invalidLocationKind(String)
   case missingLocationField(kind: String, field: String)
 
@@ -142,6 +163,10 @@ public enum MetadataStoreError: Error, Equatable, LocalizedError {
       "invalid credential state: \(state)"
     case .invalidExpiryDate(let value):
       "invalid credential expiry date: \(value)"
+    case .invalidNotificationLeadDays(let value):
+      "invalid credential notification lead days: \(value)"
+    case .notificationRequiresExpiry(let value):
+      "credential notification lead days require expiresAt: \(value)"
     case .invalidLocationKind(let kind):
       "invalid credential location kind: \(kind)"
     case .missingLocationField(let kind, let field):

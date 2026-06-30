@@ -86,6 +86,36 @@ func fileMetadataStoreDerivesExpiringStateFromExpiryMetadata() async throws {
 }
 
 @Test
+func fileMetadataStoreLoadsExpiryReminderMetadata() async throws {
+  let url = try writeMetadataFixture(
+    """
+    {
+      "records": [
+        {
+          "service": "aws",
+          "account": "preview",
+          "state": "registered",
+          "expiresAt": "2026-07-15",
+          "notifyBeforeDays": 14,
+          "locations": [
+            { "kind": "config-file", "path": "~/.aws/credentials" }
+          ]
+        }
+      ]
+    }
+    """
+  )
+
+  let currentDate = try #require(ISO8601DateFormatter().date(from: "2026-07-01T00:00:00Z"))
+  let records = try await FileMetadataStore(url: url, currentDate: currentDate).listCredentials()
+  let expiry = try #require(records.first?.expiry)
+
+  #expect(records.first?.state == .expiring)
+  #expect(expiry.notifyBeforeDays == 14)
+  #expect(expiry.notifyAt == currentDate)
+}
+
+@Test
 func fileMetadataStoreDerivesExpiredStateFromExpiryMetadata() async throws {
   let url = try writeMetadataFixture(
     """
@@ -130,6 +160,53 @@ func fileMetadataStoreRejectsInvalidExpiryDate() async throws {
   )
 
   await #expect(throws: MetadataStoreError.invalidExpiryDate("soon")) {
+    try await FileMetadataStore(url: url).listCredentials()
+  }
+}
+
+@Test
+func fileMetadataStoreRejectsNegativeNotificationLeadDays() async throws {
+  let url = try writeMetadataFixture(
+    """
+    {
+      "records": [
+        {
+          "service": "aws",
+          "account": "production",
+          "state": "registered",
+          "expiresAt": "2026-07-15",
+          "notifyBeforeDays": -1,
+          "locations": []
+        }
+      ]
+    }
+    """
+  )
+
+  await #expect(throws: MetadataStoreError.invalidNotificationLeadDays(-1)) {
+    try await FileMetadataStore(url: url).listCredentials()
+  }
+}
+
+@Test
+func fileMetadataStoreRejectsNotificationWithoutExpiry() async throws {
+  let url = try writeMetadataFixture(
+    """
+    {
+      "records": [
+        {
+          "service": "aws",
+          "account": "production",
+          "state": "registered",
+          "notifyBeforeDays": 7,
+          "locations": []
+        }
+      ]
+    }
+    """
+  )
+
+  await #expect(throws: MetadataStoreError.notificationRequiresExpiry(7)) {
     try await FileMetadataStore(url: url).listCredentials()
   }
 }

@@ -18,7 +18,7 @@ expect_file_contains() {
 
 echo "1) CLI command inventory drift..."
 help_text="$(swift run keydex --help)"
-for command in list where doctor scan; do
+for command in list where doctor reminders scan; do
   printf '%s\n' "$help_text" | rg --quiet "^[[:space:]]+$command[[:space:]]" ||
     fail "CLI help is missing command: $command"
   expect_file_contains README.md "keydex $command"

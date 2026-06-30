@@ -82,6 +82,7 @@ The first M3 CLI boundary uses `CredentialProjection` from `InventoryGraph` so `
 | Graph reconstruction | Load metadata and observations into graph. | Store fixture creates deterministic graph. |
 | Ignore rules | Mark source or credential as intentionally unmanaged. | Doctor respects ignore metadata. |
 | Expiry metadata | Track rotation dates without secret values. | Doctor emits expiring/expired states. |
+| Expiry reminders | Track notification lead days without secret values. | Store parses `notifyBeforeDays`; `keydex reminders` reports scheduled, due, and expired reminders. |
 
 ## Keychain
 
@@ -95,6 +96,13 @@ The first M3 CLI boundary uses `CredentialProjection` from `InventoryGraph` so `
 The first Keychain reconciliation boundary treats raw Keychain scans as orphan candidates
 until metadata proves that a reference is registered.
 
+User language maps to graph truth:
+
+- Used Keychain items are live Keychain observations.
+- Registered Keychain items are metadata references that match live Keychain observations.
+- Orphan Keychain items are live observations without user-owned metadata.
+- Missing Keychain items are user-owned metadata references that no longer exist in Keychain.
+
 ## Mac App
 
 | Surface | Behavior | Acceptance Criteria |
@@ -106,7 +114,7 @@ until metadata proves that a reference is registered.
 | Inspector | Show selected graph relationships. | Credential, sources, state, findings, notes, actions visible. |
 | Doctor panel | Show repair queue. | Findings grouped by severity and include cause/action. |
 | List/card display | Switch between list and card inventory layouts. | The selected mode and projection are preserved across sidebar selection changes. |
-| Settings | Show permissions, appearance, and scan paths. | User can manage local Keychain permission preference, Keychain references, light/dark appearance mode, scan sources, scan paths, and ignored/unmanaged source rules. |
+| Settings | Show permissions, appearance, and scan paths. | User can manage local Keychain permission preference, Keychain references, light/dark appearance mode, scan sources, scan paths, expiry reminder policy, and ignored/unmanaged source rules. |
 
 ## Security
 

@@ -1,3 +1,4 @@
+import Foundation
 import KeydexCore
 import Testing
 
@@ -19,6 +20,53 @@ func nonEmptyTextRejectsBlankInput() {
 func credentialStateRawValuesAreStableCliLabels() {
   #expect(CredentialState.plaintextFallback.rawValue == "plaintext-fallback")
   #expect(CredentialState.missingKeychainItem.rawValue == "missing-keychain-item")
+}
+
+@Test
+func expiryReminderPlannerClassifiesReminderStatus() throws {
+  let dueRef = try CredentialRef.parse(service: "aws", account: "ci")
+  let scheduledRef = try CredentialRef.parse(service: "openai", account: "default")
+  let expiredRef = try CredentialRef.parse(service: "vault", account: "infra")
+  let currentDate = try #require(fullDate("2026-07-01"))
+  let records = [
+    CredentialRecord(
+      ref: dueRef,
+      state: .expiring,
+      locations: [],
+      expiry: CredentialExpiry(
+        expiresAt: try #require(fullDate("2026-07-15")),
+        notifyBeforeDays: 14
+      )
+    ),
+    CredentialRecord(
+      ref: scheduledRef,
+      state: .registered,
+      locations: [],
+      expiry: CredentialExpiry(
+        expiresAt: try #require(fullDate("2026-09-01")),
+        notifyBeforeDays: 7
+      )
+    ),
+    CredentialRecord(
+      ref: expiredRef,
+      state: .expired,
+      locations: [],
+      expiry: CredentialExpiry(
+        expiresAt: try #require(fullDate("2026-06-01")),
+        notifyBeforeDays: 30
+      )
+    ),
+  ]
+
+  let reminders = CredentialExpiryReminderPlanner().reminders(
+    from: records,
+    currentDate: currentDate
+  )
+
+  #expect(reminders.map(\.credential) == [expiredRef, dueRef, scheduledRef])
+  #expect(reminders.map(\.status) == [.expired, .due, .scheduled])
+  #expect(reminders[1].notifyBeforeDays == 14)
+  #expect(reminders[1].notifyAt == fullDate("2026-07-01"))
 }
 
 @Test
@@ -166,4 +214,10 @@ func inventoryGraphProjectsCredentialsForListAndWhere() throws {
 
   #expect(projections.map(\.ref) == [awsRef, openaiRef])
   #expect(openaiProjections == [expectedOpenaiProjection])
+}
+
+private func fullDate(_ value: String) -> Date? {
+  let formatter = ISO8601DateFormatter()
+  formatter.formatOptions = [.withFullDate]
+  return formatter.date(from: value)
 }
