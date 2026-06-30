@@ -60,6 +60,81 @@ func fileMetadataStoreLoadsIgnoredCredentialRefs() async throws {
 }
 
 @Test
+func fileMetadataStoreDerivesExpiringStateFromExpiryMetadata() async throws {
+  let url = try writeMetadataFixture(
+    """
+    {
+      "records": [
+        {
+          "service": "aws",
+          "account": "preview",
+          "state": "registered",
+          "expiresAt": "2026-07-15",
+          "locations": [
+            { "kind": "config-file", "path": "~/.aws/credentials" }
+          ]
+        }
+      ]
+    }
+    """
+  )
+
+  let currentDate = try #require(ISO8601DateFormatter().date(from: "2026-07-01T00:00:00Z"))
+  let records = try await FileMetadataStore(url: url, currentDate: currentDate).listCredentials()
+
+  #expect(records.first?.state == .expiring)
+}
+
+@Test
+func fileMetadataStoreDerivesExpiredStateFromExpiryMetadata() async throws {
+  let url = try writeMetadataFixture(
+    """
+    {
+      "records": [
+        {
+          "service": "aws",
+          "account": "production",
+          "state": "registered",
+          "expiresAt": "2026-06-01",
+          "locations": [
+            { "kind": "config-file", "path": "~/.aws/credentials" }
+          ]
+        }
+      ]
+    }
+    """
+  )
+
+  let currentDate = try #require(ISO8601DateFormatter().date(from: "2026-07-01T00:00:00Z"))
+  let records = try await FileMetadataStore(url: url, currentDate: currentDate).listCredentials()
+
+  #expect(records.first?.state == .expired)
+}
+
+@Test
+func fileMetadataStoreRejectsInvalidExpiryDate() async throws {
+  let url = try writeMetadataFixture(
+    """
+    {
+      "records": [
+        {
+          "service": "aws",
+          "account": "production",
+          "state": "registered",
+          "expiresAt": "soon",
+          "locations": []
+        }
+      ]
+    }
+    """
+  )
+
+  await #expect(throws: MetadataStoreError.invalidExpiryDate("soon")) {
+    try await FileMetadataStore(url: url).listCredentials()
+  }
+}
+
+@Test
 func fileMetadataStoreRejectsInvalidState() async throws {
   let url = try writeMetadataFixture(
     """
