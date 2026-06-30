@@ -40,6 +40,10 @@ Manual accessibility evidence is reviewed with
 not a CI gate because VoiceOver, keyboard traversal, dynamic type, and contrast checks
 must be reviewed on a permissioned Mac session.
 
+Use `make app-accessibility-evidence-template` to create pending local evidence files for
+all required scenarios. The generated manifests intentionally use `pending` values; change
+them to `pass` only after reviewing the paired notes on the current Git SHA.
+
 The first source-level HIG and Liquid Glass contract is `scripts/app-design-contract.sh`.
 It proves the app keeps native Mac utility structure, graph-derived repair surfaces,
 and anti-theater visual rules wired before manual design review evidence is attached.
@@ -111,6 +115,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Local screen review | `make app-screen-evidence-review` | Verifies the local screenshot and manifest set for all required script scenarios. |
 | Accessibility contract | `scripts/app-accessibility-contract.sh` | Required app surfaces expose stable labels and identifiers. |
 | Runtime accessibility smoke | `make app-accessibility-smoke` | Running app exposes expected sidebar, table, doctor, inspector, settings, and state names through AX. |
+| Accessibility evidence template | `make app-accessibility-evidence-template` | Creates pending local manifest and notes files for every required scenario. |
 | Accessibility evidence review | `make app-accessibility-evidence-review` | Verifies local VoiceOver, keyboard, state-label, and dynamic type notes for required scenarios. |
 | App design contract | `scripts/app-design-contract.sh` | Native Mac utility structure, graph repair surfaces, and anti-theater rules remain wired. |
 | Doctor shell | App source uses `CredentialDoctor().inspect(graph)` | The repair queue surface is graph-derived. |

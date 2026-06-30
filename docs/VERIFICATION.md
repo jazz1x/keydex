@@ -13,6 +13,7 @@ prove its own contract will drift into wishful UI.
 | App Window Smoke | `scripts/app-window-smoke.sh` | SwiftUI Mac app shell launches a stable default local window and reports its dimensions. |
 | App Screen Evidence Review | `scripts/app-screen-evidence-review.sh` | Local screenshot manifests and PNGs cover required screen scenarios for the current Git SHA. |
 | App Accessibility Smoke | `scripts/app-accessibility-smoke.sh` | Running app exposes core sidebar, table, doctor, inspector, settings, and state names through the macOS accessibility tree. |
+| App Accessibility Evidence Template | `scripts/app-accessibility-evidence-template.sh` | Pending local evidence files can be generated for each required scenario without falsely passing review. |
 | App Accessibility Evidence Review | `scripts/app-accessibility-evidence-review.sh` | Local VoiceOver, keyboard, state-label, and dynamic type evidence covers required screen scenarios for the current Git SHA. |
 | App Design Contract | `scripts/app-design-contract.sh` | Native Mac utility structure, graph-derived repair surfaces, and anti-theater visual rules remain wired. |
 | Forbidden Patterns | `scripts/forbidden-patterns.sh` | No silent `try?`, empty `catch`, or obvious secret-value metadata. |

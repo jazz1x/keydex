@@ -38,6 +38,7 @@ for path in \
   expect_file "$path"
 done
 expect_file scripts/app-accessibility-smoke.sh
+expect_file scripts/app-accessibility-evidence-template.sh
 expect_file scripts/app-accessibility-evidence-review.sh
 expect_file scripts/app-design-contract.sh
 expect_file scripts/release-signing-readiness.sh
@@ -147,6 +148,7 @@ expect_file_contains Makefile "swift build --product KeydexApp"
 expect_file_contains Makefile "app-window-smoke"
 expect_file_contains Makefile "app-accessibility-contract"
 expect_file_contains Makefile "app-accessibility-smoke"
+expect_file_contains Makefile "app-accessibility-evidence-template"
 expect_file_contains Makefile "app-accessibility-evidence-review"
 expect_file_contains Makefile "app-design-contract"
 expect_file_contains Makefile "app-screen-evidence"
@@ -159,6 +161,10 @@ expect_file_contains scripts/app-accessibility-contract.sh "keydex.inventory.tab
 expect_file_contains scripts/app-accessibility-smoke.sh "System Events"
 expect_file_contains scripts/app-accessibility-smoke.sh "Credential inventory table"
 expect_file_contains scripts/app-accessibility-smoke.sh "Keydex settings"
+expect_file_contains scripts/app-accessibility-evidence-template.sh "voiceover=pending"
+expect_file_contains scripts/app-accessibility-evidence-template.sh "keyboard=pending"
+expect_file_contains scripts/app-accessibility-evidence-template.sh "state_not_color_only=pending"
+expect_file_contains scripts/app-accessibility-evidence-template.sh "dynamic_type=pending"
 expect_file_contains scripts/app-accessibility-evidence-review.sh "tmp/accessibility-evidence"
 expect_file_contains scripts/app-accessibility-evidence-review.sh "voiceover=pass"
 expect_file_contains scripts/app-accessibility-evidence-review.sh "keyboard=pass"
@@ -181,6 +187,8 @@ for scenario in \
   compact-window; do
   expect_file_contains scripts/app-screen-evidence.sh "$scenario"
   expect_file_contains docs/SCREEN-VALIDATION.md "$scenario"
+  expect_file_contains scripts/app-accessibility-evidence-template.sh "$scenario"
+  expect_file_contains scripts/app-accessibility-evidence-review.sh "$scenario"
 done
 expect_file_contains scripts/app-screen-evidence.sh "empty-inventory"
 expect_file_contains scripts/app-screen-evidence.sh "KEYDEX_APP_INVENTORY_MODE"
