@@ -19,6 +19,8 @@ Keydex uses three enforcement layers.
 | CLI command docs drift | `make quality` |
 | State taxonomy docs drift | `make quality` |
 | Secret value stays outside metadata | review plus forbidden scan |
+| Project Contract docs stay present | `scripts/project-contract.sh` |
+| Graph workflow stays visible | `scripts/project-contract.sh` |
 | UI does not invent state | review |
 | Liquid Glass remains hierarchical | review |
 
@@ -36,7 +38,7 @@ The pre-commit hook runs the same command.
 ## CI Gate
 
 The GitHub Actions jobs are named `guard`, `quality`, `gitleaks`, and `trivy`.
-The `main` branch protection should require all four when GitHub plan settings allow it.
+The `main` Branch Protection requires all four.
 
 ## Review Checklist
 
@@ -45,3 +47,4 @@ The `main` branch protection should require all four when GitHub plan settings a
 - Does any metadata field store a secret value?
 - Did external input get parsed once at the boundary?
 - Is this abstraction carrying an invariant, or just carrying anxiety?
+- Is the view or command a graph projection rather than a second source of truth?

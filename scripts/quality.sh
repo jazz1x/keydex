@@ -47,4 +47,7 @@ expect_file_contains .github/workflows/guard.yml "make quality"
 expect_file_contains .github/workflows/security.yml "gitleaks/gitleaks-action"
 expect_file_contains .github/workflows/security.yml "aquasecurity/trivy-action"
 
+echo "6) project contract drift..."
+./scripts/project-contract.sh
+
 echo "quality gate clean"

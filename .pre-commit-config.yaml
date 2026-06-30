@@ -25,3 +25,9 @@ repos:
         language: system
         pass_filenames: false
         files: ^(Package.swift|Sources/|Tests/|Apps/|scripts/|Makefile)
+      - id: keydex-quality
+        name: keydex quality
+        entry: ./scripts/quality.sh
+        language: system
+        pass_filenames: false
+        files: ^(README.md|CONTRIBUTING.md|docs/|scripts/|.github/)

@@ -1,4 +1,4 @@
-.PHONY: guard format test forbidden quality
+.PHONY: guard format test forbidden quality contract
 
 SWIFT_FORMAT ?= /Library/Developer/CommandLineTools/usr/bin/swift-format
 
@@ -15,3 +15,6 @@ forbidden:
 
 quality:
 	./scripts/quality.sh
+
+contract:
+	./scripts/project-contract.sh

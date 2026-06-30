@@ -10,6 +10,8 @@ Keydex is Finder plus Keychain Access plus Xcode Issues for developer credential
 - Keychain Access: domain model reference, not UX reference.
 - Xcode Issues: risk states are actionable and hard to miss.
 - System Settings: preferences, permissions, and privacy language.
+- Graph tools: every view is a projection of credential, source, state, and finding
+  relationships.
 
 ## Layout
 
@@ -18,6 +20,11 @@ Keydex is Finder plus Keychain Access plus Xcode Issues for developer credential
 - Inspector: selected credential details, sources, expiry, notes, and actions.
 - Doctor panel: grouped issues with cause and next action.
 - Toolbar: search, scan, register, doctor.
+
+## Design System
+
+The detailed component and token contract lives in [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md).
+The graph-driven product workflow lives in [GRAPH-WORKFLOW.md](GRAPH-WORKFLOW.md).
 
 ## Liquid Glass
 
