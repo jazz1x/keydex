@@ -53,7 +53,7 @@ signing or notarization.
 | CI release smoke | CI `release-smoke`. |
 | CLI smoke | `keydex --help`, `scan env`, `scan shell`, `doctor`. |
 | App build | Xcode, SwiftPM app build, or ad-hoc app bundle smoke evidence. |
-| Screen proof | Required screenshots and accessibility notes. |
+| Screen proof | Required screenshots, `make app-screen-evidence-review`, and accessibility notes. |
 | Release smoke | `make release-smoke` output manifest, checksums, DMG, and archive file list. |
 | Artifact inspection | Confirm archive/DMG contains expected files only. |
 | Release notes | `RELEASE-CANDIDATE.md` is current. |
