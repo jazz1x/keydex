@@ -81,12 +81,21 @@ public struct CredentialRecord: Equatable, Sendable {
 
 public enum KeydexError: Error, Equatable, LocalizedError {
   case emptyField(String)
+  case invalidKeychainAttribute(String)
+  case invalidKeychainQueryResult(String)
+  case keychainQueryFailed(Int32)
   case unsupportedOperation(String)
 
   public var errorDescription: String? {
     switch self {
     case .emptyField(let field):
       "\(field) must not be empty"
+    case .invalidKeychainAttribute(let attribute):
+      "Keychain item is missing valid \(attribute)"
+    case .invalidKeychainQueryResult(let description):
+      "Keychain query returned invalid \(description)"
+    case .keychainQueryFailed(let status):
+      "Keychain query failed with OSStatus \(status)"
     case .unsupportedOperation(let operation):
       "\(operation) is not implemented yet"
     }

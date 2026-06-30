@@ -37,6 +37,7 @@ let package = Package(
       ]
     ),
     .testTarget(name: "KeydexCoreTests", dependencies: ["KeydexCore"]),
+    .testTarget(name: "KeydexKeychainTests", dependencies: ["KeydexKeychain"]),
     .testTarget(name: "KeydexSourcesTests", dependencies: ["KeydexSources"]),
     .testTarget(name: "KeydexStoreTests", dependencies: ["KeydexStore"]),
   ]

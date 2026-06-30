@@ -63,6 +63,7 @@ stable acceptance criteria here before expanding scope.
 | `keydex scan env` | Scan process environment and print graph summary. | Output includes credential/source/edge counts only. |
 | `keydex scan shell` | Scan known shell profiles and print graph summary. | Output includes credential/source/edge counts only. |
 | `keydex scan config --path PATH` | Scan supported config files. | Output follows graph summary shape and omits values. |
+| `keydex scan keychain` | Scan generic password item references as orphan candidates. | Output includes reference/source/edge counts only and omits values. |
 | `keydex list` | List graph-derived credentials. | Rows include service, account, state, source count. |
 | `keydex where SERVICE` | Show graph-derived source relationships. | Output includes locations and state without secret values. |
 | `keydex doctor` | Print graph-derived findings. | Every issue includes severity, credential, state, cause, action. |

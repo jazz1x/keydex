@@ -63,6 +63,7 @@ doctor findings, security boundaries, and future UI.
 | `scan env` | Process env with credential-like names | Counts credentials, sources, edges; no values. |
 | `scan shell` | Shell profile fixture | Counts credentials, sources, edges; no values. |
 | `scan config --path fixture.env` | Config fixture | Counts credentials, sources, edges; no values. |
+| `scan keychain` | Generic password item references | Counts orphan references, sources, edges; no values. |
 | `list --metadata fixture.json` | Store fixture | Prints service/account/state/source count. |
 | `where openai --metadata fixture.json` | Store fixture | Prints env/shell/config/Keychain locations. |
 | `doctor --metadata fixture.json` | Store fixture with unhealthy states | Prints severity, credential, state, cause, action. |
