@@ -77,6 +77,7 @@ required screenshot and accessibility evidence below.
 | Window shell | `scripts/app-window-smoke.sh` | The app launches and publishes the default window. |
 | Doctor shell | App source uses `CredentialDoctor().inspect(graph)` | The repair queue surface is graph-derived. |
 | Search shell | App source filters `CredentialProjection` rows | Search narrows graph projections without separate list truth. |
+| Settings shell | App source exposes `SettingsPanel` | Permission, scan path, and unmanaged source controls are reachable. |
 
 ## Screen Review Checklist
 

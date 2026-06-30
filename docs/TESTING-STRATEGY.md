@@ -66,6 +66,8 @@ The first Doctor panel shell must read `CredentialDoctor().inspect(graph)` so re
 queue rows stay graph-derived.
 The first search shell must filter `CredentialProjection` rows by service, account,
 state, and source label without creating a separate list source of truth.
+The first settings shell must expose Keychain permission, scan source, and unmanaged
+source controls without performing mutations.
 
 ## Completion Rule
 
