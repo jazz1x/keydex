@@ -21,8 +21,11 @@ struct Keydex: AsyncParsableCommand {
 struct List: AsyncParsableCommand {
   static let configuration = CommandConfiguration(abstract: "List indexed credentials.")
 
+  @Option(help: "Path to a Keydex metadata JSON file.")
+  var metadata: String?
+
   func run() async throws {
-    let records = try await EmptyMetadataStore().listCredentials()
+    let records = try await credentialRecords(metadataPath: metadata)
     let projections = InventoryGraph(records: records).credentialProjections
     if projections.isEmpty {
       print("keydex: no credentials indexed yet")
@@ -43,9 +46,12 @@ struct Where: AsyncParsableCommand {
   @Argument(help: "Service name, such as openai or bitbucket.")
   var service: String
 
+  @Option(help: "Path to a Keydex metadata JSON file.")
+  var metadata: String?
+
   func run() async throws {
     let parsedService = try NonEmptyText.parse(service, field: "service")
-    let records = try await EmptyMetadataStore().listCredentials()
+    let records = try await credentialRecords(metadataPath: metadata)
     let projections = InventoryGraph(records: records).credentialProjections(
       service: parsedService)
 
@@ -67,8 +73,11 @@ struct Where: AsyncParsableCommand {
 struct Doctor: AsyncParsableCommand {
   static let configuration = CommandConfiguration(abstract: "Diagnose credential inventory drift.")
 
+  @Option(help: "Path to a Keydex metadata JSON file.")
+  var metadata: String?
+
   func run() async throws {
-    let records = try await EmptyMetadataStore().listCredentials()
+    let records = try await credentialRecords(metadataPath: metadata)
     let graph = InventoryGraph(records: records)
     let issues = CredentialDoctor().inspect(graph)
     if issues.isEmpty {
@@ -85,6 +94,16 @@ struct Doctor: AsyncParsableCommand {
       }
     }
   }
+}
+
+private func credentialRecords(metadataPath: String?) async throws -> [CredentialRecord] {
+  guard let metadataPath else {
+    return try await EmptyMetadataStore().listCredentials()
+  }
+
+  let path = try NonEmptyText.parse(metadataPath, field: "metadata")
+  let url = URL(fileURLWithPath: path.value)
+  return try await FileMetadataStore(url: url).listCredentials()
 }
 
 private func stateLabels(_ states: [CredentialState]) -> String {

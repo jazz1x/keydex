@@ -17,8 +17,11 @@ Bootstrapping.
 
 ```bash
 keydex list
+keydex list --metadata ./metadata.json
 keydex where openai
+keydex where openai --metadata ./metadata.json
 keydex doctor
+keydex doctor --metadata ./metadata.json
 keydex scan env
 keydex scan shell
 ```

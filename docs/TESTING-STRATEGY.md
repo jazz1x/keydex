@@ -9,7 +9,7 @@ CLI, app, and release evidence.
 | --- | --- |
 | Domain unit tests | Prove typed parsing, graph edges, state labels, doctor mappings. |
 | Source parser tests | Prove scanner inputs become observations without secret values. |
-| Store fixture tests | Prove metadata persistence excludes secret values. |
+| Store fixture tests | Prove metadata input excludes secret values and rejects invalid states. |
 | CLI scenario tests | Prove commands use graph projections and stable output. |
 | App screen tests | Prove SwiftUI surfaces render the graph truth. |
 | Release smoke tests | Prove packaged artifacts run. |
@@ -40,9 +40,9 @@ CLI, app, and release evidence.
 | `scan env` | Fixture environment produces graph summary. |
 | `scan shell` | Fixture profile produces graph summary. |
 | `scan config` | Fixture config produces graph summary. |
-| `list` | Fixture graph prints rows. |
-| `where` | Fixture graph prints source relationships. |
-| `doctor` | Fixture graph prints findings. |
+| `list` | Metadata fixture graph prints rows. |
+| `where` | Metadata fixture graph prints source relationships. |
+| `doctor` | Metadata fixture graph prints findings. |
 
 ## App Test Targets
 

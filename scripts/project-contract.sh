@@ -18,7 +18,7 @@ expect_file_contains() {
   local path="$1"
   local needle="$2"
 
-  rg --fixed-strings --quiet "$needle" "$path" ||
+  rg --fixed-strings --quiet -- "$needle" "$path" ||
     fail "$path is missing expected text: $needle"
 }
 
@@ -88,6 +88,9 @@ expect_file_contains Sources/KeydexSources/ShellProfileScanner.swift "ShellProfi
 expect_file_contains Sources/keydex/main.swift "InventoryGraph(observations:"
 expect_file_contains Sources/keydex/main.swift "ShellProfileScanner"
 expect_file_contains docs/FEATURE-SPEC.md "CredentialProjection"
+expect_file_contains docs/FEATURE-SPEC.md "--metadata PATH"
+expect_file_contains Sources/KeydexStore/FileMetadataStore.swift "FileMetadataStore"
+expect_file_contains Package.swift "KeydexStoreTests"
 expect_file_contains README.md "GRAPH-WORKFLOW.md"
 
 echo "5) verification contract..."
