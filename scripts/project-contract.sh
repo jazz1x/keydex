@@ -24,9 +24,15 @@ expect_file_contains() {
 
 for path in \
   docs/GOALS.md \
+  docs/PRODUCT-PLAN.md \
+  docs/FEATURE-SPEC.md \
   docs/DESIGN-SYSTEM.md \
   docs/GRAPH-WORKFLOW.md \
-  docs/VERIFICATION.md; do
+  docs/VERIFICATION.md \
+  docs/VALIDATION-SCENARIOS.md \
+  docs/SCREEN-VALIDATION.md \
+  docs/RELEASE-READINESS.md \
+  docs/TESTING-STRATEGY.md; do
   expect_file "$path"
 done
 
@@ -37,16 +43,34 @@ done
 expect_file_contains docs/GOALS.md "Keydex owns that inventory graph."
 expect_file_contains README.md "GOALS.md"
 
-echo "2) design system contract..."
+echo "2) planning pack contract..."
+for document in \
+  PRODUCT-PLAN.md \
+  FEATURE-SPEC.md \
+  VALIDATION-SCENARIOS.md \
+  SCREEN-VALIDATION.md \
+  RELEASE-READINESS.md \
+  TESTING-STRATEGY.md; do
+  expect_file_contains README.md "$document"
+  expect_file_contains docs/GOALS.md "$document"
+done
+expect_file_contains docs/PRODUCT-PLAN.md "Total Goal"
+expect_file_contains docs/FEATURE-SPEC.md "Acceptance Criteria"
+expect_file_contains docs/VALIDATION-SCENARIOS.md "Functional Scenarios"
+expect_file_contains docs/SCREEN-VALIDATION.md "Screenshot Scenarios"
+expect_file_contains docs/RELEASE-READINESS.md "Release Candidate Checklist"
+expect_file_contains docs/TESTING-STRATEGY.md "Test Pyramid"
+
+echo "3) design system contract..."
 for token in surface.primary surface.sidebar risk.warning risk.error spacing.row radius.card; do
   expect_file_contains docs/DESIGN-SYSTEM.md "$token"
 done
 for surface in "Inventory Table" "Inspector" "Doctor Panel"; do
-  expect_file_contains docs/DESIGN-SYSTEM.md "$surface"
+expect_file_contains docs/DESIGN-SYSTEM.md "$surface"
 done
 expect_file_contains README.md "DESIGN-SYSTEM.md"
 
-echo "3) graph workflow contract..."
+echo "4) graph workflow contract..."
 for edge in stored-in observed-in has-state has-finding tagged-with duplicates; do
   expect_file_contains docs/GRAPH-WORKFLOW.md "$edge"
 done
@@ -63,10 +87,16 @@ expect_file_contains Sources/keydex/main.swift "InventoryGraph(observations:"
 expect_file_contains Sources/keydex/main.swift "ShellProfileScanner"
 expect_file_contains README.md "GRAPH-WORKFLOW.md"
 
-echo "4) verification contract..."
+echo "5) verification contract..."
 for gate in "Project Contract" "Branch Protection" "gitleaks" "trivy"; do
   expect_file_contains docs/VERIFICATION.md "$gate"
 done
+expect_file_contains docs/VERIFICATION.md "planning pack"
+expect_file_contains docs/VALIDATION-SCENARIOS.md "Build Scenarios"
+expect_file_contains docs/VALIDATION-SCENARIOS.md "Philosophy Scenarios"
+expect_file_contains docs/VALIDATION-SCENARIOS.md "Security Scenarios"
+expect_file_contains docs/SCREEN-VALIDATION.md "Accessibility Rules"
+expect_file_contains docs/RELEASE-READINESS.md "Release Gates"
 expect_file_contains Sources/KeydexCore/Doctor.swift "inspect(_ graph: InventoryGraph)"
 expect_file_contains Sources/KeydexCore/Doctor.swift "credential: CredentialRef"
 expect_file_contains Sources/keydex/main.swift "CredentialDoctor().inspect(graph)"

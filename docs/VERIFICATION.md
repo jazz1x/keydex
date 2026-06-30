@@ -10,7 +10,7 @@ prove its own contract will drift into wishful UI.
 | Format | `swift-format lint --recursive --strict Package.swift Sources Tests Apps` | Swift style stays stable. |
 | Tests | `swift test` | Domain, graph, source parser, and doctor behavior. |
 | Forbidden Patterns | `scripts/forbidden-patterns.sh` | No silent `try?`, empty `catch`, or obvious secret-value metadata. |
-| Project Contract | `scripts/project-contract.sh` | Goals, design system, graph workflow, verification docs, and README links stay aligned. |
+| Project Contract | `scripts/project-contract.sh` | Goals, planning pack, design system, graph workflow, verification docs, and README links stay aligned. |
 | Quality | `make quality` | CLI docs, state taxonomy, workflow wiring, and project contract. |
 | Security | GitHub Actions `gitleaks` and `trivy` | Secret leaks, high-risk dependency and config findings. |
 | Branch Protection | GitHub `main` protection | Required checks, PR flow, linear history, and force-push prevention. |
@@ -20,6 +20,7 @@ prove its own contract will drift into wishful UI.
 - Does this change make the inventory graph more truthful?
 - Does this change add a source, node, edge, state, or projection?
 - Does every doctor issue include credential, state, cause, and action?
+- Does this change satisfy the relevant planning pack acceptance criteria?
 - Is the new behavior verified at the closest stable boundary?
 - Does the UI still use canonical state labels and risk semantics?
 - Does any metadata field contain or imply a secret value?
@@ -32,6 +33,7 @@ prove its own contract will drift into wishful UI.
 | Local gate | `make guard` passes. |
 | Drift gate | `make quality` passes. |
 | PR checks | `guard`, `quality`, `gitleaks`, and `trivy` pass. |
+| Planning pack | Product plan, feature spec, validation scenarios, screen validation, testing strategy, and release readiness remain aligned. |
 | Branch state | Work merges through PR into `main`. |
 | Distribution | Archive or DMG contains no secret-bearing metadata. |
 
