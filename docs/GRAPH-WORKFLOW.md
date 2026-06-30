@@ -27,7 +27,7 @@ credential inventory honest across CLI, UI, doctor, and future automation.
 ## Dynamic Workflow
 
 1. Scan source.
-2. Parse source into typed observations.
+2. Parse source into typed `CredentialObservation` values.
 3. Merge observations into the inventory graph.
 4. Classify state from graph relationships.
 5. Produce doctor findings from states.
@@ -62,6 +62,7 @@ The first graph implementation is intentionally small:
 - source nodes
 - state nodes
 - `stored-in`, `observed-in`, and `has-state` edges
-- deterministic construction from `CredentialRecord`
+- deterministic construction from `CredentialObservation`
+- compatibility construction from `CredentialRecord`
 
 Findings, tags, and duplicate edges can be added when the doctor and UI need them.

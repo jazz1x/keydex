@@ -45,7 +45,7 @@ public enum CredentialLocation: Equatable, Hashable, Sendable {
   case configFile(path: NonEmptyText)
 }
 
-public enum CredentialState: String, CaseIterable, Equatable, Sendable {
+public enum CredentialState: String, CaseIterable, Equatable, Hashable, Sendable {
   case registered
   case missingKeychainItem = "missing-keychain-item"
   case plaintextFallback = "plaintext-fallback"
@@ -53,6 +53,18 @@ public enum CredentialState: String, CaseIterable, Equatable, Sendable {
   case expiring
   case expired
   case duplicate
+}
+
+public struct CredentialObservation: Equatable, Hashable, Sendable {
+  public let ref: CredentialRef
+  public let state: CredentialState
+  public let location: CredentialLocation
+
+  public init(ref: CredentialRef, state: CredentialState, location: CredentialLocation) {
+    self.ref = ref
+    self.state = state
+    self.location = location
+  }
 }
 
 public struct CredentialRecord: Equatable, Sendable {
