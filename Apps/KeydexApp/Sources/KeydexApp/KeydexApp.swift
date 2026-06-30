@@ -158,6 +158,7 @@ struct CredentialInventoryShellView: View {
 
         DoctorPanel(issues: doctorIssues, isEmptyMode: isEmptyMode)
       }
+      .navigationSplitViewColumnWidth(min: 420, ideal: 460, max: 560)
     } detail: {
       VStack(alignment: .leading, spacing: 14) {
         if let projection = selectedProjection {
@@ -386,11 +387,40 @@ private struct DoctorIssueRow: Identifiable {
   var severityTint: Color {
     doctorSeverityTint(issue.severity)
   }
+
+  var accessibilityLabel: String {
+    "\(severityLabel) issue for \(credentialLabel). State: \(stateLabel). Cause: \(issue.message). Action: \(issue.action)."
+  }
 }
 
 private struct DoctorPanel: View {
   let issues: [DoctorIssue]
   let isEmptyMode: Bool
+
+  private var issueRows: [DoctorIssueRow] {
+    issues.map(DoctorIssueRow.init)
+  }
+
+  private var previewRows: [DoctorIssueRow] {
+    Array(issueRows.prefix(2))
+  }
+
+  private var remainingIssueCount: Int {
+    max(issueRows.count - previewRows.count, 0)
+  }
+
+  private var remainingIssueSummary: String {
+    let issueNoun = remainingIssueCount == 1 ? "issue" : "issues"
+    return "\(remainingIssueCount) more \(issueNoun) in repair queue (\(issueRows.count) total)"
+  }
+
+  private var accessibilityHint: String {
+    if issues.isEmpty {
+      return "No repair issues are currently listed."
+    }
+
+    return "Showing \(previewRows.count) of \(issueRows.count) repair issues."
+  }
 
   var body: some View {
     VStack(alignment: .leading, spacing: 6) {
@@ -416,37 +446,61 @@ private struct DoctorPanel: View {
           }
         }
       } else {
-        List(issues.map(DoctorIssueRow.init)) { row in
-          VStack(alignment: .leading, spacing: 4) {
-            HStack(spacing: 8) {
-              Text(row.severityLabel)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(row.severityTint)
-              Text(row.credentialLabel)
-                .font(.subheadline)
-                .fontDesign(.monospaced)
-              Spacer()
+        VStack(alignment: .leading, spacing: 0) {
+          ForEach(previewRows) { row in
+            VStack(alignment: .leading, spacing: 4) {
+              HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text(row.severityLabel)
+                  .font(.subheadline.weight(.semibold))
+                  .foregroundStyle(row.severityTint)
+                Text(row.credentialLabel)
+                  .font(.subheadline)
+                  .fontDesign(.monospaced)
+                  .lineLimit(1)
+                Spacer()
+              }
+
               Text("state: \(row.stateLabel)")
                 .font(.caption)
                 .foregroundStyle(.secondary)
+
+              Text("cause: \(row.issue.message)")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
+
+              Text("action: \(row.issue.action)")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(2)
             }
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(row.accessibilityLabel)
 
-            Text("cause: \(row.issue.message)")
-              .font(.caption)
-              .foregroundStyle(.secondary)
-
-            Text("action: \(row.issue.action)")
-              .font(.caption)
-              .foregroundStyle(.secondary)
+            if row.id != previewRows.last?.id {
+              Divider()
+                .padding(.leading, 12)
+            }
           }
-          .padding(.vertical, 4)
+
+          if remainingIssueCount > 0 {
+            Divider()
+              .padding(.leading, 12)
+
+            Text(remainingIssueSummary)
+              .font(.caption.weight(.medium))
+              .foregroundStyle(.secondary)
+              .padding(.horizontal, 12)
+              .padding(.vertical, 8)
+          }
         }
-        .listStyle(.plain)
-        .frame(minHeight: 170, maxHeight: 220)
       }
     }
     .accessibilityIdentifier("keydex.doctor.panel")
     .accessibilityLabel("Credential repair queue")
+    .accessibilityHint(accessibilityHint)
   }
 }
 
