@@ -12,6 +12,7 @@ command -v shasum >/dev/null 2>&1 || fail "missing dependency: shasum"
 command -v tar >/dev/null 2>&1 || fail "missing dependency: tar"
 command -v hdiutil >/dev/null 2>&1 || fail "missing dependency: hdiutil"
 command -v plutil >/dev/null 2>&1 || fail "missing dependency: plutil"
+command -v codesign >/dev/null 2>&1 || fail "missing dependency: codesign"
 
 sha="$(git rev-parse --short HEAD)"
 platform="$(uname -s)-$(uname -m)"
@@ -59,6 +60,8 @@ cat > "$payload_dir/Keydex.app/Contents/Info.plist" <<'INFO_PLIST'
 INFO_PLIST
 plutil -lint "$payload_dir/Keydex.app/Contents/Info.plist"
 chmod +x "$payload_dir/bin/keydex" "$payload_dir/bin/KeydexApp" "$payload_dir/Keydex.app/Contents/MacOS/KeydexApp"
+codesign --force --deep --sign - "$payload_dir/Keydex.app"
+codesign --verify --deep --strict "$payload_dir/Keydex.app"
 
 "$payload_dir/bin/keydex" --help >"$payload_dir/keydex-help.txt"
 "$payload_dir/bin/keydex" doctor --metadata Tests/Fixtures/metadata.json \
@@ -70,10 +73,11 @@ chmod +x "$payload_dir/bin/keydex" "$payload_dir/bin/KeydexApp" "$payload_dir/Ke
   printf 'cli=bin/keydex\n'
   printf 'app=bin/KeydexApp\n'
   printf 'app_bundle=Keydex.app\n'
+  printf 'app_codesign=ad-hoc\n'
   printf 'dmg=%s\n' "$dmg_path"
   printf 'dmg_checksum=%s\n' "$dmg_checksum_path"
   printf 'archive=%s\n' "$archive_path"
-  printf 'known_limits=unsigned app bundle and unsigned DMG; signing/notarization remain future gates\n'
+  printf 'known_limits=app bundle signed ad-hoc (unsigned identity); unsigned DMG; Developer ID signing and notarization remain future gates\n'
 } >"$payload_dir/manifest.txt"
 
 hdiutil create -volname "Keydex" -srcfolder "$payload_dir/Keydex.app" -ov -format UDZO "$dmg_path"
@@ -97,6 +101,8 @@ while IFS= read -r archived_path; do
     "$payload_name/Keydex.app/Contents/MacOS/" | \
     "$payload_name/Keydex.app/Contents/Info.plist" | \
     "$payload_name/Keydex.app/Contents/MacOS/KeydexApp" | \
+    "$payload_name/Keydex.app/Contents/_CodeSignature/" | \
+    "$payload_name/Keydex.app/Contents/_CodeSignature/CodeResources" | \
     "$payload_name/keydex-help.txt" | \
     "$payload_name/keydex-doctor-smoke.txt" | \
     "$payload_name/manifest.txt")
@@ -112,6 +118,7 @@ for expected in \
   "$payload_name/bin/KeydexApp" \
   "$payload_name/Keydex.app/Contents/Info.plist" \
   "$payload_name/Keydex.app/Contents/MacOS/KeydexApp" \
+  "$payload_name/Keydex.app/Contents/_CodeSignature/CodeResources" \
   "$payload_name/keydex-help.txt" \
   "$payload_name/keydex-doctor-smoke.txt" \
   "$payload_name/manifest.txt"; do

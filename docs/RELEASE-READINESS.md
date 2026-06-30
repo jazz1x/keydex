@@ -20,7 +20,7 @@ artifact.
 | Local verification | `make guard` and `make quality` pass. |
 | Functional scenarios | Required scenarios in `VALIDATION-SCENARIOS.md` pass. |
 | Screen validation | Required scenarios in `SCREEN-VALIDATION.md` pass for app releases. |
-| Release smoke | `make release-smoke` creates, checksums, and inspects a local archive, unsigned app bundle, and unsigned DMG. |
+| Release smoke | `make release-smoke` creates, ad-hoc signs, checksums, and inspects a local archive, app bundle, and unsigned DMG. |
 | Secret boundary | Release artifacts contain no secret-bearing metadata. |
 | Documentation | README, product plan, feature spec, and release notes match behavior. |
 
@@ -29,7 +29,7 @@ artifact.
 | Decision | Current Position |
 | --- | --- |
 | App Store | Out of scope for first release. |
-| Developer ID signing | Required before public Mac app release if feasible. |
+| Developer ID signing | Required before public Mac app release if feasible; ad-hoc signing is only a structure smoke. |
 | Notarization | Required before public Mac app release if feasible. |
 | DMG | Preferred user-facing app download format; unsigned DMG smoke is a pre-signing gate. |
 | Zip archive | Acceptable for early internal app builds. |
@@ -37,9 +37,9 @@ artifact.
 
 The first local release smoke is `scripts/release-smoke.sh`. It builds release-mode
 SwiftPM products, writes a local archive, unsigned DMG, and SHA-256 checksums under
-`tmp/release-smoke`, validates an unsigned app bundle, runs the packaged CLI, and verifies
-fixture metadata is not included. It is not a substitute for Developer ID signing or
-notarization.
+`tmp/release-smoke`, validates an app bundle with ad-hoc codesign, runs the packaged CLI,
+and verifies fixture metadata is not included. It is not a substitute for Developer ID
+signing or notarization.
 
 ## Release Candidate Checklist
 
@@ -52,7 +52,7 @@ notarization.
 | Security | CI `gitleaks` and `trivy`. |
 | CI release smoke | CI `release-smoke`. |
 | CLI smoke | `keydex --help`, `scan env`, `scan shell`, `doctor`. |
-| App build | Xcode, SwiftPM app build, or unsigned app bundle smoke evidence. |
+| App build | Xcode, SwiftPM app build, or ad-hoc app bundle smoke evidence. |
 | Screen proof | Required screenshots and accessibility notes. |
 | Release smoke | `make release-smoke` output manifest, checksums, DMG, and archive file list. |
 | Artifact inspection | Confirm archive/DMG contains expected files only. |
