@@ -15,7 +15,7 @@ CLI, app, and release evidence.
 | App window smoke | Prove the SwiftUI shell launches a default window locally. |
 | App accessibility contract | Prove required SwiftUI surfaces expose stable labels and identifiers. |
 | App screen tests | Prove SwiftUI surfaces render the graph truth. |
-| Release smoke tests | Prove packaged artifacts run. |
+| Release smoke tests | Prove local release artifacts build, run, and omit fixture metadata. |
 
 ## Required Test Themes
 
