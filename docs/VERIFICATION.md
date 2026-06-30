@@ -15,7 +15,7 @@ prove its own contract will drift into wishful UI.
 | Project Contract | `scripts/project-contract.sh` | Goals, planning pack, design system, graph workflow, verification docs, and README links stay aligned. |
 | Quality | `make quality` | CLI docs, state taxonomy, workflow wiring, and project contract. |
 | CLI Smoke | `scripts/cli-smoke.sh` | Fixture-backed `list`, `where`, `doctor`, and `scan config` outputs. |
-| Release Smoke | `scripts/release-smoke.sh` | Release-mode artifacts bundle locally, create unsigned DMG smoke evidence, checksum cleanly, and omit fixture metadata. |
+| Release Smoke | `scripts/release-smoke.sh` | Release-mode artifacts bundle locally, ad-hoc sign cleanly, create unsigned DMG smoke evidence, checksum cleanly, and omit fixture metadata. |
 | Security | GitHub Actions `gitleaks` and `trivy` | Secret leaks, high-risk dependency and config findings. |
 | Branch Protection | GitHub `main` protection | Required checks, PR flow, linear history, and force-push prevention. |
 
@@ -39,7 +39,7 @@ prove its own contract will drift into wishful UI.
 | PR checks | `guard`, `quality`, `release-smoke`, `gitleaks`, and `trivy` pass. |
 | Planning pack | Product plan, feature spec, validation scenarios, screen validation, testing strategy, and release readiness remain aligned. |
 | Branch state | Work merges through PR into `main`. |
-| Distribution | Archive and DMG contain no secret-bearing metadata, app bundle evidence, and checksum evidence. |
+| Distribution | Archive and DMG contain no secret-bearing metadata, app codesign evidence, and checksum evidence. |
 
 ## Failure Rule
 
