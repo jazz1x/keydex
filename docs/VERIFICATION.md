@@ -10,6 +10,7 @@ prove its own contract will drift into wishful UI.
 | Format | `swift-format lint --recursive --strict Package.swift Sources Tests Apps` | Swift style stays stable. |
 | Tests | `swift test` | Domain, graph, source parser, and doctor behavior. |
 | App Build | `swift build --product KeydexApp` | SwiftUI Mac app shell compiles against graph projections. |
+| App Window Smoke | `scripts/app-window-smoke.sh` | SwiftUI Mac app shell launches a default local window. |
 | Forbidden Patterns | `scripts/forbidden-patterns.sh` | No silent `try?`, empty `catch`, or obvious secret-value metadata. |
 | Project Contract | `scripts/project-contract.sh` | Goals, planning pack, design system, graph workflow, verification docs, and README links stay aligned. |
 | Quality | `make quality` | CLI docs, state taxonomy, workflow wiring, and project contract. |

@@ -8,6 +8,10 @@ overlap, inaccessible state, or decorative noise.
 This document applies once the SwiftUI app target exists. It defines required evidence for
 M4 and release candidates.
 
+The first local screen smoke is `scripts/app-window-smoke.sh`. It proves the app builds,
+launches, and publishes the default 1080 x 680 window. It is not a replacement for the
+required screenshot and accessibility evidence below.
+
 ## Required Screens
 
 | Screen | Purpose |
@@ -64,6 +68,13 @@ M4 and release candidates.
 | UI8 | Settings permissions | Screenshot of Keychain access and scan path settings. |
 | UI9 | Search/filter | Screenshot before and after graph projection filter. |
 | UI10 | Compact viewport | Screenshot proving no overlap. |
+
+## Smoke Evidence
+
+| Evidence | Command | Meaning |
+| --- | --- | --- |
+| Build shell | `swift build --product KeydexApp` | The SwiftUI app compiles against graph projections. |
+| Window shell | `scripts/app-window-smoke.sh` | The app launches and publishes the default window. |
 
 ## Screen Review Checklist
 

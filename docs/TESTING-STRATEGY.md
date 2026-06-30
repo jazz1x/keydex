@@ -12,6 +12,7 @@ CLI, app, and release evidence.
 | Store fixture tests | Prove metadata input excludes secret values and rejects invalid states. |
 | CLI scenario tests | Prove commands use graph projections and stable output. |
 | App build tests | Prove the SwiftUI shell compiles against graph projections. |
+| App window smoke | Prove the SwiftUI shell launches a default window locally. |
 | App screen tests | Prove SwiftUI surfaces render the graph truth. |
 | Release smoke tests | Prove packaged artifacts run. |
 
