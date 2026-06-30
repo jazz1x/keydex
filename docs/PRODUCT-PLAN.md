@@ -100,4 +100,5 @@ Keydex ships outside the App Store:
 | `VALIDATION-SCENARIOS.md` | Functional, build, philosophy, and regression scenarios. |
 | `SCREEN-VALIDATION.md` | Mac app visual and accessibility verification. |
 | `RELEASE-READINESS.md` | Release evidence, packaging, and distribution checks. |
+| `RELEASE-CANDIDATE.md` | Current release notes draft, evidence, limits, and publish blockers. |
 | `TESTING-STRATEGY.md` | Test layers and evidence rules. |
