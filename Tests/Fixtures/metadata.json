@@ -1,0 +1,21 @@
+{
+  "records": [
+    {
+      "service": "openai",
+      "account": "jongyun",
+      "state": "plaintext-fallback",
+      "locations": [
+        { "kind": "environment", "name": "OPENAI_API_KEY" },
+        { "kind": "shell-profile", "path": "~/.zshrc" }
+      ]
+    },
+    {
+      "service": "aws",
+      "account": "jongyun",
+      "state": "expired",
+      "locations": [
+        { "kind": "config-file", "path": "Tests/Fixtures/credentials.env" }
+      ]
+    }
+  ]
+}

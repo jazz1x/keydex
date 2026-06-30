@@ -50,4 +50,7 @@ expect_file_contains .github/workflows/security.yml "aquasecurity/trivy-action"
 echo "6) project contract drift..."
 ./scripts/project-contract.sh
 
+echo "7) CLI smoke scenarios..."
+./scripts/cli-smoke.sh
+
 echo "quality gate clean"

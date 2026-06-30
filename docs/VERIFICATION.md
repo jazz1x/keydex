@@ -12,6 +12,7 @@ prove its own contract will drift into wishful UI.
 | Forbidden Patterns | `scripts/forbidden-patterns.sh` | No silent `try?`, empty `catch`, or obvious secret-value metadata. |
 | Project Contract | `scripts/project-contract.sh` | Goals, planning pack, design system, graph workflow, verification docs, and README links stay aligned. |
 | Quality | `make quality` | CLI docs, state taxonomy, workflow wiring, and project contract. |
+| CLI Smoke | `scripts/cli-smoke.sh` | Fixture-backed `list`, `where`, `doctor`, and `scan config` outputs. |
 | Security | GitHub Actions `gitleaks` and `trivy` | Secret leaks, high-risk dependency and config findings. |
 | Branch Protection | GitHub `main` protection | Required checks, PR flow, linear history, and force-push prevention. |
 
