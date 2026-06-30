@@ -40,7 +40,7 @@ window_report() {
 
 swift build --product KeydexApp
 
-swift run KeydexApp &
+KEYDEX_APP_WINDOW_PRESET=default swift run KeydexApp &
 app_pid="$!"
 trap 'kill "$app_pid" >/dev/null 2>&1 || true' EXIT
 
