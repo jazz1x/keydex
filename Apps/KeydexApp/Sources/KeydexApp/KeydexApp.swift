@@ -473,7 +473,7 @@ private struct MusicSidebarRow: View {
   @ViewBuilder private var rowBackground: some View {
     if selected {
       RoundedRectangle(cornerRadius: 8, style: .continuous)
-        .fill(Color.primary.opacity(0.06))
+        .fill(KeydexGlassTone.sidebarSelectionFill)
     }
   }
 }
@@ -694,10 +694,12 @@ private struct CredentialInventoryTable: View {
     Table(rows, selection: $selectedCredentialID) {
       TableColumn("Service") { row in
         Text(row.service)
+          .font(.body.weight(.medium))
       }
 
       TableColumn("Account") { row in
         Text(row.account)
+          .fontDesign(.monospaced)
       }
 
       TableColumn("State") { row in
@@ -715,7 +717,7 @@ private struct CredentialInventoryTable: View {
     }
     .accessibilityIdentifier("keydex.inventory.table")
     .accessibilityLabel("Credential inventory table")
-    .font(.system(.body, design: .monospaced))
+    .font(.body)
   }
 }
 
@@ -725,8 +727,8 @@ private struct CredentialCardGrid: View {
   @Binding var selectedCredentialID: CredentialRow.ID?
 
   private let columns = [
-    GridItem(.flexible(minimum: 196), spacing: 12, alignment: .top),
-    GridItem(.flexible(minimum: 196), spacing: 12, alignment: .top),
+    GridItem(.flexible(minimum: 212), spacing: 18, alignment: .top),
+    GridItem(.flexible(minimum: 212), spacing: 18, alignment: .top),
   ]
 
   var body: some View {
@@ -736,10 +738,10 @@ private struct CredentialCardGrid: View {
       ScrollView {
         VStack(alignment: .leading, spacing: 18) {
           Text(title)
-            .font(.largeTitle.weight(.bold))
+            .font(.largeTitle.weight(.semibold))
             .lineLimit(1)
 
-          LazyVGrid(columns: columns, alignment: .leading, spacing: 14) {
+          LazyVGrid(columns: columns, alignment: .leading, spacing: 18) {
             ForEach(rows) { row in
               CredentialInventoryCard(
                 row: row,
@@ -750,7 +752,7 @@ private struct CredentialCardGrid: View {
             }
           }
         }
-        .padding(.horizontal, 18)
+        .padding(.horizontal, 24)
         .padding(.top, 26)
         .padding(.bottom, 20)
       }
@@ -768,7 +770,7 @@ private struct CredentialInventoryCard: View {
   var body: some View {
     Button(action: selectAction) {
       VStack(alignment: .leading, spacing: 12) {
-        CredentialArtworkPanel(row: row, height: 156)
+        CredentialArtworkPanel(row: row, height: 176)
 
         VStack(alignment: .leading, spacing: 10) {
           VStack(alignment: .leading, spacing: 4) {
@@ -797,13 +799,9 @@ private struct CredentialInventoryCard: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
       }
-      .padding(12)
-      .frame(maxWidth: .infinity, minHeight: 298, alignment: .topLeading)
-      .keydexGlassCard(
-        tint: cardGlassTint,
-        stroke: cardStroke,
-        selected: isSelected
-      )
+      .padding(10)
+      .frame(maxWidth: .infinity, minHeight: 320, alignment: .topLeading)
+      .keydexContentPanel(stroke: cardStroke, selected: isSelected)
     }
     .buttonStyle(.plain)
     .accessibilityLabel(row.cardAccessibilityLabel)
@@ -814,12 +812,9 @@ private struct CredentialInventoryCard: View {
       return Color.accentColor
     }
 
-    return Color(nsColor: .separatorColor).opacity(0.55)
+    return KeydexGlassTone.panelStroke
   }
 
-  private var cardGlassTint: Color {
-    Color.white.opacity(0.22)
-  }
 }
 
 private struct CredentialArtworkPanel: View {
@@ -827,41 +822,49 @@ private struct CredentialArtworkPanel: View {
   var height: CGFloat = 82
 
   var body: some View {
-    ZStack(alignment: .leading) {
+    ZStack {
       RoundedRectangle(cornerRadius: 6, style: .continuous)
-        .fill(panelFill)
+        .fill(.thinMaterial)
         .overlay {
-          MiniGraphMark(color: accentColor)
-            .opacity(0.28)
+          RoundedRectangle(cornerRadius: 6, style: .continuous)
+            .fill(panelFill)
         }
-
-      HStack(alignment: .center, spacing: 12) {
-        Image(systemName: row.keychainStatusSystemImage)
-          .font(.system(size: 28, weight: .semibold))
-          .foregroundStyle(accentColor)
-          .frame(width: 34)
-
-        VStack(alignment: .leading, spacing: 4) {
-          Text(row.keychainStatusTitle.uppercased())
-            .font(.caption.weight(.bold))
-            .foregroundStyle(accentColor)
-            .lineLimit(1)
-
-          Text("\(row.locations.count) graph sources")
-            .font(.caption)
+        .overlay(alignment: .topTrailing) {
+          Text("\(row.locations.count)")
+            .font(.caption.weight(.semibold))
             .foregroundStyle(.secondary)
-            .lineLimit(1)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(.ultraThinMaterial, in: Capsule())
+            .padding(10)
+        }
+        .overlay(alignment: .bottomLeading) {
+          VStack(alignment: .leading, spacing: 4) {
+            Text(row.keychainStatusTitle.uppercased())
+              .font(.caption.weight(.bold))
+              .foregroundStyle(accentColor)
+              .lineLimit(1)
+
+            Text("\(row.locations.count) graph sources")
+              .font(.caption)
+              .foregroundStyle(.secondary)
+              .lineLimit(1)
+          }
+          .padding(12)
         }
 
-        Spacer(minLength: 6)
-      }
-      .padding(12)
+      Image(systemName: row.keychainStatusSystemImage)
+        .font(.system(size: height > 120 ? 54 : 34, weight: .semibold))
+        .foregroundStyle(accentColor)
+        .symbolRenderingMode(.hierarchical)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+        .accessibilityHidden(true)
     }
     .frame(height: height)
   }
 
   private var panelFill: Color {
-    accentColor.opacity(0.08)
+    accentColor.opacity(KeydexGlassTone.artworkColorAlpha)
   }
 
   private var accentColor: Color {
@@ -869,131 +872,13 @@ private struct CredentialArtworkPanel: View {
   }
 }
 
-private struct MiniGraphMark: View {
-  let color: Color
-
-  var body: some View {
-    GeometryReader { proxy in
-      let width = proxy.size.width
-      let height = proxy.size.height
-
-      Path { path in
-        path.move(to: CGPoint(x: width * 0.58, y: height * 0.24))
-        path.addLine(to: CGPoint(x: width * 0.76, y: height * 0.42))
-        path.addLine(to: CGPoint(x: width * 0.63, y: height * 0.72))
-
-        path.move(to: CGPoint(x: width * 0.24, y: height * 0.68))
-        path.addLine(to: CGPoint(x: width * 0.42, y: height * 0.34))
-        path.addLine(to: CGPoint(x: width * 0.58, y: height * 0.24))
-      }
-      .stroke(color, lineWidth: 1.4)
-
-      ForEach(miniNodes(width: width, height: height)) { node in
-        Circle()
-          .fill(color.opacity(0.86))
-          .frame(width: node.size, height: node.size)
-          .position(node.point)
-      }
-    }
-  }
-
-  private func miniNodes(width: CGFloat, height: CGFloat) -> [MiniGraphNode] {
-    [
-      MiniGraphNode(id: 0, x: width * 0.24, y: height * 0.68, size: 5),
-      MiniGraphNode(id: 1, x: width * 0.42, y: height * 0.34, size: 4),
-      MiniGraphNode(id: 2, x: width * 0.58, y: height * 0.24, size: 6),
-      MiniGraphNode(id: 3, x: width * 0.76, y: height * 0.42, size: 4),
-      MiniGraphNode(id: 4, x: width * 0.63, y: height * 0.72, size: 5),
-    ]
-  }
-}
-
-private struct MiniGraphNode: Identifiable {
-  let id: Int
-  let point: CGPoint
-  let size: CGFloat
-
-  init(id: Int, x: CGFloat, y: CGFloat, size: CGFloat) {
-    self.id = id
-    point = CGPoint(x: x, y: y)
-    self.size = size
-  }
-}
-
 private struct GraphBackdropView: View {
   var body: some View {
-    ZStack {
-      baseFill
-
-      Path { path in
-        path.move(to: CGPoint(x: 20, y: 78))
-        path.addLine(to: CGPoint(x: 184, y: 42))
-        path.addLine(to: CGPoint(x: 336, y: 120))
-        path.addLine(to: CGPoint(x: 520, y: 64))
-
-        path.move(to: CGPoint(x: 56, y: 252))
-        path.addLine(to: CGPoint(x: 226, y: 194))
-        path.addLine(to: CGPoint(x: 410, y: 246))
-        path.addLine(to: CGPoint(x: 584, y: 168))
-
-        path.move(to: CGPoint(x: 96, y: 420))
-        path.addLine(to: CGPoint(x: 268, y: 348))
-        path.addLine(to: CGPoint(x: 494, y: 386))
-      }
-      .stroke(lineColor, lineWidth: 1)
-      .opacity(0.18)
-
-      ForEach(graphNodes) { node in
-        RoundedRectangle(cornerRadius: 4, style: .continuous)
-          .fill(nodeFill)
-          .frame(width: node.size, height: node.size)
-          .overlay {
-            RoundedRectangle(cornerRadius: 4, style: .continuous)
-              .stroke(lineColor.opacity(0.45), lineWidth: 1)
-          }
-          .position(node.point)
-      }
-    }
+    baseFill
   }
 
   private var baseFill: Color {
     Color(nsColor: .windowBackgroundColor)
-  }
-
-  private var lineColor: Color {
-    Color.accentColor
-  }
-
-  private var nodeFill: Color {
-    Color.white.opacity(0.42)
-  }
-
-  private var graphNodes: [GraphBackdropNode] {
-    [
-      GraphBackdropNode(id: 0, x: 20, y: 78, size: 8),
-      GraphBackdropNode(id: 1, x: 184, y: 42, size: 10),
-      GraphBackdropNode(id: 2, x: 336, y: 120, size: 8),
-      GraphBackdropNode(id: 3, x: 520, y: 64, size: 12),
-      GraphBackdropNode(id: 4, x: 56, y: 252, size: 10),
-      GraphBackdropNode(id: 5, x: 226, y: 194, size: 8),
-      GraphBackdropNode(id: 6, x: 410, y: 246, size: 12),
-      GraphBackdropNode(id: 7, x: 584, y: 168, size: 8),
-      GraphBackdropNode(id: 8, x: 96, y: 420, size: 8),
-      GraphBackdropNode(id: 9, x: 268, y: 348, size: 10),
-      GraphBackdropNode(id: 10, x: 494, y: 386, size: 8),
-    ]
-  }
-}
-
-private struct GraphBackdropNode: Identifiable {
-  let id: Int
-  let point: CGPoint
-  let size: CGFloat
-
-  init(id: Int, x: CGFloat, y: CGFloat, size: CGFloat) {
-    self.id = id
-    point = CGPoint(x: x, y: y)
-    self.size = size
   }
 }
 
@@ -1153,11 +1038,7 @@ private struct InspectorGlassSection<Content: View>: View {
     }
     .padding(14)
     .frame(maxWidth: .infinity, alignment: .leading)
-    .keydexGlassCard(
-      tint: Color.white.opacity(0.18),
-      stroke: Color(nsColor: .separatorColor).opacity(0.45),
-      selected: false
-    )
+    .keydexContentPanel(stroke: KeydexGlassTone.panelStroke, selected: false)
   }
 }
 
@@ -1401,8 +1282,8 @@ private struct DoctorPanel: View {
     .padding(.vertical, 12)
     .frame(maxWidth: 760, minHeight: 68, alignment: .center)
     .keydexFloatingGlassPanel(
-      tint: Color.white.opacity(0.18),
-      stroke: Color(nsColor: .separatorColor).opacity(0.45)
+      tint: KeydexGlassTone.floatingTint,
+      stroke: KeydexGlassTone.panelStroke
     )
     .accessibilityIdentifier("keydex.doctor.panel")
     .accessibilityLabel("Credential repair queue")
@@ -2194,6 +2075,13 @@ private struct SettingsDivider: View {
   }
 }
 
+private enum KeydexGlassTone {
+  static let sidebarSelectionFill = Color.primary.opacity(0.055)
+  static let floatingTint = Color.white.opacity(0.14)
+  static let panelStroke = Color(nsColor: .separatorColor).opacity(0.36)
+  static let artworkColorAlpha = 0.20
+}
+
 private struct KeydexGlassButtonModifier: ViewModifier {
   let prominent: Bool
 
@@ -2224,32 +2112,13 @@ private struct KeydexGlassButtonModifier: ViewModifier {
   }
 }
 
-private struct KeydexGlassCardModifier: ViewModifier {
-  let tint: Color
+private struct KeydexContentPanelModifier: ViewModifier {
   let stroke: Color
   let selected: Bool
 
-  @ViewBuilder
   func body(content: Content) -> some View {
     let shape = RoundedRectangle(cornerRadius: 8, style: .continuous)
 
-    #if compiler(>=6.2)
-      if #available(macOS 26.0, *) {
-        content
-          .glassEffect(.regular.tint(tint).interactive(), in: shape)
-          .overlay {
-            shape.stroke(stroke, lineWidth: selected ? 2 : 1)
-          }
-      } else {
-        fallback(content: content, in: shape)
-      }
-    #else
-      fallback(content: content, in: shape)
-    #endif
-  }
-
-  @ViewBuilder
-  private func fallback(content: Content, in shape: RoundedRectangle) -> some View {
     content
       .background(.regularMaterial, in: shape)
       .overlay {
@@ -2296,14 +2165,9 @@ extension View {
     modifier(KeydexGlassButtonModifier(prominent: prominent))
   }
 
-  fileprivate func keydexGlassCard(
-    tint: Color,
-    stroke: Color,
-    selected: Bool
-  ) -> some View {
+  fileprivate func keydexContentPanel(stroke: Color, selected: Bool) -> some View {
     modifier(
-      KeydexGlassCardModifier(
-        tint: tint,
+      KeydexContentPanelModifier(
         stroke: stroke,
         selected: selected
       )
