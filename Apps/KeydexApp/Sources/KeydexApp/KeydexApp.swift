@@ -6,6 +6,8 @@ struct KeydexApp: App {
   var body: some Scene {
     WindowGroup("Keydex") {
       CredentialInventoryShellView()
+        .accessibilityIdentifier("keydex.shell")
+        .accessibilityLabel("Keydex credential inventory")
     }
     .defaultSize(width: 1080, height: 680)
   }
@@ -80,6 +82,8 @@ struct CredentialInventoryShellView: View {
           .tag(item)
       }
       .listStyle(.sidebar)
+      .accessibilityIdentifier("keydex.sidebar.scopes")
+      .accessibilityLabel("Credential scopes")
       .navigationTitle("Scopes")
     } content: {
       VStack(spacing: 0) {
@@ -101,6 +105,8 @@ struct CredentialInventoryShellView: View {
               Text("\(row.locations.count)")
             }
           }
+          .accessibilityIdentifier("keydex.inventory.table")
+          .accessibilityLabel("Credential inventory table")
           .searchable(
             text: $searchText,
             prompt: isEmptyMode
@@ -174,6 +180,8 @@ struct CredentialInventoryShellView: View {
       }
       .padding(16)
       .frame(minWidth: 260)
+      .accessibilityIdentifier("keydex.inspector")
+      .accessibilityLabel("Credential inspector")
     }
     .toolbar {
       ToolbarItem(placement: .status) {
@@ -185,6 +193,8 @@ struct CredentialInventoryShellView: View {
         .pickerStyle(.segmented)
         .frame(width: 160)
         .help("Switch sample credential dataset")
+        .accessibilityIdentifier("keydex.toolbar.inventory-mode")
+        .accessibilityLabel("Inventory mode")
       }
 
       ToolbarItem(placement: .primaryAction) {
@@ -194,6 +204,8 @@ struct CredentialInventoryShellView: View {
           Label("Settings", systemImage: "gearshape.fill")
         }
         .help("Open app settings sample")
+        .accessibilityIdentifier("keydex.toolbar.settings")
+        .accessibilityLabel("Open settings")
       }
     }
     .onChange(of: inventoryMode) { _, _ in
@@ -269,6 +281,8 @@ private struct EmptyStatePanel: View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .multilineTextAlignment(.center)
+    .accessibilityIdentifier("keydex.inventory.empty-state")
+    .accessibilityLabel("Empty credential inventory state")
   }
 }
 
@@ -406,6 +420,8 @@ private struct DoctorPanel: View {
         .frame(minHeight: 170, maxHeight: 220)
       }
     }
+    .accessibilityIdentifier("keydex.doctor.panel")
+    .accessibilityLabel("Credential repair queue")
   }
 }
 
@@ -659,5 +675,7 @@ private struct SettingsPanel: View {
     }
     .padding(.horizontal, 4)
     .frame(minWidth: 520)
+    .accessibilityIdentifier("keydex.settings.panel")
+    .accessibilityLabel("Keydex settings")
   }
 }
