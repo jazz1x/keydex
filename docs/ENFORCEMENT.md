@@ -20,6 +20,7 @@ Keydex uses three enforcement layers.
 | State taxonomy docs drift | `make quality` |
 | Secret value stays outside metadata | review plus forbidden scan |
 | Project Contract docs stay present | `scripts/project-contract.sh` |
+| Planning pack stays present | `scripts/project-contract.sh` |
 | Graph workflow stays visible | `scripts/project-contract.sh` |
 | UI does not invent state | review |
 | Liquid Glass remains hierarchical | review |
@@ -48,3 +49,4 @@ The `main` Branch Protection requires all four.
 - Did external input get parsed once at the boundary?
 - Is this abstraction carrying an invariant, or just carrying anxiety?
 - Is the view or command a graph projection rather than a second source of truth?
+- Is the work covered by product plan, feature spec, and validation scenarios?
