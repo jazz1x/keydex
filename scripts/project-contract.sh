@@ -37,6 +37,7 @@ for path in \
   docs/TESTING-STRATEGY.md; do
   expect_file "$path"
 done
+expect_file scripts/app-accessibility-smoke.sh
 expect_file scripts/app-accessibility-evidence-review.sh
 expect_file scripts/app-design-contract.sh
 
@@ -144,6 +145,7 @@ expect_file_contains scripts/cli-smoke.sh "Tests/Fixtures/metadata.json"
 expect_file_contains Makefile "swift build --product KeydexApp"
 expect_file_contains Makefile "app-window-smoke"
 expect_file_contains Makefile "app-accessibility-contract"
+expect_file_contains Makefile "app-accessibility-smoke"
 expect_file_contains Makefile "app-accessibility-evidence-review"
 expect_file_contains Makefile "app-design-contract"
 expect_file_contains Makefile "app-screen-evidence"
@@ -152,6 +154,9 @@ expect_file_contains Makefile "release-smoke"
 expect_file_contains scripts/app-window-smoke.sh "stable on-screen window"
 expect_file_contains scripts/app-window-smoke.sh "KEYDEX_APP_WINDOW_PRESET=default"
 expect_file_contains scripts/app-accessibility-contract.sh "keydex.inventory.table"
+expect_file_contains scripts/app-accessibility-smoke.sh "System Events"
+expect_file_contains scripts/app-accessibility-smoke.sh "Credential inventory table"
+expect_file_contains scripts/app-accessibility-smoke.sh "Keydex settings"
 expect_file_contains scripts/app-accessibility-evidence-review.sh "tmp/accessibility-evidence"
 expect_file_contains scripts/app-accessibility-evidence-review.sh "voiceover=pass"
 expect_file_contains scripts/app-accessibility-evidence-review.sh "keyboard=pass"

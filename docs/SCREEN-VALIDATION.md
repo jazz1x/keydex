@@ -29,6 +29,11 @@ The first source-level accessibility contract is `scripts/app-accessibility-cont
 It proves required SwiftUI surfaces expose stable accessibility labels and identifiers
 before permissioned screenshot or VoiceOver evidence is attached.
 
+The first runtime accessibility smoke is `scripts/app-accessibility-smoke.sh`. It launches
+the app locally, reads the macOS accessibility tree with System Events, and proves core
+surface names are visible from the running app. It requires macOS accessibility scripting
+permission and is not a substitute for VoiceOver review notes.
+
 Manual accessibility evidence is reviewed with
 `scripts/app-accessibility-evidence-review.sh`. It verifies local manifests and notes in
 `tmp/accessibility-evidence` for the same required scenarios as screen evidence. It is
@@ -105,6 +110,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Local screen evidence | `scripts/app-screen-evidence.sh --list` and `make app-screen-evidence SCENARIO=<name>` | Captures local screenshot and manifest for manual screen review evidence in `tmp/screen-evidence` (not CI required). |
 | Local screen review | `make app-screen-evidence-review` | Verifies the local screenshot and manifest set for all required script scenarios. |
 | Accessibility contract | `scripts/app-accessibility-contract.sh` | Required app surfaces expose stable labels and identifiers. |
+| Runtime accessibility smoke | `make app-accessibility-smoke` | Running app exposes expected sidebar, table, doctor, inspector, settings, and state names through AX. |
 | Accessibility evidence review | `make app-accessibility-evidence-review` | Verifies local VoiceOver, keyboard, state-label, and dynamic type notes for required scenarios. |
 | App design contract | `scripts/app-design-contract.sh` | Native Mac utility structure, graph repair surfaces, and anti-theater rules remain wired. |
 | Doctor shell | App source uses `CredentialDoctor().inspect(graph)` | The repair queue surface is graph-derived. |
