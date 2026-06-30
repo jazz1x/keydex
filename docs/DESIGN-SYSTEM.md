@@ -21,6 +21,11 @@ and honest about risk.
 | `surface.sidebar` | Liquid Glass material | sidebar search, navigation, and scope filters |
 | `surface.inspector` | Liquid Glass material | selected item detail |
 | `surface.card` | regular material, 8 px radius | inventory cards and grouped settings only |
+| `glass.sidebar.selection` | primary 0.055 alpha | selected sidebar rows |
+| `glass.card.tint` | white 0.12 alpha | inventory card glass tint |
+| `glass.inspector.tint` | white 0.10 alpha | inspector section glass tint |
+| `glass.floating.tint` | white 0.14 alpha | bottom repair rail tint |
+| `artwork.state.tint` | semantic state color 0.20 alpha | card artwork color field |
 | `text.primary` | label | credential names and actions |
 | `text.secondary` | secondary label | metadata and source paths |
 | `risk.info` | blue | neutral findings |
