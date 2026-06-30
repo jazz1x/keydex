@@ -75,10 +75,36 @@ struct Scan: ParsableCommand {
         graph: \(summary.locationCount) sources, \(summary.edgeCount) edges
         """
       )
-    case "shell", "config":
+    case "shell":
+      let observations = try ShellProfileScanner().observations(from: defaultShellProfiles())
+      let summary = InventoryGraph(observations: observations).summary
+      print(
+        """
+        keydex scan shell: \(summary.credentialCount) credential hints
+        graph: \(summary.locationCount) sources, \(summary.edgeCount) edges
+        """
+      )
+    case "config":
       print("keydex scan \(parsedTarget): not implemented yet")
     default:
       throw ValidationError("scan target must be env, shell, or config")
     }
+  }
+
+  private func defaultShellProfiles() throws -> [ShellProfile] {
+    let home = FileManager.default.homeDirectoryForCurrentUser
+    let profileNames = [".zshrc", ".zprofile", ".bash_profile", ".bashrc"]
+    var profiles: [ShellProfile] = []
+
+    for profileName in profileNames {
+      let url = home.appendingPathComponent(profileName)
+      if FileManager.default.fileExists(atPath: url.path) {
+        let path = try NonEmptyText.parse(url.path, field: "path")
+        let contents = try String(contentsOf: url, encoding: .utf8)
+        profiles.append(ShellProfile(path: path, contents: contents))
+      }
+    }
+
+    return profiles
   }
 }
