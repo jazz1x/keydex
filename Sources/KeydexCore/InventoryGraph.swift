@@ -22,6 +22,20 @@ public struct InventoryEdge: Equatable, Hashable, Sendable {
   }
 }
 
+public struct InventoryGraphSummary: Equatable, Sendable {
+  public let credentialCount: Int
+  public let locationCount: Int
+  public let stateCount: Int
+  public let edgeCount: Int
+
+  public init(credentialCount: Int, locationCount: Int, stateCount: Int, edgeCount: Int) {
+    self.credentialCount = credentialCount
+    self.locationCount = locationCount
+    self.stateCount = stateCount
+    self.edgeCount = edgeCount
+  }
+}
+
 public struct InventoryGraph: Equatable, Sendable {
   public let nodes: Set<InventoryNode>
   public let edges: [InventoryEdge]
@@ -64,6 +78,30 @@ public struct InventoryGraph: Equatable, Sendable {
 
   public func outgoingEdges(from node: InventoryNode) -> [InventoryEdge] {
     edges.filter { $0.from == node }
+  }
+
+  public var summary: InventoryGraphSummary {
+    var credentialCount = 0
+    var locationCount = 0
+    var stateCount = 0
+
+    for node in nodes {
+      switch node {
+      case .credential:
+        credentialCount += 1
+      case .location:
+        locationCount += 1
+      case .state:
+        stateCount += 1
+      }
+    }
+
+    return InventoryGraphSummary(
+      credentialCount: credentialCount,
+      locationCount: locationCount,
+      stateCount: stateCount,
+      edgeCount: edges.count
+    )
   }
 
   private static func insert(
