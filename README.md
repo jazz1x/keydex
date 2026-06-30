@@ -11,7 +11,7 @@ secret store; Keydex stores references, metadata, graph edges, and doctor findin
 
 ## Status
 
-Bootstrapping.
+CLI workflows now cover env, shell, config file, and Keychain discovery with metadata-backed list/where/doctor flows.
 
 ## Commands
 
@@ -25,7 +25,17 @@ keydex doctor --metadata ./metadata.json
 keydex scan env
 keydex scan shell
 keydex scan config --path ./credentials.env
+keydex scan keychain
+keydex list --metadata ./metadata.json --include-keychain
+keydex where openai --metadata ./metadata.json --include-keychain
+keydex doctor --metadata ./metadata.json --include-keychain
 ```
+
+When `--include-keychain` is used, Keydex reconciles metadata against live Keychain references:
+
+- matched metadata-keychain pairs become `registered`
+- missing metadata references become `missing-keychain-item`
+- unmatched live Keychain references become `orphan`
 
 ## Guard
 

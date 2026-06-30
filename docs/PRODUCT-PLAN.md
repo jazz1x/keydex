@@ -64,9 +64,9 @@ Keydex is complete when it can safely answer:
 | Milestone | State |
 | --- | --- |
 | M0 | Complete. |
-| M1 | Complete for env and shell first boundary. Config and Keychain expansion remain. |
-| M2 | Complete for graph-based findings. Persisted inventory integration remains. |
-| M3 | Next. |
+| M1 | Complete for env, shell, config, and keychain discovery. |
+| M2 | Complete for graph-based findings. |
+| M3 | Complete for metadata-backed CLI commands and keychain reconciliation. |
 | M4 | Not started. |
 | M5 | Not started. |
 
