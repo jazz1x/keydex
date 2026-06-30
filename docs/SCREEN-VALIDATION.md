@@ -17,6 +17,9 @@ manual validation runs. It requires macOS Screen Recording permission and must b
 outside CI. The command writes a screenshot PNG plus a manifest into
 `tmp/screen-evidence`.
 
+Use `make app-screen-evidence` for the default inventory screen and
+`make app-screen-evidence SCENARIO=empty-inventory` for the empty inventory screen.
+
 The first source-level accessibility contract is `scripts/app-accessibility-contract.sh`.
 It proves required SwiftUI surfaces expose stable accessibility labels and identifiers
 before permissioned screenshot or VoiceOver evidence is attached.

@@ -94,6 +94,7 @@ Manual local screen evidence capture is done with `scripts/app-screen-evidence.s
 requires local Screen Recording permission on macOS and writes PNG output plus manifest files
 to `tmp/screen-evidence`. This command is not CI-required and does not replace the required
 screen review evidence flow.
+The first supported scenarios are `default-window` and `empty-inventory`.
 Functional release cannot be called complete until screen scenarios have screenshot and
 accessibility evidence.
 
