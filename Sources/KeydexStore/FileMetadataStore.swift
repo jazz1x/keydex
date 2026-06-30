@@ -3,9 +3,11 @@ import KeydexCore
 
 public struct FileMetadataStore: MetadataStore {
   public let url: URL
+  public let currentDate: Date
 
-  public init(url: URL) {
+  public init(url: URL, currentDate: Date = Date()) {
     self.url = url
+    self.currentDate = currentDate
   }
 
   public func listCredentials() async throws -> [CredentialRecord] {
@@ -14,7 +16,7 @@ public struct FileMetadataStore: MetadataStore {
     return try document.records.map { record in
       CredentialRecord(
         ref: try CredentialRef.parse(service: record.service, account: record.account),
-        state: try record.credentialState(),
+        state: try record.credentialState(currentDate: currentDate),
         locations: try record.locations.map { try $0.credentialLocation() }
       )
     }
@@ -52,14 +54,36 @@ private struct MetadataRecord: Decodable {
   let service: String
   let account: String
   let state: String
+  let expiresAt: String?
   let locations: [MetadataLocation]
 
-  func credentialState() throws -> CredentialState {
+  func credentialState(currentDate: Date) throws -> CredentialState {
+    if let expiresAt {
+      let expiryDate = try Self.expiryDate(from: expiresAt)
+      if expiryDate <= currentDate {
+        return .expired
+      }
+
+      if expiryDate <= currentDate.addingTimeInterval(30 * 24 * 60 * 60) {
+        return .expiring
+      }
+    }
+
     guard let credentialState = CredentialState(rawValue: state) else {
       throw MetadataStoreError.invalidState(state)
     }
 
     return credentialState
+  }
+
+  private static func expiryDate(from value: String) throws -> Date {
+    let formatter = ISO8601DateFormatter()
+    formatter.formatOptions = [.withFullDate]
+    guard let date = formatter.date(from: value) else {
+      throw MetadataStoreError.invalidExpiryDate(value)
+    }
+
+    return date
   }
 }
 
@@ -108,6 +132,7 @@ private struct MetadataLocation: Decodable {
 
 public enum MetadataStoreError: Error, Equatable, LocalizedError {
   case invalidState(String)
+  case invalidExpiryDate(String)
   case invalidLocationKind(String)
   case missingLocationField(kind: String, field: String)
 
@@ -115,6 +140,8 @@ public enum MetadataStoreError: Error, Equatable, LocalizedError {
     switch self {
     case .invalidState(let state):
       "invalid credential state: \(state)"
+    case .invalidExpiryDate(let value):
+      "invalid credential expiry date: \(value)"
     case .invalidLocationKind(let kind):
       "invalid credential location kind: \(kind)"
     case .missingLocationField(let kind, let field):

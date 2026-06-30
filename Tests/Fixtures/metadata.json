@@ -18,7 +18,8 @@
     {
       "service": "aws",
       "account": "jongyun",
-      "state": "expired",
+      "state": "registered",
+      "expiresAt": "2026-01-01",
       "locations": [
         { "kind": "config-file", "path": "Tests/Fixtures/credentials.env" }
       ]
