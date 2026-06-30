@@ -48,6 +48,16 @@ struct CredentialInventoryShellView: View {
       .map(\.projection)
   }
 
+  private var doctorIssues: [DoctorIssue] {
+    CredentialDoctor().inspect(graph).sorted {
+      if $0.severity != $1.severity {
+        return doctorSeverityOrder($0.severity) < doctorSeverityOrder($1.severity)
+      }
+      return "\($0.credential.service.value)/\($0.credential.account.value)"
+        < "\($1.credential.service.value)/\($1.credential.account.value)"
+    }
+  }
+
   var body: some View {
     NavigationSplitView {
       List(sidebarSelectionItems, id: \.self, selection: $selectedSidebar) { item in
@@ -57,25 +67,32 @@ struct CredentialInventoryShellView: View {
       .listStyle(.sidebar)
       .navigationTitle("Scopes")
     } content: {
-      Table(rows, selection: $selectedCredentialID) {
-        TableColumn("Service") { row in
-          Text(row.service)
-        }
+      VStack(spacing: 0) {
+        Table(rows, selection: $selectedCredentialID) {
+          TableColumn("Service") { row in
+            Text(row.service)
+          }
 
-        TableColumn("Account") { row in
-          Text(row.account)
-        }
+          TableColumn("Account") { row in
+            Text(row.account)
+          }
 
-        TableColumn("State") { row in
-          Text(canonicalStateLabel(row.states))
-        }
+          TableColumn("State") { row in
+            Text(canonicalStateLabel(row.states))
+          }
 
-        TableColumn("Sources") { row in
-          Text("\(row.locations.count)")
+          TableColumn("Sources") { row in
+            Text("\(row.locations.count)")
+          }
         }
+        .navigationTitle(selectedSidebar.title)
+        .font(.system(.body, design: .monospaced))
+        .frame(minHeight: 320)
+
+        Divider()
+
+        DoctorPanel(issues: doctorIssues)
       }
-      .navigationTitle(selectedSidebar.title)
-      .font(.system(.body, design: .monospaced))
     } detail: {
       VStack(alignment: .leading, spacing: 14) {
         if let projection = selectedProjection {
@@ -186,6 +203,79 @@ private func canonicalStateLabel(_ states: [CredentialState]) -> String {
   states.map(\.rawValue).sorted().joined(separator: ", ")
 }
 
+private struct DoctorIssueRow: Identifiable {
+  let issue: DoctorIssue
+
+  var id: String {
+    "\(issue.credential.service.value)|\(issue.credential.account.value)|\(issue.state.rawValue)"
+  }
+
+  var severityLabel: String {
+    issue.severity.rawValue
+  }
+
+  var credentialLabel: String {
+    "\(issue.credential.service.value)/\(issue.credential.account.value)"
+  }
+
+  var stateLabel: String {
+    canonicalStateLabel([issue.state])
+  }
+
+  var severityTint: Color {
+    doctorSeverityTint(issue.severity)
+  }
+}
+
+private struct DoctorPanel: View {
+  let issues: [DoctorIssue]
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 6) {
+      Text("Doctor")
+        .font(.headline)
+        .padding(.horizontal, 12)
+        .padding(.top, 10)
+
+      if issues.isEmpty {
+        Text("No issues found")
+          .font(.subheadline)
+          .foregroundStyle(.secondary)
+          .padding(.horizontal, 12)
+          .padding(.bottom, 8)
+      } else {
+        List(issues.map(DoctorIssueRow.init)) { row in
+          VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 8) {
+              Text(row.severityLabel)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(row.severityTint)
+              Text(row.credentialLabel)
+                .font(.subheadline)
+                .fontDesign(.monospaced)
+              Spacer()
+              Text("state: \(row.stateLabel)")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            }
+
+            Text("cause: \(row.issue.message)")
+              .font(.caption)
+              .foregroundStyle(.secondary)
+
+            Text("action: \(row.issue.action)")
+              .font(.caption)
+              .foregroundStyle(.secondary)
+          }
+          .padding(.vertical, 4)
+        }
+        .listStyle(.plain)
+        .frame(minHeight: 170, maxHeight: 220)
+      }
+    }
+  }
+}
+
 private func stateTint(for state: CredentialState) -> Color {
   switch state {
   case .missingKeychainItem, .expired:
@@ -194,6 +284,28 @@ private func stateTint(for state: CredentialState) -> Color {
     .orange
   case .registered:
     .green
+  }
+}
+
+private func doctorSeverityOrder(_ severity: DoctorSeverity) -> Int {
+  switch severity {
+  case .error:
+    0
+  case .warning:
+    1
+  case .info:
+    2
+  }
+}
+
+private func doctorSeverityTint(_ severity: DoctorSeverity) -> Color {
+  switch severity {
+  case .error:
+    .red
+  case .warning:
+    .orange
+  case .info:
+    .blue
   }
 }
 
