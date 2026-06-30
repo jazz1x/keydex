@@ -33,7 +33,17 @@ for identifier in \
   expect_file_contains "$app_source" ".accessibilityIdentifier(\"$identifier\")"
 done
 
-echo "2) required accessibility labels..."
+echo "2) required reusable accessibility identifiers..."
+for identifier in \
+  keydex.settings.keychain-access \
+  keydex.settings.request-prompt \
+  keydex.settings.add-scan-path \
+  keydex.settings.add-ignored-source \
+  keydex.settings.add-unmanaged-source; do
+  expect_file_contains "$app_source" "$identifier"
+done
+
+echo "3) required accessibility labels..."
 for label in \
   "Keydex credential inventory" \
   "Credential scopes" \
@@ -43,6 +53,17 @@ for label in \
   "Settings section" \
   "Keydex settings"; do
   expect_file_contains "$app_source" ".accessibilityLabel(\"$label\")"
+done
+
+echo "4) required reusable accessibility labels..."
+for label in \
+  "Add scan path" \
+  "Remove scan path" \
+  "Add ignored source" \
+  "Remove ignored source" \
+  "Add unmanaged source" \
+  "Remove unmanaged source"; do
+  expect_file_contains "$app_source" "$label"
 done
 
 echo "app accessibility contract clean"

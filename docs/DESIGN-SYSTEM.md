@@ -56,6 +56,8 @@ and honest about risk.
 
 - Use Liquid Glass for hierarchy: sidebar, toolbar, inspector, popovers, and command
   surfaces.
+- Settings uses a material header plus grouped list sections; repeated rows stay plain
+  and editable.
 - Do not use Liquid Glass for repeated table cells.
 - Do not hide text contrast behind material effects.
 - Keep risk colors outside decorative materials when legibility would suffer.

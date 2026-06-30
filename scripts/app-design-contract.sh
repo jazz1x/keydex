@@ -48,9 +48,13 @@ for needle in \
   ".searchable(" \
   "ToolbarItem" \
   "ContentUnavailableView" \
-  "Form {" \
-  ".formStyle(.grouped)" \
+  "ScrollView {" \
+  "SettingsGlassSection" \
+  "SettingsStatusPill" \
   ".pickerStyle(.segmented)" \
+  ".background(.regularMaterial" \
+  ".background(.ultraThinMaterial)" \
+  ".background(.thinMaterial" \
   ".help("; do
   expect_file_contains "$app_source" "$needle"
 done

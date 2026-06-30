@@ -85,6 +85,7 @@ struct CredentialInventoryShellView: View {
   @State private var isShowingSettings: Bool
   @State private var selectedSettingsSection: SettingsSection
   @State private var inventoryMode: InventoryMode
+  @State private var settingsConfig: ShellSettingsConfig
 
   init() {
     let initialScenario = Self.screenScenarioFromEnvironment()
@@ -97,6 +98,7 @@ struct CredentialInventoryShellView: View {
     _isShowingSettings = State(initialValue: initialScenario.showsSettings)
     _selectedSettingsSection = State(initialValue: initialScenario.settingsSection)
     _inventoryMode = State(initialValue: initialMode)
+    _settingsConfig = State(initialValue: sampleSettingsData())
   }
 
   fileprivate static func inventoryModeFromEnvironment(
@@ -328,10 +330,10 @@ struct CredentialInventoryShellView: View {
     }
     .sheet(isPresented: $isShowingSettings) {
       SettingsPanel(
-        sample: sampleSettingsData(),
+        settings: $settingsConfig,
         selectedSection: $selectedSettingsSection
       )
-      .frame(minWidth: 560, minHeight: 480)
+      .frame(width: 720, height: 520)
     }
   }
 
@@ -792,20 +794,57 @@ private func sampleCredentialGraph() -> InventoryGraph {
 }
 
 private struct ScanSourceRow: Identifiable {
-  let id = UUID()
-  let title: String
-  let detail: String
-  let enabled: Bool
+  let id: UUID
+  var title: String
+  var detail: String
+  var enabled: Bool
+
+  init(id: UUID = UUID(), title: String, detail: String, enabled: Bool) {
+    self.id = id
+    self.title = title
+    self.detail = detail
+    self.enabled = enabled
+  }
+
+  var accessibilitySuffix: String {
+    title
+      .lowercased()
+      .replacingOccurrences(of: " ", with: "-")
+  }
+
+  var systemImage: String {
+    switch accessibilitySuffix {
+    case "keychain":
+      "key.fill"
+    case "shell-profiles":
+      "terminal"
+    case "environment-variables":
+      "curlybraces"
+    case "config-files":
+      "doc.text"
+    default:
+      "circle.grid.2x2"
+    }
+  }
+}
+
+private struct EditableSettingsRow: Identifiable {
+  let id: UUID
+  var value: String
+
+  init(id: UUID = UUID(), _ value: String) {
+    self.id = id
+    self.value = value
+  }
 }
 
 private struct ShellSettingsConfig {
-  let keychainPermissionState: String
-  let keychainAccess: Bool
-  let requestPrompt: Bool
-  let scanSources: [ScanSourceRow]
-  let scanPaths: [String]
-  let ignoredSources: [String]
-  let unmanagedSources: [String]
+  var keychainAccess: Bool
+  var requestPrompt: Bool
+  var scanSources: [ScanSourceRow]
+  var scanPaths: [EditableSettingsRow]
+  var ignoredSources: [EditableSettingsRow]
+  var unmanagedSources: [EditableSettingsRow]
 }
 
 private enum SettingsSection: String, CaseIterable, Identifiable {
@@ -832,7 +871,6 @@ private enum SettingsSection: String, CaseIterable, Identifiable {
 
 private func sampleSettingsData() -> ShellSettingsConfig {
   ShellSettingsConfig(
-    keychainPermissionState: "Read-only sample scope",
     keychainAccess: true,
     requestPrompt: false,
     scanSources: [
@@ -858,116 +896,411 @@ private func sampleSettingsData() -> ShellSettingsConfig {
       ),
     ],
     scanPaths: [
-      "/Users/example/.zshrc",
-      "/Users/example/.config/gh/config",
-      "/Users/example/.aws/credentials",
+      EditableSettingsRow("/Users/example/.zshrc"),
+      EditableSettingsRow("/Users/example/.config/gh/config"),
+      EditableSettingsRow("/Users/example/.aws/credentials"),
     ],
     ignoredSources: [
-      "~/Downloads/keys/legacy.env",
-      "~/tmp/oneoff/.env.disabled",
+      EditableSettingsRow("~/Downloads/keys/legacy.env"),
+      EditableSettingsRow("~/tmp/oneoff/.env.disabled"),
     ],
     unmanagedSources: [
-      "process:local-session-secret",
-      "binary:legacy-auth-helper",
+      EditableSettingsRow("process:local-session-secret"),
+      EditableSettingsRow("binary:legacy-auth-helper"),
     ]
   )
 }
 
 private struct SettingsPanel: View {
-  let sample: ShellSettingsConfig
+  @Binding var settings: ShellSettingsConfig
   @Binding var selectedSection: SettingsSection
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 16) {
-      Text("Settings")
-        .font(.title3.weight(.semibold))
-        .padding(.top, 12)
-        .padding(.horizontal, 16)
-
-      Picker("Settings section", selection: $selectedSection) {
-        ForEach(SettingsSection.allCases) { section in
-          Text(section.title).tag(section)
-        }
-      }
-      .pickerStyle(.segmented)
-      .padding(.horizontal, 16)
-      .accessibilityIdentifier("keydex.settings.section-picker")
-      .accessibilityLabel("Settings section")
-
-      Form {
-        switch selectedSection {
-        case .permissions:
-          Section("Keychain Permission") {
-            LabeledContent("Current status") {
-              Text(sample.keychainPermissionState)
-                .foregroundStyle(.secondary)
-            }
-            Toggle("Enable keychain access", isOn: .constant(sample.keychainAccess))
-              .disabled(true)
-            Toggle("Request runtime keychain prompt", isOn: .constant(sample.requestPrompt))
-              .disabled(true)
+    VStack(spacing: 0) {
+      VStack(alignment: .leading, spacing: 14) {
+        HStack(alignment: .firstTextBaseline) {
+          VStack(alignment: .leading, spacing: 4) {
+            Text("Settings")
+              .font(.title2.weight(.semibold))
+            Text(settingsSummary)
+              .font(.caption)
+              .foregroundStyle(.secondary)
           }
 
-        case .sources:
-          Section("Scan Sources") {
-            ForEach(sample.scanSources) { source in
-              Toggle(isOn: .constant(source.enabled)) {
-                VStack(alignment: .leading, spacing: 2) {
-                  Text(source.title)
-                    .font(.subheadline)
-                  Text(source.detail)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+          Spacer()
+
+          HStack(spacing: 8) {
+            SettingsStatusPill(
+              title: "Keychain",
+              value: settings.keychainAccess ? "On" : "Off",
+              systemImage: settings.keychainAccess ? "key.fill" : "key.slash"
+            )
+            SettingsStatusPill(
+              title: "Sources",
+              value: "\(enabledSourceCount)/\(settings.scanSources.count)",
+              systemImage: "checklist"
+            )
+          }
+        }
+
+        Picker("Settings section", selection: $selectedSection) {
+          ForEach(SettingsSection.allCases) { section in
+            Text(section.title).tag(section)
+          }
+        }
+        .pickerStyle(.segmented)
+        .padding(4)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .accessibilityIdentifier("keydex.settings.section-picker")
+        .accessibilityLabel("Settings section")
+      }
+      .padding(.horizontal, 24)
+      .padding(.top, 20)
+      .padding(.bottom, 16)
+      .background(.regularMaterial)
+      .overlay(alignment: .bottom) {
+        Rectangle()
+          .fill(.separator.opacity(0.45))
+          .frame(height: 1)
+      }
+
+      ScrollView {
+        VStack(alignment: .leading, spacing: 16) {
+          switch selectedSection {
+          case .permissions:
+            SettingsGlassSection(
+              title: "Keychain Permission",
+              subtitle: keychainPermissionStatus,
+              systemImage: "key.fill"
+            ) {
+              SettingsToggleRow(
+                title: "Enable keychain access",
+                subtitle: "Include Keychain references in local inventory scans",
+                systemImage: "lock.open",
+                isOn: $settings.keychainAccess,
+                accessibilityIdentifier: "keydex.settings.keychain-access"
+              )
+
+              SettingsDivider()
+
+              SettingsToggleRow(
+                title: "Request runtime keychain prompt",
+                subtitle: "Ask before a scan reads Keychain item references",
+                systemImage: "hand.raised",
+                isOn: $settings.requestPrompt,
+                accessibilityIdentifier: "keydex.settings.request-prompt"
+              )
+            }
+
+          case .sources:
+            SettingsGlassSection(
+              title: "Scan Sources",
+              subtitle: "\(enabledSourceCount) enabled",
+              systemImage: "checklist"
+            ) {
+              ForEach($settings.scanSources) { $source in
+                SettingsToggleRow(
+                  title: source.title,
+                  subtitle: source.detail,
+                  systemImage: source.systemImage,
+                  isOn: $source.enabled,
+                  accessibilityIdentifier:
+                    "keydex.settings.scan-source.\(source.accessibilitySuffix)"
+                )
+
+                if source.id != settings.scanSources.last?.id {
+                  SettingsDivider()
                 }
               }
-              .disabled(true)
             }
-          }
 
-        case .paths:
-          Section("Scan Paths") {
-            ForEach(sample.scanPaths, id: \.self) { path in
-              TextField("Path", text: .constant(path))
-                .textFieldStyle(.roundedBorder)
-                .disabled(true)
-                .font(.system(.body, design: .monospaced))
-            }
-          }
+          case .paths:
+            EditableSettingsListSection(
+              title: "Scan Paths",
+              subtitle: "\(settings.scanPaths.count) paths",
+              systemImage: "folder",
+              textFieldLabel: "Path",
+              addLabel: "Add scan path",
+              removeLabel: "Remove scan path",
+              rows: $settings.scanPaths,
+              monospace: true,
+              valueFieldIdentifier: "keydex.settings.scan-path.value",
+              draftFieldIdentifier: "keydex.settings.scan-path.draft",
+              addButtonIdentifier: "keydex.settings.add-scan-path",
+              removeButtonIdentifier: "keydex.settings.remove-scan-path"
+            )
 
-        case .rules:
-          if !sample.ignoredSources.isEmpty || !sample.unmanagedSources.isEmpty {
-            Section("Ignored / unmanaged sources") {
-              if !sample.ignoredSources.isEmpty {
-                Text("Ignored")
-                  .font(.subheadline.weight(.medium))
-              }
-              ForEach(sample.ignoredSources, id: \.self) { source in
-                Text(source)
-                  .font(.caption)
-                  .foregroundStyle(.secondary)
-              }
-
-              if !sample.unmanagedSources.isEmpty {
-                Text("Unmanaged")
-                  .font(.subheadline.weight(.medium))
-                  .padding(.top, 4)
-              }
-              ForEach(sample.unmanagedSources, id: \.self) { source in
-                Text(source)
-                  .font(.caption)
-                  .foregroundStyle(.secondary)
-              }
-            }
+          case .rules:
+            EditableSettingsListSection(
+              title: "Ignored Sources",
+              subtitle: "\(settings.ignoredSources.count) ignored",
+              systemImage: "eye.slash",
+              textFieldLabel: "Source",
+              addLabel: "Add ignored source",
+              removeLabel: "Remove ignored source",
+              rows: $settings.ignoredSources,
+              monospace: false,
+              valueFieldIdentifier: "keydex.settings.ignored-source.value",
+              draftFieldIdentifier: "keydex.settings.ignored-source.draft",
+              addButtonIdentifier: "keydex.settings.add-ignored-source",
+              removeButtonIdentifier: "keydex.settings.remove-ignored-source"
+            )
+            EditableSettingsListSection(
+              title: "Unmanaged Sources",
+              subtitle: "\(settings.unmanagedSources.count) unmanaged",
+              systemImage: "tray",
+              textFieldLabel: "Source",
+              addLabel: "Add unmanaged source",
+              removeLabel: "Remove unmanaged source",
+              rows: $settings.unmanagedSources,
+              monospace: false,
+              valueFieldIdentifier: "keydex.settings.unmanaged-source.value",
+              draftFieldIdentifier: "keydex.settings.unmanaged-source.draft",
+              addButtonIdentifier: "keydex.settings.add-unmanaged-source",
+              removeButtonIdentifier: "keydex.settings.remove-unmanaged-source"
+            )
           }
         }
+        .padding(24)
       }
-      .formStyle(.grouped)
-
-      Spacer()
+      .background(.ultraThinMaterial)
     }
-    .padding(.horizontal, 4)
-    .frame(minWidth: 520)
+    .frame(width: 720, height: 520)
+    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     .accessibilityIdentifier("keydex.settings.panel")
     .accessibilityLabel("Keydex settings")
+  }
+
+  private var enabledSourceCount: Int {
+    settings.scanSources.filter(\.enabled).count
+  }
+
+  private var settingsSummary: String {
+    "\(settings.scanPaths.count) paths · \(settings.ignoredSources.count) ignored · \(settings.unmanagedSources.count) unmanaged"
+  }
+
+  private var keychainPermissionStatus: String {
+    if settings.keychainAccess {
+      return "Enabled for inventory scan runs"
+    }
+
+    return "Disabled for inventory scan runs"
+  }
+}
+
+private struct EditableSettingsListSection: View {
+  let title: String
+  let subtitle: String
+  let systemImage: String
+  let textFieldLabel: String
+  let addLabel: String
+  let removeLabel: String
+  @Binding var rows: [EditableSettingsRow]
+  var monospace: Bool
+  let valueFieldIdentifier: String
+  let draftFieldIdentifier: String
+  let addButtonIdentifier: String
+  let removeButtonIdentifier: String
+  @State private var draftValue = ""
+
+  var body: some View {
+    SettingsGlassSection(title: title, subtitle: subtitle, systemImage: systemImage) {
+      ForEach($rows) { $row in
+        SettingsEditableRow(
+          textFieldLabel: textFieldLabel,
+          removeLabel: removeLabel,
+          text: $row.value,
+          monospace: monospace,
+          valueFieldIdentifier: valueFieldIdentifier,
+          removeButtonIdentifier: removeButtonIdentifier
+        ) {
+          rows.removeAll { $0.id == row.id }
+        }
+
+        if row.id != rows.last?.id {
+          SettingsDivider()
+        }
+      }
+
+      if !rows.isEmpty {
+        SettingsDivider()
+      }
+
+      HStack(alignment: .center, spacing: 10) {
+        Image(systemName: "plus.circle.fill")
+          .font(.body.weight(.semibold))
+          .foregroundStyle(.secondary)
+          .frame(width: 24)
+
+        TextField(textFieldLabel, text: $draftValue)
+          .textFieldStyle(.plain)
+          .font(monospace ? .system(.body, design: .monospaced) : .body)
+          .accessibilityIdentifier(draftFieldIdentifier)
+          .accessibilityLabel(textFieldLabel)
+
+        Button {
+          addDraftValue()
+        } label: {
+          Label(addLabel, systemImage: "plus")
+        }
+        .buttonStyle(.borderless)
+        .labelStyle(.iconOnly)
+        .help(addLabel)
+        .accessibilityLabel(addLabel)
+        .accessibilityIdentifier(addButtonIdentifier)
+        .disabled(trimmedDraftValue.isEmpty)
+      }
+      .padding(.vertical, 8)
+    }
+  }
+
+  private var trimmedDraftValue: String {
+    draftValue.trimmingCharacters(in: .whitespacesAndNewlines)
+  }
+
+  private func addDraftValue() {
+    rows.append(EditableSettingsRow(trimmedDraftValue))
+    draftValue = ""
+  }
+}
+
+private struct SettingsStatusPill: View {
+  let title: String
+  let value: String
+  let systemImage: String
+
+  var body: some View {
+    HStack(spacing: 6) {
+      Image(systemName: systemImage)
+        .font(.caption.weight(.semibold))
+      Text(title)
+      Text(value)
+        .foregroundStyle(.secondary)
+    }
+    .font(.caption.weight(.medium))
+    .padding(.horizontal, 10)
+    .padding(.vertical, 6)
+    .background(.thinMaterial, in: Capsule())
+    .overlay {
+      Capsule()
+        .stroke(.separator.opacity(0.5), lineWidth: 1)
+    }
+  }
+}
+
+private struct SettingsGlassSection<Content: View>: View {
+  let title: String
+  let subtitle: String
+  let systemImage: String
+  @ViewBuilder var content: Content
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 12) {
+      HStack(alignment: .firstTextBaseline, spacing: 10) {
+        Image(systemName: systemImage)
+          .font(.body.weight(.semibold))
+          .foregroundStyle(.secondary)
+          .frame(width: 24)
+
+        VStack(alignment: .leading, spacing: 2) {
+          Text(title)
+            .font(.headline)
+          Text(subtitle)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+        }
+
+        Spacer()
+      }
+
+      VStack(spacing: 0) {
+        content
+      }
+      .padding(.horizontal, 12)
+      .padding(.vertical, 6)
+      .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+      .overlay {
+        RoundedRectangle(cornerRadius: 8, style: .continuous)
+          .stroke(.separator.opacity(0.55), lineWidth: 1)
+      }
+    }
+  }
+}
+
+private struct SettingsToggleRow: View {
+  let title: String
+  let subtitle: String
+  let systemImage: String
+  @Binding var isOn: Bool
+  let accessibilityIdentifier: String
+
+  var body: some View {
+    Toggle(isOn: $isOn) {
+      HStack(alignment: .top, spacing: 10) {
+        Image(systemName: systemImage)
+          .font(.body.weight(.medium))
+          .foregroundStyle(.secondary)
+          .frame(width: 24)
+
+        VStack(alignment: .leading, spacing: 3) {
+          Text(title)
+            .font(.body)
+          Text(subtitle)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
+        }
+      }
+      .padding(.vertical, 8)
+    }
+    .toggleStyle(.switch)
+    .help(subtitle)
+    .accessibilityIdentifier(accessibilityIdentifier)
+  }
+}
+
+private struct SettingsEditableRow: View {
+  let textFieldLabel: String
+  let removeLabel: String
+  @Binding var text: String
+  var monospace: Bool
+  let valueFieldIdentifier: String
+  let removeButtonIdentifier: String
+  let removeAction: () -> Void
+
+  var body: some View {
+    HStack(alignment: .center, spacing: 10) {
+      Image(systemName: monospace ? "folder" : "line.3.horizontal.decrease.circle")
+        .font(.body.weight(.medium))
+        .foregroundStyle(.secondary)
+        .frame(width: 24)
+
+      TextField(textFieldLabel, text: $text)
+        .textFieldStyle(.plain)
+        .font(monospace ? .system(.body, design: .monospaced) : .body)
+        .accessibilityIdentifier(valueFieldIdentifier)
+        .accessibilityLabel(textFieldLabel)
+
+      Button {
+        removeAction()
+      } label: {
+        Label(removeLabel, systemImage: "minus")
+      }
+      .buttonStyle(.borderless)
+      .labelStyle(.iconOnly)
+      .help(removeLabel)
+      .accessibilityLabel(removeLabel)
+      .accessibilityIdentifier(removeButtonIdentifier)
+    }
+    .padding(.vertical, 8)
+  }
+}
+
+private struct SettingsDivider: View {
+  var body: some View {
+    Rectangle()
+      .fill(.separator.opacity(0.55))
+      .frame(height: 1)
+      .padding(.leading, 34)
   }
 }

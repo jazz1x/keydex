@@ -103,7 +103,7 @@ until metadata proves that a reference is registered.
 | Inventory table | Show dense credential rows. | Rows use canonical states and source counts. |
 | Inspector | Show selected graph relationships. | Credential, sources, state, findings, notes, actions visible. |
 | Doctor panel | Show repair queue. | Findings grouped by severity and include cause/action. |
-| Settings | Show permissions and scan paths. | User can manage Keychain permission and scan sources. |
+| Settings | Show permissions and scan paths. | User can manage local Keychain permission preference, scan sources, scan paths, and ignored/unmanaged source rules. |
 
 ## Security
 
