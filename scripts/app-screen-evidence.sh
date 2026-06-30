@@ -41,12 +41,27 @@ window_report() {
   ' "$pid"
 }
 
+scenario="${1:-default-window}"
+inventory_mode="sample"
+
+case "$scenario" in
+  default-window)
+    inventory_mode="sample"
+    ;;
+  empty-inventory)
+    inventory_mode="empty"
+    ;;
+  *)
+    fail "unknown screen evidence scenario: $scenario"
+    ;;
+esac
+
 output_dir="${KEYDEX_SCREEN_EVIDENCE_DIR:-tmp/screen-evidence}"
 mkdir -p "$output_dir"
 
 swift build --product KeydexApp
 
-swift run KeydexApp &
+KEYDEX_APP_INVENTORY_MODE="$inventory_mode" swift run KeydexApp &
 app_pid="$!"
 
 cleanup() {
@@ -68,8 +83,8 @@ test -n "$report" || fail "KeydexApp did not publish an on-screen window"
 
 window_id="${report#window=}"
 window_id="${window_id%% *}"
-capture_path="$output_dir/default-window.png"
-manifest_path="$output_dir/default-window.manifest"
+capture_path="$output_dir/$scenario.png"
+manifest_path="$output_dir/$scenario.manifest"
 
 if ! screencapture -x -l "$window_id" "$capture_path"; then
   fail "screencapture failed for $report. Grant Screen Recording permission to the Codex host or terminal, then rerun."
@@ -78,7 +93,8 @@ fi
 test -s "$capture_path" || fail "empty screenshot artifact: $capture_path"
 
 {
-  printf 'scenario=default-window\n'
+  printf 'scenario=%s\n' "$scenario"
+  printf 'inventory_mode=%s\n' "$inventory_mode"
   printf 'captured_at=%s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
   printf 'git_sha=%s\n' "$(git rev-parse --short HEAD)"
   printf '%s\n' "$report"

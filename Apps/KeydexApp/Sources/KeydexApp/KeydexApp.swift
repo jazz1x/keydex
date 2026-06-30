@@ -18,7 +18,29 @@ struct CredentialInventoryShellView: View {
   @State private var selectedCredentialID: CredentialRow.ID?
   @State private var searchText = ""
   @State private var isShowingSettings = false
-  @State private var inventoryMode: InventoryMode = .sample
+  @State private var inventoryMode: InventoryMode
+
+  init() {
+    let initialMode = Self.inventoryModeFromEnvironment()
+    _inventoryMode = State(initialValue: initialMode)
+  }
+
+  fileprivate static func inventoryModeFromEnvironment() -> InventoryMode {
+    guard let rawMode = ProcessInfo.processInfo.environment["KEYDEX_APP_INVENTORY_MODE"] else {
+      return .sample
+    }
+
+    switch rawMode {
+    case InventoryMode.sample.rawValue:
+      return .sample
+    case InventoryMode.empty.rawValue:
+      return .empty
+    default:
+      preconditionFailure(
+        "Unsupported KEYDEX_APP_INVENTORY_MODE value: \(rawMode). Expected 'sample' or 'empty'."
+      )
+    }
+  }
 
   private var graph: InventoryGraph {
     switch inventoryMode {

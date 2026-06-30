@@ -32,4 +32,4 @@ app-accessibility-contract:
 	./scripts/app-accessibility-contract.sh
 
 app-screen-evidence:
-	./scripts/app-screen-evidence.sh
+	./scripts/app-screen-evidence.sh $(SCENARIO)
