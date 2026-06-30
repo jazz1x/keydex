@@ -43,26 +43,37 @@ private struct WindowPresetApplier: NSViewRepresentable {
   let size: CGSize?
 
   func makeNSView(context _: Context) -> NSView {
-    let view = NSView()
-    DispatchQueue.main.async {
-      apply(to: view)
-    }
+    let view = WindowPresetView()
+    view.size = size
     return view
   }
 
   func updateNSView(_ nsView: NSView, context _: Context) {
-    DispatchQueue.main.async {
-      apply(to: nsView)
-    }
-  }
-
-  private func apply(to view: NSView) {
-    guard let size, let window = view.window else {
+    guard let view = nsView as? WindowPresetView else {
       return
     }
 
-    var frame = window.frame
-    frame.size = size
+    view.size = size
+    view.applyPreset()
+  }
+}
+
+private final class WindowPresetView: NSView {
+  var size: CGSize?
+
+  override func viewDidMoveToWindow() {
+    super.viewDidMoveToWindow()
+    applyPreset()
+  }
+
+  func applyPreset() {
+    guard let size, let window else {
+      return
+    }
+
+    let contentRect = NSRect(origin: .zero, size: size)
+    var frame = window.frameRect(forContentRect: contentRect)
+    frame.origin = window.frame.origin
     window.setFrame(frame, display: true)
   }
 }
