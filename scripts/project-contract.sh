@@ -37,6 +37,7 @@ for path in \
   docs/TESTING-STRATEGY.md; do
   expect_file "$path"
 done
+expect_file scripts/app-design-contract.sh
 
 echo "1) project goals contract..."
 for goal in G1 G2 G3 G4 G5 G6 G7 G8; do
@@ -142,12 +143,16 @@ expect_file_contains scripts/cli-smoke.sh "Tests/Fixtures/metadata.json"
 expect_file_contains Makefile "swift build --product KeydexApp"
 expect_file_contains Makefile "app-window-smoke"
 expect_file_contains Makefile "app-accessibility-contract"
+expect_file_contains Makefile "app-design-contract"
 expect_file_contains Makefile "app-screen-evidence"
 expect_file_contains Makefile "app-screen-evidence-review"
 expect_file_contains Makefile "release-smoke"
 expect_file_contains scripts/app-window-smoke.sh "stable on-screen window"
 expect_file_contains scripts/app-window-smoke.sh "KEYDEX_APP_WINDOW_PRESET=default"
 expect_file_contains scripts/app-accessibility-contract.sh "keydex.inventory.table"
+expect_file_contains scripts/app-design-contract.sh "NavigationSplitView"
+expect_file_contains scripts/app-design-contract.sh "No dashboard theater"
+expect_file_contains scripts/app-design-contract.sh "LinearGradient"
 expect_file_contains scripts/app-screen-evidence.sh "tmp/screen-evidence"
 expect_file_contains scripts/app-screen-evidence.sh "screencapture"
 expect_file_contains scripts/app-screen-evidence.sh "--list"
@@ -191,6 +196,7 @@ expect_file_contains scripts/release-smoke.sh "dmg_path"
 expect_file_contains docs/RELEASE-READINESS.md "make release-smoke"
 expect_file_contains docs/RELEASE-READINESS.md "make app-screen-evidence-review"
 expect_file_contains scripts/quality.sh "scripts/app-accessibility-contract.sh"
+expect_file_contains scripts/quality.sh "scripts/app-design-contract.sh"
 expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift "CredentialDoctor().inspect(graph)"
 expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift "CredentialProjection"
 expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift "searchText"
