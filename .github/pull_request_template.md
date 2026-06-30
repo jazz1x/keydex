@@ -9,3 +9,4 @@
 ## Guard
 
 - [ ] `make guard`
+- [ ] `make release-smoke`

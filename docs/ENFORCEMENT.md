@@ -38,8 +38,8 @@ The pre-commit hook runs the same command.
 
 ## CI Gate
 
-The GitHub Actions jobs are named `guard`, `quality`, `gitleaks`, and `trivy`.
-The `main` Branch Protection requires all four.
+The GitHub Actions jobs are named `guard`, `quality`, `release-smoke`, `gitleaks`, and
+`trivy`. The `main` Branch Protection requires all five.
 
 ## Review Checklist
 

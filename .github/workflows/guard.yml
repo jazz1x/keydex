@@ -37,3 +37,15 @@ jobs:
         run: swift --version
       - name: Quality
         run: make quality
+
+  release-smoke:
+    name: release-smoke
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install release smoke tools
+        run: brew install ripgrep
+      - name: Swift version
+        run: swift --version
+      - name: Release smoke
+        run: make release-smoke

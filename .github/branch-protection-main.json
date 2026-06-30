@@ -4,6 +4,7 @@
     "contexts": [
       "guard",
       "quality",
+      "release-smoke",
       "gitleaks",
       "trivy"
     ]

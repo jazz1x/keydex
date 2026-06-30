@@ -114,6 +114,8 @@ echo "5) verification contract..."
 for gate in "Project Contract" "Branch Protection" "gitleaks" "trivy"; do
   expect_file_contains docs/VERIFICATION.md "$gate"
 done
+expect_file_contains .github/workflows/guard.yml "name: release-smoke"
+expect_file_contains .github/branch-protection-main.json "\"release-smoke\""
 expect_file_contains docs/VERIFICATION.md "planning pack"
 expect_file_contains docs/VERIFICATION.md "App Build"
 expect_file_contains docs/VERIFICATION.md "App Window Smoke"
