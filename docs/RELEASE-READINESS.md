@@ -16,7 +16,7 @@ artifact.
 | Gate | Evidence |
 | --- | --- |
 | Branch protection | Release commit is on protected `main`. |
-| CI | `guard`, `quality`, `gitleaks`, and `trivy` pass. |
+| CI | `guard`, `quality`, `release-smoke`, `gitleaks`, and `trivy` pass. |
 | Local verification | `make guard` and `make quality` pass. |
 | Functional scenarios | Required scenarios in `VALIDATION-SCENARIOS.md` pass. |
 | Screen validation | Required scenarios in `SCREEN-VALIDATION.md` pass for app releases. |
@@ -50,6 +50,7 @@ DMG gate.
 | Tests | `make guard`. |
 | Quality | `make quality`. |
 | Security | CI `gitleaks` and `trivy`. |
+| CI release smoke | CI `release-smoke`. |
 | CLI smoke | `keydex --help`, `scan env`, `scan shell`, `doctor`. |
 | App build | Xcode, SwiftPM app build, or unsigned app bundle smoke evidence. |
 | Screen proof | Required screenshots and accessibility notes. |

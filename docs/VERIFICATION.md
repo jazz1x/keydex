@@ -36,7 +36,7 @@ prove its own contract will drift into wishful UI.
 | --- | --- |
 | Local gate | `make guard` passes. |
 | Drift gate | `make quality` passes. |
-| PR checks | `guard`, `quality`, `gitleaks`, and `trivy` pass. |
+| PR checks | `guard`, `quality`, `release-smoke`, `gitleaks`, and `trivy` pass. |
 | Planning pack | Product plan, feature spec, validation scenarios, screen validation, testing strategy, and release readiness remain aligned. |
 | Branch state | Work merges through PR into `main`. |
 | Distribution | Archive or DMG contains no secret-bearing metadata, app bundle evidence, and checksum evidence. |
