@@ -27,7 +27,7 @@ doctor findings, security boundaries, and future UI.
 | B6 | CLI scenarios remain executable. | `scripts/cli-smoke.sh`. |
 | B7 | Mac app shell compiles. | `swift build --product KeydexApp`. |
 | B8 | Mac app shell launches. | `scripts/app-window-smoke.sh`. |
-| B9 | Local release artifact builds with checksum evidence. | `scripts/release-smoke.sh`. |
+| B9 | Local release artifact builds with app bundle and checksum evidence. | `scripts/release-smoke.sh`. |
 
 ## Philosophy Scenarios
 
@@ -105,5 +105,5 @@ Release validation details live in `RELEASE-READINESS.md`. Distribution cannot b
 complete until release evidence is attached to the release candidate.
 
 The first local release smoke is `make release-smoke`. It creates an ignored
-`tmp/release-smoke` archive and SHA-256 checksum from release-mode SwiftPM products,
-then inspects the archive file list before any public release is cut.
+`tmp/release-smoke` archive, unsigned app bundle, and SHA-256 checksum from release-mode
+SwiftPM products, then inspects the archive file list before any public release is cut.

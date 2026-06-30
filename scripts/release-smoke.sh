@@ -10,6 +10,7 @@ command -v rg >/dev/null 2>&1 || fail "missing dependency: rg (ripgrep)"
 command -v swift >/dev/null 2>&1 || fail "missing dependency: swift"
 command -v shasum >/dev/null 2>&1 || fail "missing dependency: shasum"
 command -v tar >/dev/null 2>&1 || fail "missing dependency: tar"
+command -v plutil >/dev/null 2>&1 || fail "missing dependency: plutil"
 
 sha="$(git rev-parse --short HEAD)"
 platform="$(uname -s)-$(uname -m)"
@@ -27,7 +28,34 @@ swift build -c release --product KeydexApp
 
 cp .build/release/keydex "$payload_dir/bin/keydex"
 cp .build/release/KeydexApp "$payload_dir/bin/KeydexApp"
-chmod +x "$payload_dir/bin/keydex" "$payload_dir/bin/KeydexApp"
+mkdir -p "$payload_dir/Keydex.app/Contents/MacOS"
+cp .build/release/KeydexApp "$payload_dir/Keydex.app/Contents/MacOS/KeydexApp"
+cat > "$payload_dir/Keydex.app/Contents/Info.plist" <<'INFO_PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>CFBundleExecutable</key>
+    <string>KeydexApp</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.keydex.app</string>
+    <key>CFBundleName</key>
+    <string>Keydex</string>
+    <key>CFBundleDisplayName</key>
+    <string>Keydex</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>15.0</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+  </dict>
+</plist>
+INFO_PLIST
+plutil -lint "$payload_dir/Keydex.app/Contents/Info.plist"
+chmod +x "$payload_dir/bin/keydex" "$payload_dir/bin/KeydexApp" "$payload_dir/Keydex.app/Contents/MacOS/KeydexApp"
 
 "$payload_dir/bin/keydex" --help >"$payload_dir/keydex-help.txt"
 "$payload_dir/bin/keydex" doctor --metadata Tests/Fixtures/metadata.json \
@@ -38,8 +66,9 @@ chmod +x "$payload_dir/bin/keydex" "$payload_dir/bin/KeydexApp"
   printf 'platform=%s\n' "$platform"
   printf 'cli=bin/keydex\n'
   printf 'app=bin/KeydexApp\n'
+  printf 'app_bundle=Keydex.app\n'
   printf 'archive=%s\n' "$archive_path"
-  printf 'known_limits=unsigned SwiftPM executable products; DMG and notarization remain future gates\n'
+  printf 'known_limits=unsigned SwiftPM executable products and app bundle; DMG and notarization remain future gates\n'
 } >"$payload_dir/manifest.txt"
 
 tar -czf "$archive_path" -C "$output_root" "$payload_name"
@@ -53,6 +82,11 @@ while IFS= read -r archived_path; do
     "$payload_name/bin/" | \
     "$payload_name/bin/keydex" | \
     "$payload_name/bin/KeydexApp" | \
+    "$payload_name/Keydex.app/" | \
+    "$payload_name/Keydex.app/Contents/" | \
+    "$payload_name/Keydex.app/Contents/MacOS/" | \
+    "$payload_name/Keydex.app/Contents/Info.plist" | \
+    "$payload_name/Keydex.app/Contents/MacOS/KeydexApp" | \
     "$payload_name/keydex-help.txt" | \
     "$payload_name/keydex-doctor-smoke.txt" | \
     "$payload_name/manifest.txt")
@@ -66,6 +100,8 @@ done <"$file_list_path"
 for expected in \
   "$payload_name/bin/keydex" \
   "$payload_name/bin/KeydexApp" \
+  "$payload_name/Keydex.app/Contents/Info.plist" \
+  "$payload_name/Keydex.app/Contents/MacOS/KeydexApp" \
   "$payload_name/keydex-help.txt" \
   "$payload_name/keydex-doctor-smoke.txt" \
   "$payload_name/manifest.txt"; do
