@@ -22,6 +22,7 @@ artifact.
 | Screen validation | Required scenarios in `SCREEN-VALIDATION.md` pass for app releases. |
 | Release smoke | `make release-smoke` creates, ad-hoc signs, checksums, and inspects a local archive, app bundle, and unsigned DMG. |
 | Signing readiness | `make release-signing-readiness` proves a local Developer ID Application identity, notarytool, and stapler are available before public app signing. |
+| Signing evidence | `make release-signing-evidence-template` creates pending local evidence; `make release-signing-evidence-review` verifies signed/notarized artifacts. |
 | Secret boundary | Release artifacts contain no secret-bearing metadata. |
 | Documentation | README, product plan, feature spec, and release notes match behavior. |
 
@@ -47,6 +48,12 @@ Developer ID signing readiness is checked separately by
 contain a `Developer ID Application` identity; that failure is the correct blocker before
 public Mac app distribution.
 
+After signing and notarization, use `make release-signing-evidence-template` to create the
+local evidence shell, fill the notes and manifest with the actual commands/results, then
+run `make release-signing-evidence-review`. The review gate checks the current Git SHA,
+the expected app and DMG paths, Developer ID app signing, stapled notarization validation,
+and signed DMG checksum.
+
 ## Release Candidate Checklist
 
 | Step | Evidence |
@@ -62,6 +69,7 @@ public Mac app distribution.
 | Screen proof | Required screenshots, `make app-screen-evidence-review`, and accessibility notes. |
 | Release smoke | `make release-smoke` output manifest, checksums, DMG, and archive file list. |
 | Signing readiness | `make release-signing-readiness` output or explicit blocker note. |
+| Signing evidence | `make release-signing-evidence-review` output after Developer ID signing and notarization. |
 | Artifact inspection | Confirm archive/DMG contains expected files only. |
 | Release notes | `RELEASE-CANDIDATE.md` is current. |
 | Signing runbook | `SIGNING-NOTARIZATION.md` is current. |
