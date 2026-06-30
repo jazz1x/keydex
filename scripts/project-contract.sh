@@ -26,6 +26,7 @@ for path in \
   docs/GOALS.md \
   docs/PRODUCT-PLAN.md \
   docs/FEATURE-SPEC.md \
+  docs/CLI-INTERFACE.md \
   docs/DESIGN-SYSTEM.md \
   docs/GRAPH-WORKFLOW.md \
   docs/VERIFICATION.md \
@@ -72,7 +73,19 @@ expect_file_contains docs/SCREEN-VALIDATION.md "Screenshot Scenarios"
 expect_file_contains docs/RELEASE-READINESS.md "Release Candidate Checklist"
 expect_file_contains docs/TESTING-STRATEGY.md "Test Pyramid"
 
-echo "3) design system contract..."
+echo "3) CLI interface contract..."
+expect_file_contains README.md "CLI-INTERFACE.md"
+expect_file_contains docs/CLI-INTERFACE.md "ohmyboring-style"
+expect_file_contains docs/CLI-INTERFACE.md "NO_COLOR"
+expect_file_contains docs/CLI-INTERFACE.md "▶"
+expect_file_contains docs/CLI-INTERFACE.md "⚠️"
+expect_file_contains docs/CLI-INTERFACE.md "[graph]"
+expect_file_contains Sources/keydex/main.swift "private enum CLIStyle"
+expect_file_contains Sources/keydex/main.swift "isatty(STDOUT_FILENO)"
+expect_file_contains Sources/keydex/main.swift "NO_COLOR"
+expect_file_contains scripts/cli-smoke.sh "▶ keydex scan config"
+
+echo "4) design system contract..."
 for token in surface.primary surface.sidebar risk.warning risk.error spacing.row radius.card; do
   expect_file_contains docs/DESIGN-SYSTEM.md "$token"
 done
@@ -81,7 +94,7 @@ expect_file_contains docs/DESIGN-SYSTEM.md "$surface"
 done
 expect_file_contains README.md "DESIGN-SYSTEM.md"
 
-echo "4) graph workflow contract..."
+echo "5) graph workflow contract..."
 for edge in stored-in observed-in has-state has-finding tagged-with duplicates; do
   expect_file_contains docs/GRAPH-WORKFLOW.md "$edge"
 done
@@ -125,7 +138,7 @@ expect_file_contains Package.swift "KeydexStoreTests"
 expect_file_contains Apps/KeydexApp/README.md "KeydexCore"
 expect_file_contains README.md "GRAPH-WORKFLOW.md"
 
-echo "5) verification contract..."
+echo "6) verification contract..."
 for gate in "Project Contract" "Branch Protection" "gitleaks" "trivy"; do
   expect_file_contains docs/VERIFICATION.md "$gate"
 done

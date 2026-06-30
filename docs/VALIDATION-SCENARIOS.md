@@ -66,12 +66,12 @@ doctor findings, security boundaries, and future UI.
 | --- | --- | --- |
 | `scan env` | Process env with credential-like names | Counts credentials, sources, edges; no values. |
 | `scan shell` | Shell profile fixture | Counts credentials, sources, edges; no values. |
-| `scan config --path fixture.env` | Config fixture | Counts credentials, sources, edges; no values. |
+| `scan config --path fixture.env` | Config fixture | Counts credentials, sources, edges with `▶` and `[graph]`; no values. |
 | `scan keychain` | Generic password item references | Counts orphan references, sources, edges; no values. |
-| `list --metadata fixture.json` | Store fixture | Prints service/account/state/source count. |
-| `where openai --metadata fixture.json` | Store fixture | Prints env/shell/config/Keychain locations. |
-| `doctor --metadata fixture.json` | Store fixture with unhealthy states | Prints severity, credential, state, cause, action. |
-| `reminders --metadata fixture.json --now YYYY-MM-DD` | Store fixture with expiry reminder metadata | Prints reminder status, expiry date, and notification date. |
+| `list --metadata fixture.json` | Store fixture | Prints state symbol, service/account/state/source count. |
+| `where openai --metadata fixture.json` | Store fixture | Prints scoped env/shell/config/Keychain locations. |
+| `doctor --metadata fixture.json` | Store fixture with unhealthy states | Prints severity symbol, credential, state, cause, action. |
+| `reminders --metadata fixture.json --now YYYY-MM-DD` | Store fixture with expiry reminder metadata | Prints reminder symbol, expiry date, and notification date. |
 
 Metadata-Keychain reconciliation scenarios must prove matched references become
 `registered`, missing metadata references become `missing-keychain-item`, and unmatched
