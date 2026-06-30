@@ -10,6 +10,18 @@ SwiftUI macOS app surface shell.
 An app-shell-only interface that renders graph-derived credential projections
 from `KeydexCore.InventoryGraph` and `CredentialProjection`.
 
+## Settings Shell
+
+The macOS shell now includes a non-mutating Settings sheet (toolbar gear button)
+showing sample controls for:
+
+- Keychain permission/status
+- Source scan toggles (Keychain, Shell, Environment, Config)
+- Scan paths
+- Ignored/unmanaged source lists
+
+All values are sample-only and read-only by design (no runtime keychain access).
+
 ## Local Run
 
 From the repository root:
