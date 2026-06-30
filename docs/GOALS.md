@@ -46,6 +46,9 @@ Keydex owns that inventory graph.
 | M4 Mac App | Native SwiftUI inventory table, sidebar, inspector, and doctor panel | design review, accessibility pass |
 | M5 Distribution | Signed downloadable app archive or DMG outside the App Store | release checklist, security scan |
 
+Current milestone evidence lives in `PRODUCT-PLAN.md`. M4 has started, but it remains
+incomplete until screen validation and accessibility evidence pass.
+
 ## Total Completion Gates
 
 | Gate | Required Document | Required Evidence |
