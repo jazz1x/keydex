@@ -1,4 +1,4 @@
-.PHONY: guard format test app-build forbidden quality contract cli-smoke app-window-smoke app-accessibility-contract
+.PHONY: guard format test app-build forbidden quality contract cli-smoke app-window-smoke app-accessibility-contract app-screen-evidence
 
 SWIFT_FORMAT ?= /Library/Developer/CommandLineTools/usr/bin/swift-format
 
@@ -30,3 +30,6 @@ app-window-smoke:
 
 app-accessibility-contract:
 	./scripts/app-accessibility-contract.sh
+
+app-screen-evidence:
+	./scripts/app-screen-evidence.sh

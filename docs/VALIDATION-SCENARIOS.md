@@ -89,8 +89,13 @@ first scenario set for `list`, `where`, `doctor`, and `scan config`.
 
 ## Screen Scenarios
 
-Screen validation details live in `SCREEN-VALIDATION.md`. Functional release cannot be
-called complete until screen scenarios have screenshot and accessibility evidence.
+Screen validation details live in `SCREEN-VALIDATION.md`.
+Manual local screen evidence capture is done with `scripts/app-screen-evidence.sh`, which
+requires local Screen Recording permission on macOS and writes PNG output plus manifest files
+to `tmp/screen-evidence`. This command is not CI-required and does not replace the required
+screen review evidence flow.
+Functional release cannot be called complete until screen scenarios have screenshot and
+accessibility evidence.
 
 ## Release Scenarios
 
