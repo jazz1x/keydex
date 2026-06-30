@@ -9,7 +9,7 @@ This document applies once the SwiftUI app target exists. It defines required ev
 M4 and release candidates.
 
 The first local screen smoke is `scripts/app-window-smoke.sh`. It proves the app builds,
-launches, and publishes the default 1080 x 680 window. It is not a replacement for the
+launches, and publishes a stable default local window. It is not a replacement for the
 required screenshot and accessibility evidence below.
 
 `scripts/app-screen-evidence.sh` is the local permissioned app-screen capture path for
@@ -20,6 +20,10 @@ outside CI. The command writes a screenshot PNG plus a manifest into
 Use `scripts/app-screen-evidence.sh --list` to inspect supported local capture
 scenarios. Use `make app-screen-evidence SCENARIO=<name>` to capture a specific
 scenario.
+
+After capturing all required scenarios, run `make app-screen-evidence-review`.
+It verifies that each required manifest and PNG exists, points at the current Git
+SHA, and records the local window dimensions used for review.
 
 The first source-level accessibility contract is `scripts/app-accessibility-contract.sh`.
 It proves required SwiftUI surfaces expose stable accessibility labels and identifiers
@@ -89,6 +93,7 @@ before permissioned screenshot or VoiceOver evidence is attached.
 | Build shell | `swift build --product KeydexApp` | The SwiftUI app compiles against graph projections. |
 | Window shell | `scripts/app-window-smoke.sh` | The app launches and publishes the default window. |
 | Local screen evidence | `scripts/app-screen-evidence.sh --list` and `make app-screen-evidence SCENARIO=<name>` | Captures local screenshot and manifest for manual screen review evidence in `tmp/screen-evidence` (not CI required). |
+| Local screen review | `make app-screen-evidence-review` | Verifies the local screenshot and manifest set for all required script scenarios. |
 | Accessibility contract | `scripts/app-accessibility-contract.sh` | Required app surfaces expose stable labels and identifiers. |
 | Doctor shell | App source uses `CredentialDoctor().inspect(graph)` | The repair queue surface is graph-derived. |
 | Search shell | App source filters `CredentialProjection` rows | Search narrows graph projections without separate list truth. |

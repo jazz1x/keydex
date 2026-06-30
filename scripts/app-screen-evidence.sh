@@ -11,21 +11,32 @@ command -v swift >/dev/null 2>&1 || fail "missing dependency: swift"
 
 window_report() {
   local pid="$1"
+  local selector="$2"
 
   swift -e '
     import CoreGraphics
     import Foundation
 
     let pid = Int(CommandLine.arguments[1])!
+    let selector = CommandLine.arguments[2]
     let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID)
       as? [[String: Any]] ?? []
+
+    var selectedReport: String?
+    var selectedArea = selector == "settings" ? Int.max : 0
 
     for window in windows {
       guard let ownerPID = window[kCGWindowOwnerPID as String] as? Int, ownerPID == pid else {
         continue
       }
 
+      guard let layer = window[kCGWindowLayer as String] as? Int, layer == 0 else {
+        continue
+      }
+
       guard let bounds = window[kCGWindowBounds as String] as? [String: Any],
+        let x = bounds["X"] as? Int,
+        let y = bounds["Y"] as? Int,
         let width = bounds["Width"] as? Int,
         let height = bounds["Height"] as? Int,
         let number = window[kCGWindowNumber as String] as? Int
@@ -33,12 +44,27 @@ window_report() {
         continue
       }
 
-      print("window=\(number) width=\(width) height=\(height)")
+      let report = "window=\(number) x=\(x) y=\(y) width=\(width) height=\(height)"
+      let area = width * height
+
+      if selector == "settings" {
+        if area < selectedArea {
+          selectedArea = area
+          selectedReport = report
+        }
+      } else if area > selectedArea {
+        selectedArea = area
+        selectedReport = report
+      }
+    }
+
+    if let selectedReport {
+      print(selectedReport)
       exit(0)
     }
 
     exit(2)
-  ' "$pid"
+  ' "$pid" "$selector"
 }
 
 list_scenarios() {
@@ -54,6 +80,7 @@ list_scenarios() {
 scenario="${1:-default-window}"
 inventory_mode="sample"
 window_preset="default"
+window_selector="main"
 
 if [[ "$scenario" == "--list" ]]; then
   list_scenarios
@@ -67,8 +94,12 @@ case "$scenario" in
   empty-inventory)
     inventory_mode="empty"
     ;;
-  search-filter | inspector | settings)
+  search-filter | inspector)
     inventory_mode="sample"
+    ;;
+  settings)
+    inventory_mode="sample"
+    window_selector="settings"
     ;;
   compact-window)
     inventory_mode="sample"
@@ -84,10 +115,16 @@ mkdir -p "$output_dir"
 
 swift build --product KeydexApp
 
-KEYDEX_APP_INVENTORY_MODE="$inventory_mode" \
-  KEYDEX_APP_SCREEN_SCENARIO="$scenario" \
-  KEYDEX_APP_WINDOW_PRESET="$window_preset" \
-  swift run KeydexApp &
+if [[ "$window_preset" == "compact" ]]; then
+  KEYDEX_APP_INVENTORY_MODE="$inventory_mode" \
+    KEYDEX_APP_SCREEN_SCENARIO="$scenario" \
+    KEYDEX_APP_WINDOW_PRESET="$window_preset" \
+    swift run KeydexApp &
+else
+  KEYDEX_APP_INVENTORY_MODE="$inventory_mode" \
+    KEYDEX_APP_SCREEN_SCENARIO="$scenario" \
+    swift run KeydexApp &
+fi
 app_pid="$!"
 
 cleanup() {
@@ -98,14 +135,19 @@ cleanup() {
 trap cleanup EXIT
 
 report=""
-for _ in 1 2 3 4 5 6 7 8 9 10; do
-  if report="$(window_report "$app_pid")"; then
-    break
+previous_report=""
+for attempt in 1 2 3 4 5 6 7 8 9 10; do
+  if current_report="$(window_report "$app_pid" "$window_selector")"; then
+    if [[ "$current_report" == "$previous_report" ]] && ((attempt >= 5)); then
+      report="$current_report"
+      break
+    fi
+    previous_report="$current_report"
   fi
   sleep 1
 done
 
-test -n "$report" || fail "KeydexApp did not publish an on-screen window"
+test -n "$report" || fail "KeydexApp did not publish a stable on-screen window for $scenario"
 
 window_id="${report#window=}"
 window_id="${window_id%% *}"

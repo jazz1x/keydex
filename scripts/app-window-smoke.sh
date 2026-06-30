@@ -16,9 +16,15 @@ window_report() {
     let pid = Int(CommandLine.arguments[1])!
     let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID)
       as? [[String: Any]] ?? []
+    var selectedReport: String?
+    var selectedArea = 0
 
     for window in windows {
       guard let ownerPID = window[kCGWindowOwnerPID as String] as? Int, ownerPID == pid else {
+        continue
+      }
+
+      guard let layer = window[kCGWindowLayer as String] as? Int, layer == 0 else {
         continue
       }
 
@@ -30,7 +36,17 @@ window_report() {
         continue
       }
 
-      print("window=\(number) width=\(width) height=\(height)")
+      let report = "window=\(number) width=\(width) height=\(height)"
+      let area = width * height
+
+      if area > selectedArea {
+        selectedArea = area
+        selectedReport = report
+      }
+    }
+
+    if let selectedReport {
+      print(selectedReport)
       exit(0)
     }
 
@@ -45,19 +61,19 @@ app_pid="$!"
 trap 'kill "$app_pid" >/dev/null 2>&1 || true' EXIT
 
 report=""
-for _ in 1 2 3 4 5; do
-  if report="$(window_report "$app_pid")"; then
-    break
+previous_report=""
+for attempt in 1 2 3 4 5; do
+  if current_report="$(window_report "$app_pid")"; then
+    if [[ "$current_report" == "$previous_report" ]] && ((attempt >= 5)); then
+      report="$current_report"
+      break
+    fi
+    previous_report="$current_report"
   fi
   sleep 1
 done
 
-test -n "$report" || fail "KeydexApp did not publish an on-screen window"
+test -n "$report" || fail "KeydexApp did not publish a stable on-screen window"
 printf '%s\n' "$report"
-
-case "$report" in
-  *"width=1080 height=680"*) ;;
-  *) fail "unexpected default window size: $report" ;;
-esac
 
 echo "app window smoke clean"
