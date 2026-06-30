@@ -19,6 +19,7 @@ Bootstrapping.
 keydex list
 keydex where openai
 keydex doctor
+keydex scan env
 keydex scan shell
 ```
 

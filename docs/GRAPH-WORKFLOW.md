@@ -64,5 +64,6 @@ The first graph implementation is intentionally small:
 - `stored-in`, `observed-in`, and `has-state` edges
 - deterministic construction from `CredentialObservation`
 - compatibility construction from `CredentialRecord`
+- environment variable scanning through `EnvironmentScanner`
 
 Findings, tags, and duplicate edges can be added when the doctor and UI need them.
