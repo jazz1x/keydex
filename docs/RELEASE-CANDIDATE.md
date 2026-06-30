@@ -28,6 +28,8 @@ values.
 - CLI supports metadata-backed `list`, `where`, `doctor`, and `scan` flows.
 - Mac app shell renders graph-derived inventory, inspector, Doctor, settings, duplicate,
   empty, expiring, and expired states.
+- Local app screen evidence covers required default, empty, search, inspector, settings,
+  and compact scenarios with a review gate.
 - Release smoke builds release-mode CLI and app products, creates an app bundle, ad-hoc
   signs it, creates an unsigned DMG, writes checksums, and verifies artifact boundaries.
 
@@ -39,7 +41,7 @@ values.
 | Drift and contracts | `make quality`. |
 | Release artifact smoke | `make release-smoke`. |
 | Required CI | `guard`, `quality`, `release-smoke`, `gitleaks`, `trivy`. |
-| Screen evidence | `scripts/app-screen-evidence.sh` local output before app release. |
+| Screen evidence | `scripts/app-screen-evidence.sh` local output plus `make app-screen-evidence-review` before app release. |
 | Security boundary | `gitleaks`, `trivy`, forbidden-pattern scan, release artifact inspection. |
 
 ### Known Limits
@@ -48,7 +50,8 @@ values.
 - DMG is unsigned.
 - Developer ID signing is not complete.
 - Notarization is not complete.
-- Screen evidence remains local and manual.
+- Screen evidence remains local and manual, but the required manifest and screenshot set
+  is review-gated.
 - Homebrew distribution is out of scope for the first release.
 
 ## Publish Blockers
@@ -59,7 +62,7 @@ values.
 | Notarization | `xcrun notarytool` success and stapled ticket evidence from `SIGNING-NOTARIZATION.md`. |
 | Final DMG | Signed and notarized DMG or documented fallback decision. |
 | Release tag | Protected `main` tag and GitHub release notes. |
-| Screen proof | Required screenshots and accessibility notes from `SCREEN-VALIDATION.md`. |
+| Screen proof | Required screenshots, `make app-screen-evidence-review`, and accessibility notes from `SCREEN-VALIDATION.md`. |
 
 ## Completion Rule
 
