@@ -151,7 +151,16 @@ expect_file_contains scripts/app-accessibility-contract.sh "keydex.inventory.tab
 expect_file_contains scripts/app-screen-evidence.sh "tmp/screen-evidence"
 expect_file_contains scripts/app-screen-evidence.sh "screencapture"
 expect_file_contains scripts/app-screen-evidence.sh "--list"
-for scenario in default-window empty-inventory search-filter inspector settings compact-window; do
+for scenario in \
+  default-window \
+  empty-inventory \
+  search-filter \
+  inspector \
+  settings \
+  settings-sources \
+  settings-paths \
+  settings-rules \
+  compact-window; do
   expect_file_contains scripts/app-screen-evidence.sh "$scenario"
   expect_file_contains docs/SCREEN-VALIDATION.md "$scenario"
 done
