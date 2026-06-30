@@ -10,6 +10,7 @@ let package = Package(
   products: [
     .library(name: "KeydexCore", targets: ["KeydexCore"]),
     .library(name: "KeydexKeychain", targets: ["KeydexKeychain"]),
+    .library(name: "KeydexSources", targets: ["KeydexSources"]),
     .library(name: "KeydexStore", targets: ["KeydexStore"]),
     .executable(name: "keydex", targets: ["keydex"]),
   ],
@@ -23,16 +24,19 @@ let package = Package(
       dependencies: ["KeydexCore"],
       linkerSettings: [.linkedFramework("Security")]
     ),
+    .target(name: "KeydexSources", dependencies: ["KeydexCore"]),
     .target(name: "KeydexStore", dependencies: ["KeydexCore"]),
     .executableTarget(
       name: "keydex",
       dependencies: [
         "KeydexCore",
         "KeydexKeychain",
+        "KeydexSources",
         "KeydexStore",
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
       ]
     ),
     .testTarget(name: "KeydexCoreTests", dependencies: ["KeydexCore"]),
+    .testTarget(name: "KeydexSourcesTests", dependencies: ["KeydexSources"]),
   ]
 )

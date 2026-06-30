@@ -52,8 +52,11 @@ for edge in stored-in observed-in has-state has-finding tagged-with duplicates; 
 done
 expect_file_contains docs/GRAPH-WORKFLOW.md "Everything in Keydex is a graph."
 expect_file_contains docs/GRAPH-WORKFLOW.md "CredentialObservation"
+expect_file_contains docs/GRAPH-WORKFLOW.md "EnvironmentScanner"
 expect_file_contains Sources/KeydexCore/Domain.swift "CredentialObservation"
 expect_file_contains Sources/KeydexCore/InventoryGraph.swift "init(observations:"
+expect_file_contains Package.swift "KeydexSources"
+expect_file_contains Sources/KeydexSources/EnvironmentScanner.swift "EnvironmentScanner"
 expect_file_contains README.md "GRAPH-WORKFLOW.md"
 
 echo "4) verification contract..."

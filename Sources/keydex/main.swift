@@ -1,6 +1,7 @@
 import ArgumentParser
 import Foundation
 import KeydexCore
+import KeydexSources
 import KeydexStore
 
 @main
@@ -61,7 +62,17 @@ struct Scan: ParsableCommand {
   var target: String
 
   func run() throws {
-    _ = try NonEmptyText.parse(target, field: "target")
-    print("keydex scan \(target): not implemented yet")
+    let parsedTarget = try NonEmptyText.parse(target, field: "target")
+
+    switch parsedTarget.value {
+    case "env":
+      let observations = try EnvironmentScanner().observations(
+        from: ProcessInfo.processInfo.environment)
+      print("keydex scan env: \(observations.count) credential hints")
+    case "shell", "config":
+      print("keydex scan \(parsedTarget): not implemented yet")
+    default:
+      throw ValidationError("scan target must be env, shell, or config")
+    }
   }
 }
