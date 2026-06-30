@@ -20,7 +20,7 @@ artifact.
 | Local verification | `make guard` and `make quality` pass. |
 | Functional scenarios | Required scenarios in `VALIDATION-SCENARIOS.md` pass. |
 | Screen validation | Required scenarios in `SCREEN-VALIDATION.md` pass for app releases. |
-| Release smoke | `make release-smoke` creates and inspects a local archive. |
+| Release smoke | `make release-smoke` creates, checksums, and inspects a local archive. |
 | Secret boundary | Release artifacts contain no secret-bearing metadata. |
 | Documentation | README, product plan, feature spec, and release notes match behavior. |
 
@@ -36,9 +36,9 @@ artifact.
 | CLI install | GitHub release artifact first; Homebrew formula can come later. |
 
 The first local release smoke is `scripts/release-smoke.sh`. It builds release-mode
-SwiftPM products, writes a local archive under `tmp/release-smoke`, runs the packaged CLI,
-and verifies fixture metadata is not included. It is not a substitute for Developer ID
-signing, notarization, or the final DMG gate.
+SwiftPM products, writes a local archive and SHA-256 checksum under `tmp/release-smoke`,
+runs the packaged CLI, and verifies fixture metadata is not included. It is not a
+substitute for Developer ID signing, notarization, or the final DMG gate.
 
 ## Release Candidate Checklist
 
@@ -52,7 +52,7 @@ signing, notarization, or the final DMG gate.
 | CLI smoke | `keydex --help`, `scan env`, `scan shell`, `doctor`. |
 | App build | Xcode or SwiftPM app build evidence. |
 | Screen proof | Required screenshots and accessibility notes. |
-| Release smoke | `make release-smoke` output manifest and archive file list. |
+| Release smoke | `make release-smoke` output manifest, checksum, and archive file list. |
 | Artifact inspection | Confirm archive/DMG contains expected files only. |
 | Publish | GitHub release created from protected `main`. |
 
