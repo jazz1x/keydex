@@ -12,6 +12,10 @@ The first local screen smoke is `scripts/app-window-smoke.sh`. It proves the app
 launches, and publishes the default 1080 x 680 window. It is not a replacement for the
 required screenshot and accessibility evidence below.
 
+The first source-level accessibility contract is `scripts/app-accessibility-contract.sh`.
+It proves required SwiftUI surfaces expose stable accessibility labels and identifiers
+before permissioned screenshot or VoiceOver evidence is attached.
+
 ## Required Screens
 
 | Screen | Purpose |
@@ -75,6 +79,7 @@ required screenshot and accessibility evidence below.
 | --- | --- | --- |
 | Build shell | `swift build --product KeydexApp` | The SwiftUI app compiles against graph projections. |
 | Window shell | `scripts/app-window-smoke.sh` | The app launches and publishes the default window. |
+| Accessibility contract | `scripts/app-accessibility-contract.sh` | Required app surfaces expose stable labels and identifiers. |
 | Doctor shell | App source uses `CredentialDoctor().inspect(graph)` | The repair queue surface is graph-derived. |
 | Search shell | App source filters `CredentialProjection` rows | Search narrows graph projections without separate list truth. |
 | Settings shell | App source exposes `SettingsPanel` | Permission, scan path, and unmanaged source controls are reachable. |
