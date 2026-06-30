@@ -41,7 +41,7 @@ Keydex owns that inventory graph.
 | --- | --- | --- |
 | M0 Foundation | Package, CLI shell, docs, CI, public repo, branch protection | `make guard`, `make quality`, branch protection |
 | M1 Inventory Graph | Source observations produce graph nodes and edges | source parser tests, observation graph tests, contract gate |
-| M2 Doctor | Findings classify unhealthy graph states with cause and action | doctor unit tests, CLI snapshots |
+| M2 Doctor | Findings classify unhealthy graph states with cause and action | graph doctor tests, CLI output checks |
 | M3 CLI | `list`, `where`, `doctor`, and `scan` become useful for daily work | command tests, docs drift gate |
 | M4 Mac App | Native SwiftUI inventory table, sidebar, inspector, and doctor panel | design review, accessibility pass |
 | M5 Distribution | Signed downloadable app archive or DMG outside the App Store | release checklist, security scan |

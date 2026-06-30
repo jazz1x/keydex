@@ -67,6 +67,10 @@ echo "4) verification contract..."
 for gate in "Project Contract" "Branch Protection" "gitleaks" "trivy"; do
   expect_file_contains docs/VERIFICATION.md "$gate"
 done
+expect_file_contains Sources/KeydexCore/Doctor.swift "inspect(_ graph: InventoryGraph)"
+expect_file_contains Sources/KeydexCore/Doctor.swift "credential: CredentialRef"
+expect_file_contains Sources/keydex/main.swift "CredentialDoctor().inspect(graph)"
+expect_file_contains docs/GRAPH-WORKFLOW.md "CredentialDoctor.inspect(InventoryGraph)"
 expect_file_contains docs/ENFORCEMENT.md "Project Contract"
 expect_file_contains README.md "VERIFICATION.md"
 
