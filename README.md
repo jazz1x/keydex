@@ -24,6 +24,7 @@ keydex doctor
 keydex doctor --metadata ./metadata.json
 keydex scan env
 keydex scan shell
+keydex scan config --path ./credentials.env
 ```
 
 ## Guard

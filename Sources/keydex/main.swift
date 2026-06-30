@@ -134,6 +134,9 @@ struct Scan: ParsableCommand {
   @Argument(help: "Scan target: env, shell, or config.")
   var target: String
 
+  @Option(help: "Config file path to scan. Repeat for multiple files.")
+  var path: [String] = []
+
   func run() throws {
     let parsedTarget = try NonEmptyText.parse(target, field: "target")
 
@@ -158,7 +161,15 @@ struct Scan: ParsableCommand {
         """
       )
     case "config":
-      print("keydex scan \(parsedTarget): not implemented yet")
+      let observations = try ConfigFileScanner().observations(
+        from: configFiles(paths: path))
+      let summary = InventoryGraph(observations: observations).summary
+      print(
+        """
+        keydex scan config: \(summary.credentialCount) credential hints
+        graph: \(summary.locationCount) sources, \(summary.edgeCount) edges
+        """
+      )
     default:
       throw ValidationError("scan target must be env, shell, or config")
     }
@@ -179,5 +190,18 @@ struct Scan: ParsableCommand {
     }
 
     return profiles
+  }
+
+  private func configFiles(paths: [String]) throws -> [ConfigFile] {
+    if paths.isEmpty {
+      throw ValidationError("scan config requires at least one --path")
+    }
+
+    return try paths.map { rawPath in
+      let path = try NonEmptyText.parse(rawPath, field: "path")
+      let url = URL(fileURLWithPath: path.value)
+      let contents = try String(contentsOf: url, encoding: .utf8)
+      return ConfigFile(path: path, contents: contents)
+    }
   }
 }
