@@ -21,6 +21,7 @@ artifact.
 | Functional scenarios | Required scenarios in `VALIDATION-SCENARIOS.md` pass. |
 | Screen validation | Required scenarios in `SCREEN-VALIDATION.md` pass for app releases. |
 | Release smoke | `make release-smoke` creates, ad-hoc signs, checksums, and inspects a local archive, app bundle, and unsigned DMG. |
+| Signing readiness | `make release-signing-readiness` proves a local Developer ID Application identity, notarytool, and stapler are available before public app signing. |
 | Secret boundary | Release artifacts contain no secret-bearing metadata. |
 | Documentation | README, product plan, feature spec, and release notes match behavior. |
 
@@ -41,6 +42,11 @@ SwiftPM products, writes a local archive, unsigned DMG, and SHA-256 checksums un
 and verifies fixture metadata is not included. It is not a substitute for Developer ID
 signing or notarization.
 
+Developer ID signing readiness is checked separately by
+`scripts/release-signing-readiness.sh`. It must fail when the local Keychain does not
+contain a `Developer ID Application` identity; that failure is the correct blocker before
+public Mac app distribution.
+
 ## Release Candidate Checklist
 
 | Step | Evidence |
@@ -55,6 +61,7 @@ signing or notarization.
 | App build | Xcode, SwiftPM app build, or ad-hoc app bundle smoke evidence. |
 | Screen proof | Required screenshots, `make app-screen-evidence-review`, and accessibility notes. |
 | Release smoke | `make release-smoke` output manifest, checksums, DMG, and archive file list. |
+| Signing readiness | `make release-signing-readiness` output or explicit blocker note. |
 | Artifact inspection | Confirm archive/DMG contains expected files only. |
 | Release notes | `RELEASE-CANDIDATE.md` is current. |
 | Signing runbook | `SIGNING-NOTARIZATION.md` is current. |

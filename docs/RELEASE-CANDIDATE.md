@@ -40,6 +40,7 @@ values.
 | Build and tests | `make guard`. |
 | Drift and contracts | `make quality`. |
 | Release artifact smoke | `make release-smoke`. |
+| Signing readiness | `make release-signing-readiness` before public app release. |
 | Required CI | `guard`, `quality`, `release-smoke`, `gitleaks`, `trivy`. |
 | Screen evidence | `scripts/app-screen-evidence.sh` local output plus `make app-screen-evidence-review` before app release. |
 | Security boundary | `gitleaks`, `trivy`, forbidden-pattern scan, release artifact inspection. |
@@ -50,6 +51,8 @@ values.
 - DMG is unsigned.
 - Developer ID signing is not complete.
 - Notarization is not complete.
+- Local signing readiness is blocked when no `Developer ID Application` identity exists
+  in Keychain.
 - Screen evidence remains local and manual, but the required manifest and screenshot set
   is review-gated.
 - Homebrew distribution is out of scope for the first release.
