@@ -47,9 +47,20 @@ struct Doctor: AsyncParsableCommand {
 
   func run() async throws {
     let records = try await EmptyMetadataStore().listCredentials()
-    let issues = CredentialDoctor().inspect(records)
+    let graph = InventoryGraph(records: records)
+    let issues = CredentialDoctor().inspect(graph)
     if issues.isEmpty {
       print("keydex doctor: no issues found")
+    } else {
+      for issue in issues {
+        print(
+          """
+          \(issue.severity.rawValue): \(issue.credential.service)/\(issue.credential.account) \(issue.state.rawValue)
+            cause: \(issue.message)
+            action: \(issue.action)
+          """
+        )
+      }
     }
   }
 }

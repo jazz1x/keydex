@@ -8,7 +8,7 @@ prove its own contract will drift into wishful UI.
 | Gate | Command or Setting | Verifies |
 | --- | --- | --- |
 | Format | `swift-format lint --recursive --strict Package.swift Sources Tests Apps` | Swift style stays stable. |
-| Tests | `swift test` | Domain and doctor behavior. |
+| Tests | `swift test` | Domain, graph, source parser, and doctor behavior. |
 | Forbidden Patterns | `scripts/forbidden-patterns.sh` | No silent `try?`, empty `catch`, or obvious secret-value metadata. |
 | Project Contract | `scripts/project-contract.sh` | Goals, design system, graph workflow, verification docs, and README links stay aligned. |
 | Quality | `make quality` | CLI docs, state taxonomy, workflow wiring, and project contract. |
@@ -19,6 +19,7 @@ prove its own contract will drift into wishful UI.
 
 - Does this change make the inventory graph more truthful?
 - Does this change add a source, node, edge, state, or projection?
+- Does every doctor issue include credential, state, cause, and action?
 - Is the new behavior verified at the closest stable boundary?
 - Does the UI still use canonical state labels and risk semantics?
 - Does any metadata field contain or imply a secret value?

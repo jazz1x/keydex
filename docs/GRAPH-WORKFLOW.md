@@ -48,7 +48,7 @@ credential inventory honest across CLI, UI, doctor, and future automation.
 ## Invariants
 
 - A list is a projection of the graph, not an independent source of truth.
-- A doctor issue references graph nodes and edges.
+- A doctor issue references graph credential, state, and source relationships.
 - A UI route is a graph filter plus selection.
 - A CLI command is a graph query plus formatting.
 - A source parser may add observations, but it may not silently repair metadata.
@@ -68,5 +68,6 @@ The first graph implementation is intentionally small:
 - shell profile scanning through `ShellProfileScanner`
 - `scan env` projects observations through `InventoryGraph`
 - `scan shell` projects observations through `InventoryGraph`
+- doctor findings through `CredentialDoctor.inspect(InventoryGraph)`
 
 Findings, tags, and duplicate edges can be added when the doctor and UI need them.
