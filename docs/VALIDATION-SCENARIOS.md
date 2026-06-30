@@ -25,6 +25,7 @@ doctor findings, security boundaries, and future UI.
 | B4 | CLI help remains documented. | `make quality` command inventory drift check. |
 | B5 | Project contract remains linked. | `scripts/project-contract.sh`. |
 | B6 | CLI scenarios remain executable. | `scripts/cli-smoke.sh`. |
+| B7 | Mac app shell compiles. | `swift build --product KeydexApp`. |
 
 ## Philosophy Scenarios
 

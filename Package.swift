@@ -13,6 +13,7 @@ let package = Package(
     .library(name: "KeydexSources", targets: ["KeydexSources"]),
     .library(name: "KeydexStore", targets: ["KeydexStore"]),
     .executable(name: "keydex", targets: ["keydex"]),
+    .executable(name: "KeydexApp", targets: ["KeydexApp"]),
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.5.0")
@@ -35,6 +36,11 @@ let package = Package(
         "KeydexStore",
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
       ]
+    ),
+    .executableTarget(
+      name: "KeydexApp",
+      dependencies: ["KeydexCore"],
+      path: "Apps/KeydexApp/Sources/KeydexApp"
     ),
     .testTarget(name: "KeydexCoreTests", dependencies: ["KeydexCore"]),
     .testTarget(name: "KeydexKeychainTests", dependencies: ["KeydexKeychain"]),
