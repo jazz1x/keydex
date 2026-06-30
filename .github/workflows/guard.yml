@@ -19,6 +19,8 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install guard tools
+        run: brew install ripgrep
       - name: Swift version
         run: swift --version
       - name: Guard
@@ -29,6 +31,8 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install quality tools
+        run: brew install ripgrep
       - name: Swift version
         run: swift --version
       - name: Quality

@@ -3,6 +3,11 @@ set -euo pipefail
 
 status=0
 
+command -v rg >/dev/null 2>&1 || {
+  printf 'missing dependency: rg (ripgrep)\n' >&2
+  exit 127
+}
+
 check() {
   local label="$1"
   local pattern="$2"

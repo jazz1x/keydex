@@ -6,6 +6,8 @@ fail() {
   exit 1
 }
 
+command -v rg >/dev/null 2>&1 || fail "missing dependency: rg (ripgrep)"
+
 expect_file_contains() {
   local path="$1"
   local needle="$2"
