@@ -1,10 +1,17 @@
-name: Guard
+name: guard
 
 on:
   pull_request:
   push:
     branches:
       - main
+
+concurrency:
+  group: guard-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
   guard:
@@ -15,4 +22,14 @@ jobs:
       - name: Swift version
         run: swift --version
       - name: Guard
-        run: ./scripts/guard.sh
+        run: make guard
+
+  quality:
+    name: quality
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Swift version
+        run: swift --version
+      - name: Quality
+        run: make quality

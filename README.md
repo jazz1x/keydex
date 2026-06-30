@@ -26,6 +26,7 @@ keydex scan shell
 
 ```bash
 make guard
+make quality
 ```
 
 ## Philosophy

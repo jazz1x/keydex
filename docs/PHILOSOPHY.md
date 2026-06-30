@@ -16,6 +16,9 @@ State must not lie.
 - `missing-keychain-item` means metadata points at nothing. The UI must not pretend the
   credential is healthy.
 - `orphan` means a Keychain item exists without Keydex metadata.
+- `expiring` means the credential is still usable but needs rotation soon.
+- `expired` means the credential is no longer valid and must not be shown as healthy.
+- `duplicate` means multiple observations appear to represent the same credential.
 
 No raw `String` gets to masquerade as a service, account, location, or state once it has
 crossed the input boundary. Parse once, then move typed values inward.

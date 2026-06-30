@@ -16,6 +16,8 @@ Keydex uses three enforcement layers.
 | No empty `catch` | `scripts/forbidden-patterns.sh` |
 | No obvious secret-value columns | `scripts/forbidden-patterns.sh` |
 | State enum labels stay stable | unit tests |
+| CLI command docs drift | `make quality` |
+| State taxonomy docs drift | `make quality` |
 | Secret value stays outside metadata | review plus forbidden scan |
 | UI does not invent state | review |
 | Liquid Glass remains hierarchical | review |
@@ -26,13 +28,15 @@ Run:
 
 ```bash
 make guard
+make quality
 ```
 
 The pre-commit hook runs the same command.
 
 ## CI Gate
 
-The GitHub Actions job is named `guard`. The `main` branch protection requires it.
+The GitHub Actions jobs are named `guard`, `quality`, `gitleaks`, and `trivy`.
+The `main` branch protection should require all four when GitHub plan settings allow it.
 
 ## Review Checklist
 

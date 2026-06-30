@@ -1,4 +1,4 @@
-.PHONY: guard format test forbidden
+.PHONY: guard format test forbidden quality
 
 SWIFT_FORMAT ?= /Library/Developer/CommandLineTools/usr/bin/swift-format
 
@@ -12,3 +12,6 @@ test:
 
 forbidden:
 	./scripts/forbidden-patterns.sh
+
+quality:
+	./scripts/quality.sh

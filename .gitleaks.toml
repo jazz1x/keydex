@@ -1,0 +1,14 @@
+title = "keydex gitleaks"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "documentation terms and placeholders that are not secrets"
+paths = [
+  '''docs/.*\.md$''',
+  '''README\.md$''',
+]
+regexes = [
+  '''<your-[a-z-]+-token>''',
+]
