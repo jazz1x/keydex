@@ -68,6 +68,7 @@ The first graph implementation is intentionally small:
 - shell profile scanning through `ShellProfileScanner`
 - `scan env` projects observations through `InventoryGraph`
 - `scan shell` projects observations through `InventoryGraph`
+- `list` and `where` project credentials through `CredentialProjection`
 - doctor findings through `CredentialDoctor.inspect(InventoryGraph)`
 
 Findings, tags, and duplicate edges can be added when the doctor and UI need them.

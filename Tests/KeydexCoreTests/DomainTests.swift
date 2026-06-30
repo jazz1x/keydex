@@ -134,3 +134,36 @@ func inventoryGraphSummaryCountsGraphProjection() throws {
 
   #expect(graph.summary == summary)
 }
+
+@Test
+func inventoryGraphProjectsCredentialsForListAndWhere() throws {
+  let openaiRef = try CredentialRef.parse(service: "openai", account: "jongyun")
+  let awsRef = try CredentialRef.parse(service: "aws", account: "jongyun")
+  let envName = try NonEmptyText.parse("OPENAI_API_KEY", field: "name")
+  let configPath = try NonEmptyText.parse("~/.aws/credentials", field: "path")
+  let graph = InventoryGraph(
+    observations: [
+      CredentialObservation(
+        ref: openaiRef,
+        state: .plaintextFallback,
+        location: .environment(name: envName)
+      ),
+      CredentialObservation(
+        ref: awsRef,
+        state: .expired,
+        location: .configFile(path: configPath)
+      ),
+    ]
+  )
+
+  let projections = graph.credentialProjections
+  let openaiProjections = graph.credentialProjections(service: openaiRef.service)
+  let expectedOpenaiProjection = CredentialProjection(
+    ref: openaiRef,
+    states: [.plaintextFallback],
+    locations: [.environment(name: envName)]
+  )
+
+  #expect(projections.map(\.ref) == [awsRef, openaiRef])
+  #expect(openaiProjections == [expectedOpenaiProjection])
+}
