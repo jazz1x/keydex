@@ -74,10 +74,12 @@ NOTES
 mkdir -p "$evidence_dir"
 
 write_scenario_template default-window
+write_scenario_template card-view
 write_scenario_template empty-inventory
 write_scenario_template search-filter
 write_scenario_template inspector
 write_scenario_template settings
+write_scenario_template settings-appearance
 write_scenario_template settings-sources
 write_scenario_template settings-paths
 write_scenario_template settings-rules

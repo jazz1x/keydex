@@ -36,6 +36,7 @@ struct KeydexApp: App {
       width: Self.defaultWindowSize.width,
       height: Self.defaultWindowSize.height
     )
+    .windowStyle(.hiddenTitleBar)
   }
 }
 
@@ -98,7 +99,11 @@ struct CredentialInventoryShellView: View {
     _isShowingSettings = State(initialValue: initialScenario.showsSettings)
     _selectedSettingsSection = State(initialValue: initialScenario.settingsSection)
     _inventoryMode = State(initialValue: initialMode)
-    _settingsConfig = State(initialValue: sampleSettingsData())
+    _settingsConfig = State(
+      initialValue: sampleSettingsData(
+        displayMode: initialScenario.displayMode
+      )
+    )
   }
 
   fileprivate static func inventoryModeFromEnvironment(
@@ -152,6 +157,8 @@ struct CredentialInventoryShellView: View {
     let services = Set(graph.credentialProjections.map { $0.ref.service.value }).sorted()
     return [
       .all,
+      .state(.registered),
+      .state(.missingKeychainItem),
       .state(.expiring),
       .state(.plaintextFallback),
       .state(.orphan),
@@ -193,95 +200,39 @@ struct CredentialInventoryShellView: View {
 
   var body: some View {
     NavigationSplitView {
-      List(sidebarSelectionItems, id: \.self, selection: $selectedSidebar) { item in
-        Label(item.title, systemImage: item.systemImage)
-          .tag(item)
-      }
-      .listStyle(.sidebar)
-      .accessibilityIdentifier("keydex.sidebar.scopes")
-      .accessibilityLabel("Credential scopes")
-      .navigationTitle("Scopes")
+      MusicSidebarView(
+        items: sidebarSelectionItems,
+        selectedSidebar: $selectedSidebar,
+        searchText: $searchText
+      )
     } content: {
-      VStack(spacing: 0) {
-        ZStack {
-          Table(rows, selection: $selectedCredentialID) {
-            TableColumn("Service") { row in
-              Text(row.service)
-            }
+      ZStack(alignment: .bottom) {
+        InventoryContentView(
+          rows: rows,
+          title: selectedSidebar.title,
+          displayMode: settingsConfig.displayMode,
+          selectedCredentialID: $selectedCredentialID,
+          isEmptyMode: isEmptyMode
+        )
+        .frame(minHeight: 320)
+        .padding(.bottom, 116)
 
-            TableColumn("Account") { row in
-              Text(row.account)
-            }
-
-            TableColumn("State") { row in
-              Text(canonicalStateLabel(row.states))
-            }
-
-            TableColumn("Sources") { row in
-              Text("\(row.locations.count)")
-            }
-          }
-          .accessibilityIdentifier("keydex.inventory.table")
-          .accessibilityLabel("Credential inventory table")
-          .searchable(
-            text: $searchText,
-            prompt: isEmptyMode
-              ? "No credentials to search"
-              : "Find credentials"
-          )
-          .navigationTitle(selectedSidebar.title)
-          .font(.system(.body, design: .monospaced))
-          .frame(minHeight: 320)
-
-          if rows.isEmpty {
-            EmptyStatePanel(
-              title: "No credentials",
-              systemImage: "tray",
-              description: isEmptyMode
-                ? "This dataset is intentionally empty."
-                : "No matching rows for the selected scope.",
-              secondaryText: isEmptyMode
-                ? "Scan sources or add metadata to populate credentials."
-                : "Try adjusting your scope or search query."
-            )
-          }
-        }
-
-        Divider()
-
-        DoctorPanel(issues: doctorIssues, isEmptyMode: isEmptyMode)
+        DoctorPanel(
+          issues: doctorIssues,
+          isEmptyMode: isEmptyMode
+        )
+        .padding(.horizontal, 12)
+        .padding(.bottom, 12)
       }
-      .navigationSplitViewColumnWidth(min: 420, ideal: 460, max: 560)
+      .navigationSplitViewColumnWidth(min: 480, ideal: 540, max: 640)
     } detail: {
       VStack(alignment: .leading, spacing: 14) {
         if let projection = selectedProjection {
-          Text("Credential")
-            .font(.headline)
-
-          VStack(alignment: .leading, spacing: 6) {
-            Text("\(projection.ref.service.value)/\(projection.ref.account.value)")
-              .font(.title3)
-              .fontWeight(.medium)
-
-            Text("States")
-              .font(.subheadline)
-              .fontWeight(.semibold)
-
-            ForEach(projection.states, id: \.self) { state in
-              Text(canonicalStateLabel([state]))
-                .foregroundStyle(stateTint(for: state))
-            }
-
-            Text("Sources")
-              .font(.subheadline)
-              .fontWeight(.semibold)
-              .padding(.top, 2)
-
-            ForEach(projection.locations, id: \.self) { location in
-              Text(locationLabel(location))
-                .font(.callout)
-                .textSelection(.enabled)
-            }
+          CredentialInspectorPanel(
+            projection: projection
+          ) {
+            selectedSettingsSection = .permissions
+            isShowingSettings = true
           }
         } else {
           ContentUnavailableView(
@@ -290,7 +241,7 @@ struct CredentialInventoryShellView: View {
             description: Text(
               isEmptyMode
                 ? "Scan sources or add metadata to create new credentials."
-                : "Choose an item from the table to inspect its graph-derived metadata."
+                : "Choose an item from the \(settingsConfig.displayMode.inspectorSurfaceName) to inspect its graph-derived metadata."
             )
           )
         }
@@ -314,6 +265,32 @@ struct CredentialInventoryShellView: View {
         .accessibilityLabel("Inventory mode")
       }
 
+      ToolbarItem(placement: .status) {
+        Picker("Display mode", selection: $settingsConfig.displayMode) {
+          ForEach(InventoryDisplayMode.allCases) { mode in
+            Label(mode.title, systemImage: mode.systemImage).tag(mode)
+          }
+        }
+        .pickerStyle(.segmented)
+        .frame(width: 176)
+        .help("Switch between list and card inventory views")
+        .accessibilityIdentifier("keydex.toolbar.display-mode")
+        .accessibilityLabel("Display mode")
+      }
+
+      ToolbarItem(placement: .primaryAction) {
+        Button {
+          selectedSettingsSection = .permissions
+          isShowingSettings = true
+        } label: {
+          Label("Register Keychain", systemImage: "key.fill")
+        }
+        .keydexGlassButton(prominent: true)
+        .help("Add or manage Keychain references")
+        .accessibilityIdentifier("keydex.toolbar.register-keychain")
+        .accessibilityLabel("Register Keychain reference")
+      }
+
       ToolbarItem(placement: .primaryAction) {
         Button {
           isShowingSettings = true
@@ -323,6 +300,7 @@ struct CredentialInventoryShellView: View {
         .help("Open app settings sample")
         .accessibilityIdentifier("keydex.toolbar.settings")
         .accessibilityLabel("Open settings")
+        .keydexGlassButton()
       }
     }
     .onChange(of: inventoryMode) { _, _ in
@@ -364,6 +342,142 @@ struct CredentialInventoryShellView: View {
   }
 }
 
+private struct MusicSidebarView: View {
+  let items: [SidebarSelection]
+  @Binding var selectedSidebar: SidebarSelection
+  @Binding var searchText: String
+
+  private var inventoryItems: [SidebarSelection] {
+    [.all, .state(.missingKeychainItem), .state(.plaintextFallback)]
+  }
+
+  private var libraryItems: [SidebarSelection] {
+    [
+      .state(.registered),
+      .state(.orphan),
+      .state(.expiring),
+      .state(.expired),
+      .state(.duplicate),
+    ]
+  }
+
+  private var serviceItems: [SidebarSelection] {
+    items.compactMap { item in
+      if case .service = item {
+        return item
+      }
+
+      return nil
+    }
+  }
+
+  var body: some View {
+    ScrollView {
+      VStack(alignment: .leading, spacing: 18) {
+        HStack(spacing: 10) {
+          Image(systemName: "magnifyingglass")
+            .font(.title3)
+            .foregroundStyle(.secondary)
+
+          TextField("Search", text: $searchText)
+            .textFieldStyle(.plain)
+            .accessibilityLabel("Search credentials")
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 20)
+
+        MusicSidebarSection(title: nil) {
+          ForEach(inventoryItems, id: \.self) { item in
+            MusicSidebarRow(
+              item: item,
+              selected: selectedSidebar == item
+            ) {
+              selectedSidebar = item
+            }
+          }
+        }
+
+        MusicSidebarSection(title: "Library") {
+          ForEach(libraryItems, id: \.self) { item in
+            MusicSidebarRow(
+              item: item,
+              selected: selectedSidebar == item
+            ) {
+              selectedSidebar = item
+            }
+          }
+        }
+
+        MusicSidebarSection(title: "Services") {
+          ForEach(serviceItems, id: \.self) { item in
+            MusicSidebarRow(
+              item: item,
+              selected: selectedSidebar == item
+            ) {
+              selectedSidebar = item
+            }
+          }
+        }
+      }
+      .padding(.horizontal, 12)
+      .padding(.bottom, 18)
+    }
+    .background(.ultraThinMaterial)
+    .accessibilityIdentifier("keydex.sidebar.scopes")
+    .accessibilityLabel("Credential scopes")
+    .navigationSplitViewColumnWidth(min: 220, ideal: 240, max: 280)
+  }
+}
+
+private struct MusicSidebarSection<Content: View>: View {
+  let title: String?
+  @ViewBuilder var content: Content
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 6) {
+      if let title {
+        Text(title)
+          .font(.caption.weight(.semibold))
+          .foregroundStyle(.secondary)
+          .padding(.horizontal, 4)
+      }
+
+      VStack(alignment: .leading, spacing: 2) {
+        content
+      }
+    }
+  }
+}
+
+private struct MusicSidebarRow: View {
+  let item: SidebarSelection
+  let selected: Bool
+  let action: () -> Void
+
+  var body: some View {
+    Button(action: action) {
+      Label(item.title, systemImage: item.systemImage)
+        .font(.body.weight(selected ? .semibold : .regular))
+        .foregroundStyle(selected ? Color.accentColor : .primary)
+        .lineLimit(1)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(rowBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+    }
+    .buttonStyle(.plain)
+    .help(item.title)
+  }
+
+  @ViewBuilder private var rowBackground: some View {
+    if selected {
+      RoundedRectangle(cornerRadius: 8, style: .continuous)
+        .fill(Color.primary.opacity(0.06))
+    }
+  }
+}
+
 private enum InventoryMode: String, CaseIterable, Identifiable {
   case sample
   case empty
@@ -380,12 +494,48 @@ private enum InventoryMode: String, CaseIterable, Identifiable {
   }
 }
 
+private enum InventoryDisplayMode: String, CaseIterable, Identifiable, Hashable {
+  case list
+  case cards
+
+  var id: String { rawValue }
+
+  var title: String {
+    switch self {
+    case .list:
+      "List"
+    case .cards:
+      "Cards"
+    }
+  }
+
+  var systemImage: String {
+    switch self {
+    case .list:
+      "list.bullet.rectangle"
+    case .cards:
+      "rectangle.grid.2x2"
+    }
+  }
+
+  var inspectorSurfaceName: String {
+    switch self {
+    case .list:
+      "table"
+    case .cards:
+      "card grid"
+    }
+  }
+}
+
 private enum AppScreenScenario: String, CaseIterable {
   case defaultWindow = "default-window"
+  case cardView = "card-view"
   case emptyInventory = "empty-inventory"
   case searchFilter = "search-filter"
   case inspector
   case settings
+  case settingsAppearance = "settings-appearance"
   case settingsSources = "settings-sources"
   case settingsPaths = "settings-paths"
   case settingsRules = "settings-rules"
@@ -399,9 +549,19 @@ private enum AppScreenScenario: String, CaseIterable {
     switch self {
     case .emptyInventory:
       .empty
-    case .defaultWindow, .searchFilter, .inspector, .settings, .settingsSources,
-      .settingsPaths, .settingsRules, .compactWindow:
+    case .defaultWindow, .cardView, .searchFilter, .inspector, .settings,
+      .settingsAppearance, .settingsSources, .settingsPaths, .settingsRules, .compactWindow:
       .sample
+    }
+  }
+
+  var displayMode: InventoryDisplayMode {
+    switch self {
+    case .cardView:
+      .cards
+    case .defaultWindow, .emptyInventory, .searchFilter, .inspector, .settings,
+      .settingsAppearance, .settingsSources, .settingsPaths, .settingsRules, .compactWindow:
+      .list
     }
   }
 
@@ -409,8 +569,8 @@ private enum AppScreenScenario: String, CaseIterable {
     switch self {
     case .searchFilter:
       .state(.plaintextFallback)
-    case .defaultWindow, .emptyInventory, .inspector, .settings, .settingsSources,
-      .settingsPaths, .settingsRules, .compactWindow:
+    case .defaultWindow, .cardView, .emptyInventory, .inspector, .settings,
+      .settingsAppearance, .settingsSources, .settingsPaths, .settingsRules, .compactWindow:
       .all
     }
   }
@@ -419,8 +579,10 @@ private enum AppScreenScenario: String, CaseIterable {
     switch self {
     case .inspector:
       "hashicorp-vault|infra"
-    case .defaultWindow, .emptyInventory, .searchFilter, .settings, .settingsSources,
-      .settingsPaths, .settingsRules, .compactWindow:
+    case .cardView:
+      "aws|ci"
+    case .defaultWindow, .emptyInventory, .searchFilter, .settings,
+      .settingsAppearance, .settingsSources, .settingsPaths, .settingsRules, .compactWindow:
       nil
     }
   }
@@ -429,17 +591,17 @@ private enum AppScreenScenario: String, CaseIterable {
     switch self {
     case .searchFilter:
       "github"
-    case .defaultWindow, .emptyInventory, .inspector, .settings, .settingsSources,
-      .settingsPaths, .settingsRules, .compactWindow:
+    case .defaultWindow, .cardView, .emptyInventory, .inspector, .settings,
+      .settingsAppearance, .settingsSources, .settingsPaths, .settingsRules, .compactWindow:
       ""
     }
   }
 
   var showsSettings: Bool {
     switch self {
-    case .settings, .settingsSources, .settingsPaths, .settingsRules:
+    case .settings, .settingsAppearance, .settingsSources, .settingsPaths, .settingsRules:
       true
-    case .defaultWindow, .emptyInventory, .searchFilter, .inspector, .compactWindow:
+    case .defaultWindow, .cardView, .emptyInventory, .searchFilter, .inspector, .compactWindow:
       false
     }
   }
@@ -448,13 +610,15 @@ private enum AppScreenScenario: String, CaseIterable {
     switch self {
     case .settings:
       .permissions
+    case .settingsAppearance:
+      .appearance
     case .settingsSources:
       .sources
     case .settingsPaths:
       .paths
     case .settingsRules:
       .rules
-    case .defaultWindow, .emptyInventory, .searchFilter, .inspector, .compactWindow:
+    case .defaultWindow, .cardView, .emptyInventory, .searchFilter, .inspector, .compactWindow:
       .permissions
     }
   }
@@ -486,6 +650,517 @@ private struct EmptyStatePanel: View {
   }
 }
 
+private struct InventoryContentView: View {
+  let rows: [CredentialRow]
+  let title: String
+  let displayMode: InventoryDisplayMode
+  @Binding var selectedCredentialID: CredentialRow.ID?
+  let isEmptyMode: Bool
+
+  var body: some View {
+    ZStack {
+      switch displayMode {
+      case .list:
+        CredentialInventoryTable(rows: rows, selectedCredentialID: $selectedCredentialID)
+      case .cards:
+        CredentialCardGrid(
+          rows: rows,
+          title: title,
+          selectedCredentialID: $selectedCredentialID
+        )
+      }
+
+      if rows.isEmpty {
+        EmptyStatePanel(
+          title: "No credentials",
+          systemImage: "tray",
+          description: isEmptyMode
+            ? "This dataset is intentionally empty."
+            : "No matching rows for the selected scope.",
+          secondaryText: isEmptyMode
+            ? "Scan sources or add metadata to populate credentials."
+            : "Try adjusting your scope or search query."
+        )
+      }
+    }
+  }
+}
+
+private struct CredentialInventoryTable: View {
+  let rows: [CredentialRow]
+  @Binding var selectedCredentialID: CredentialRow.ID?
+
+  var body: some View {
+    Table(rows, selection: $selectedCredentialID) {
+      TableColumn("Service") { row in
+        Text(row.service)
+      }
+
+      TableColumn("Account") { row in
+        Text(row.account)
+      }
+
+      TableColumn("State") { row in
+        CredentialStateSummaryView(states: row.states)
+      }
+
+      TableColumn("Keychain") { row in
+        Label(row.keychainStatusTitle, systemImage: row.keychainStatusSystemImage)
+          .foregroundStyle(keychainTint(for: row))
+      }
+
+      TableColumn("Sources") { row in
+        Text("\(row.locations.count)")
+      }
+    }
+    .accessibilityIdentifier("keydex.inventory.table")
+    .accessibilityLabel("Credential inventory table")
+    .font(.system(.body, design: .monospaced))
+  }
+}
+
+private struct CredentialCardGrid: View {
+  let rows: [CredentialRow]
+  let title: String
+  @Binding var selectedCredentialID: CredentialRow.ID?
+
+  private let columns = [
+    GridItem(.flexible(minimum: 196), spacing: 12, alignment: .top),
+    GridItem(.flexible(minimum: 196), spacing: 12, alignment: .top),
+  ]
+
+  var body: some View {
+    ZStack {
+      GraphBackdropView()
+
+      ScrollView {
+        VStack(alignment: .leading, spacing: 18) {
+          Text(title)
+            .font(.largeTitle.weight(.bold))
+            .lineLimit(1)
+
+          LazyVGrid(columns: columns, alignment: .leading, spacing: 14) {
+            ForEach(rows) { row in
+              CredentialInventoryCard(
+                row: row,
+                isSelected: selectedCredentialID == row.id
+              ) {
+                selectedCredentialID = row.id
+              }
+            }
+          }
+        }
+        .padding(.horizontal, 18)
+        .padding(.top, 26)
+        .padding(.bottom, 20)
+      }
+    }
+    .accessibilityIdentifier("keydex.inventory.cards")
+    .accessibilityLabel("Credential inventory cards")
+  }
+}
+
+private struct CredentialInventoryCard: View {
+  let row: CredentialRow
+  let isSelected: Bool
+  let selectAction: () -> Void
+
+  var body: some View {
+    Button(action: selectAction) {
+      VStack(alignment: .leading, spacing: 12) {
+        CredentialArtworkPanel(row: row, height: 156)
+
+        VStack(alignment: .leading, spacing: 10) {
+          VStack(alignment: .leading, spacing: 4) {
+            Text(row.service)
+              .font(.headline)
+              .lineLimit(1)
+            Text(row.account)
+              .font(.callout)
+              .fontDesign(.monospaced)
+              .foregroundStyle(.secondary)
+              .lineLimit(1)
+          }
+
+          CredentialStateSummaryView(states: row.states)
+
+          HStack(spacing: 8) {
+            KeychainStatusBadge(row: row)
+
+            SourceCountBadge(count: row.locations.count)
+          }
+
+          Text(row.primaryLocationTitle)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .lineLimit(1)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+      }
+      .padding(12)
+      .frame(maxWidth: .infinity, minHeight: 298, alignment: .topLeading)
+      .keydexGlassCard(
+        tint: cardGlassTint,
+        stroke: cardStroke,
+        selected: isSelected
+      )
+    }
+    .buttonStyle(.plain)
+    .accessibilityLabel(row.cardAccessibilityLabel)
+  }
+
+  private var cardStroke: Color {
+    if isSelected {
+      return Color.accentColor
+    }
+
+    return Color(nsColor: .separatorColor).opacity(0.55)
+  }
+
+  private var cardGlassTint: Color {
+    Color.white.opacity(0.22)
+  }
+}
+
+private struct CredentialArtworkPanel: View {
+  let row: CredentialRow
+  var height: CGFloat = 82
+
+  var body: some View {
+    ZStack(alignment: .leading) {
+      RoundedRectangle(cornerRadius: 6, style: .continuous)
+        .fill(panelFill)
+        .overlay {
+          MiniGraphMark(color: accentColor)
+            .opacity(0.28)
+        }
+
+      HStack(alignment: .center, spacing: 12) {
+        Image(systemName: row.keychainStatusSystemImage)
+          .font(.system(size: 28, weight: .semibold))
+          .foregroundStyle(accentColor)
+          .frame(width: 34)
+
+        VStack(alignment: .leading, spacing: 4) {
+          Text(row.keychainStatusTitle.uppercased())
+            .font(.caption.weight(.bold))
+            .foregroundStyle(accentColor)
+            .lineLimit(1)
+
+          Text("\(row.locations.count) graph sources")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .lineLimit(1)
+        }
+
+        Spacer(minLength: 6)
+      }
+      .padding(12)
+    }
+    .frame(height: height)
+  }
+
+  private var panelFill: Color {
+    accentColor.opacity(0.08)
+  }
+
+  private var accentColor: Color {
+    credentialAccent(for: row.states)
+  }
+}
+
+private struct MiniGraphMark: View {
+  let color: Color
+
+  var body: some View {
+    GeometryReader { proxy in
+      let width = proxy.size.width
+      let height = proxy.size.height
+
+      Path { path in
+        path.move(to: CGPoint(x: width * 0.58, y: height * 0.24))
+        path.addLine(to: CGPoint(x: width * 0.76, y: height * 0.42))
+        path.addLine(to: CGPoint(x: width * 0.63, y: height * 0.72))
+
+        path.move(to: CGPoint(x: width * 0.24, y: height * 0.68))
+        path.addLine(to: CGPoint(x: width * 0.42, y: height * 0.34))
+        path.addLine(to: CGPoint(x: width * 0.58, y: height * 0.24))
+      }
+      .stroke(color, lineWidth: 1.4)
+
+      ForEach(miniNodes(width: width, height: height)) { node in
+        Circle()
+          .fill(color.opacity(0.86))
+          .frame(width: node.size, height: node.size)
+          .position(node.point)
+      }
+    }
+  }
+
+  private func miniNodes(width: CGFloat, height: CGFloat) -> [MiniGraphNode] {
+    [
+      MiniGraphNode(id: 0, x: width * 0.24, y: height * 0.68, size: 5),
+      MiniGraphNode(id: 1, x: width * 0.42, y: height * 0.34, size: 4),
+      MiniGraphNode(id: 2, x: width * 0.58, y: height * 0.24, size: 6),
+      MiniGraphNode(id: 3, x: width * 0.76, y: height * 0.42, size: 4),
+      MiniGraphNode(id: 4, x: width * 0.63, y: height * 0.72, size: 5),
+    ]
+  }
+}
+
+private struct MiniGraphNode: Identifiable {
+  let id: Int
+  let point: CGPoint
+  let size: CGFloat
+
+  init(id: Int, x: CGFloat, y: CGFloat, size: CGFloat) {
+    self.id = id
+    point = CGPoint(x: x, y: y)
+    self.size = size
+  }
+}
+
+private struct GraphBackdropView: View {
+  var body: some View {
+    ZStack {
+      baseFill
+
+      Path { path in
+        path.move(to: CGPoint(x: 20, y: 78))
+        path.addLine(to: CGPoint(x: 184, y: 42))
+        path.addLine(to: CGPoint(x: 336, y: 120))
+        path.addLine(to: CGPoint(x: 520, y: 64))
+
+        path.move(to: CGPoint(x: 56, y: 252))
+        path.addLine(to: CGPoint(x: 226, y: 194))
+        path.addLine(to: CGPoint(x: 410, y: 246))
+        path.addLine(to: CGPoint(x: 584, y: 168))
+
+        path.move(to: CGPoint(x: 96, y: 420))
+        path.addLine(to: CGPoint(x: 268, y: 348))
+        path.addLine(to: CGPoint(x: 494, y: 386))
+      }
+      .stroke(lineColor, lineWidth: 1)
+      .opacity(0.18)
+
+      ForEach(graphNodes) { node in
+        RoundedRectangle(cornerRadius: 4, style: .continuous)
+          .fill(nodeFill)
+          .frame(width: node.size, height: node.size)
+          .overlay {
+            RoundedRectangle(cornerRadius: 4, style: .continuous)
+              .stroke(lineColor.opacity(0.45), lineWidth: 1)
+          }
+          .position(node.point)
+      }
+    }
+  }
+
+  private var baseFill: Color {
+    Color(nsColor: .windowBackgroundColor)
+  }
+
+  private var lineColor: Color {
+    Color.accentColor
+  }
+
+  private var nodeFill: Color {
+    Color.white.opacity(0.42)
+  }
+
+  private var graphNodes: [GraphBackdropNode] {
+    [
+      GraphBackdropNode(id: 0, x: 20, y: 78, size: 8),
+      GraphBackdropNode(id: 1, x: 184, y: 42, size: 10),
+      GraphBackdropNode(id: 2, x: 336, y: 120, size: 8),
+      GraphBackdropNode(id: 3, x: 520, y: 64, size: 12),
+      GraphBackdropNode(id: 4, x: 56, y: 252, size: 10),
+      GraphBackdropNode(id: 5, x: 226, y: 194, size: 8),
+      GraphBackdropNode(id: 6, x: 410, y: 246, size: 12),
+      GraphBackdropNode(id: 7, x: 584, y: 168, size: 8),
+      GraphBackdropNode(id: 8, x: 96, y: 420, size: 8),
+      GraphBackdropNode(id: 9, x: 268, y: 348, size: 10),
+      GraphBackdropNode(id: 10, x: 494, y: 386, size: 8),
+    ]
+  }
+}
+
+private struct GraphBackdropNode: Identifiable {
+  let id: Int
+  let point: CGPoint
+  let size: CGFloat
+
+  init(id: Int, x: CGFloat, y: CGFloat, size: CGFloat) {
+    self.id = id
+    point = CGPoint(x: x, y: y)
+    self.size = size
+  }
+}
+
+private struct CredentialStateSummaryView: View {
+  let states: [CredentialState]
+
+  var body: some View {
+    HStack(spacing: 4) {
+      ForEach(states, id: \.self) { state in
+        CredentialStateChip(state: state)
+      }
+    }
+  }
+}
+
+private struct CredentialStateChip: View {
+  let state: CredentialState
+
+  var body: some View {
+    Label(canonicalStateLabel([state]), systemImage: stateSystemImage(for: state))
+      .font(.caption.weight(.medium))
+      .labelStyle(.titleAndIcon)
+      .foregroundStyle(stateTint(for: state))
+      .padding(.horizontal, 7)
+      .padding(.vertical, 3)
+      .background(.thinMaterial, in: Capsule())
+      .overlay {
+        Capsule()
+          .stroke(stateTint(for: state).opacity(0.35), lineWidth: 1)
+      }
+  }
+}
+
+private struct KeychainStatusBadge: View {
+  let row: CredentialRow
+
+  var body: some View {
+    Label(row.keychainStatusTitle, systemImage: row.keychainStatusSystemImage)
+      .font(.caption.weight(.medium))
+      .foregroundStyle(keychainTint(for: row))
+      .padding(.horizontal, 8)
+      .padding(.vertical, 4)
+      .background(.thinMaterial, in: Capsule())
+      .overlay {
+        Capsule()
+          .stroke(Color.accentColor.opacity(0.25), lineWidth: 1)
+      }
+  }
+}
+
+private struct SourceCountBadge: View {
+  let count: Int
+
+  var body: some View {
+    Label("\(count)", systemImage: "point.3.connected.trianglepath.dotted")
+      .font(.caption.weight(.medium))
+      .foregroundStyle(.secondary)
+      .padding(.horizontal, 8)
+      .padding(.vertical, 4)
+      .background(.thinMaterial, in: Capsule())
+      .overlay {
+        Capsule()
+          .stroke(Color(nsColor: .separatorColor).opacity(0.45), lineWidth: 1)
+      }
+      .help("\(count) source locations")
+  }
+}
+
+private struct CredentialInspectorPanel: View {
+  let projection: CredentialProjection
+  let manageKeychainAction: () -> Void
+
+  private var row: CredentialRow {
+    CredentialRow(projection: projection)
+  }
+
+  var body: some View {
+    ScrollView {
+      VStack(alignment: .leading, spacing: 16) {
+        CredentialArtworkPanel(row: row)
+          .frame(height: 148)
+
+        VStack(alignment: .leading, spacing: 6) {
+          Text(row.service)
+            .font(.largeTitle.weight(.bold))
+            .lineLimit(1)
+
+          Text(row.account)
+            .font(.title3)
+            .fontDesign(.monospaced)
+            .foregroundStyle(.secondary)
+            .lineLimit(1)
+        }
+
+        HStack(spacing: 10) {
+          Button(action: manageKeychainAction) {
+            Label("Manage Keychain", systemImage: "key.fill")
+          }
+          .keydexGlassButton(prominent: true)
+          .help("Open Keychain reference management")
+          .accessibilityIdentifier("keydex.inspector.manage-keychain")
+          .accessibilityLabel("Manage Keychain reference")
+
+          KeychainStatusBadge(row: row)
+        }
+
+        InspectorGlassSection(
+          title: "States",
+          systemImage: "checklist"
+        ) {
+          CredentialStateSummaryView(states: projection.states)
+        }
+
+        InspectorGlassSection(
+          title: "Keychain",
+          systemImage: keychainCount(for: projection) > 0 ? "key.fill" : "key.slash"
+        ) {
+          Label(
+            keychainSummary(for: projection),
+            systemImage: keychainCount(for: projection) > 0 ? "key.fill" : "key.slash"
+          )
+          .foregroundStyle(keychainTint(for: projection))
+          .font(.callout)
+        }
+
+        InspectorGlassSection(
+          title: "Sources",
+          systemImage: "point.3.connected.trianglepath.dotted"
+        ) {
+          VStack(alignment: .leading, spacing: 8) {
+            ForEach(projection.locations, id: \.self) { location in
+              Text(locationLabel(location))
+                .font(.callout)
+                .textSelection(.enabled)
+            }
+          }
+        }
+      }
+      .padding(18)
+    }
+  }
+}
+
+private struct InspectorGlassSection<Content: View>: View {
+  let title: String
+  let systemImage: String
+  @ViewBuilder var content: Content
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 10) {
+      Label(title, systemImage: systemImage)
+        .font(.headline)
+        .foregroundStyle(.secondary)
+
+      content
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    .padding(14)
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .keydexGlassCard(
+      tint: Color.white.opacity(0.18),
+      stroke: Color(nsColor: .separatorColor).opacity(0.45),
+      selected: false
+    )
+  }
+}
+
 private enum SidebarSelection: Hashable {
   case all
   case state(CredentialState)
@@ -495,8 +1170,20 @@ private enum SidebarSelection: Hashable {
     switch self {
     case .all:
       "All Credentials"
-    case .state(let state):
-      "State: \(state.rawValue)"
+    case .state(.registered):
+      "Registered"
+    case .state(.missingKeychainItem):
+      "Missing"
+    case .state(.plaintextFallback):
+      "Plaintext"
+    case .state(.orphan):
+      "Orphan"
+    case .state(.expiring):
+      "Expiring"
+    case .state(.expired):
+      "Expired"
+    case .state(.duplicate):
+      "Duplicate"
     case .service(let service):
       service
     }
@@ -535,6 +1222,60 @@ private struct CredentialRow: Identifiable {
   var account: String { projection.ref.account.value }
   var states: [CredentialState] { projection.states }
   var locations: [CredentialLocation] { projection.locations }
+
+  var keychainLocationCount: Int {
+    locations.filter { location in
+      if case .keychain = location {
+        return true
+      }
+
+      return false
+    }.count
+  }
+
+  var locationPreview: [CredentialLocation] {
+    Array(locations.prefix(2))
+  }
+
+  var primaryLocationTitle: String {
+    locations.first.map(locationLabel) ?? "No source location"
+  }
+
+  var keychainStatusTitle: String {
+    if states.contains(.missingKeychainItem) {
+      return "Missing"
+    }
+
+    if states.contains(.orphan), keychainLocationCount > 0 {
+      return "Orphan"
+    }
+
+    if keychainLocationCount > 0 {
+      return "Linked"
+    }
+
+    return "Not linked"
+  }
+
+  var keychainStatusSystemImage: String {
+    if states.contains(.missingKeychainItem) {
+      return "key.slash"
+    }
+
+    if states.contains(.orphan) {
+      return "key.viewfinder"
+    }
+
+    if keychainLocationCount > 0 {
+      return "key.fill"
+    }
+
+    return "key"
+  }
+
+  var cardAccessibilityLabel: String {
+    "\(service) \(account), states \(canonicalStateLabel(states)), Keychain \(keychainStatusTitle), \(locations.count) sources."
+  }
 }
 
 private func canonicalStateLabel(_ states: [CredentialState]) -> String {
@@ -578,16 +1319,15 @@ private struct DoctorPanel: View {
   }
 
   private var previewRows: [DoctorIssueRow] {
-    Array(issueRows.prefix(2))
+    Array(issueRows.prefix(1))
+  }
+
+  private var primaryIssue: DoctorIssueRow? {
+    previewRows.first
   }
 
   private var remainingIssueCount: Int {
     max(issueRows.count - previewRows.count, 0)
-  }
-
-  private var remainingIssueSummary: String {
-    let issueNoun = remainingIssueCount == 1 ? "issue" : "issues"
-    return "\(remainingIssueCount) more \(issueNoun) in repair queue (\(issueRows.count) total)"
   }
 
   private var accessibilityHint: String {
@@ -599,81 +1339,71 @@ private struct DoctorPanel: View {
   }
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 6) {
-      Text("Doctor")
+    HStack(alignment: .center, spacing: 14) {
+      Label("Doctor", systemImage: issues.isEmpty ? "checkmark.seal" : "stethoscope")
         .font(.headline)
-        .padding(.horizontal, 12)
-        .padding(.top, 10)
+        .foregroundStyle(issues.isEmpty ? .green : .primary)
+
+      Divider()
+        .frame(height: 28)
+
+      if let primaryIssue {
+        VStack(alignment: .leading, spacing: 3) {
+          HStack(spacing: 7) {
+            Text(primaryIssue.severityLabel)
+              .font(.subheadline.weight(.semibold))
+              .foregroundStyle(primaryIssue.severityTint)
+            Text(primaryIssue.credentialLabel)
+              .font(.subheadline)
+              .fontDesign(.monospaced)
+              .lineLimit(1)
+          }
+
+          Text(primaryIssue.issue.action)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .lineLimit(1)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(primaryIssue.accessibilityLabel)
+      } else {
+        VStack(alignment: .leading, spacing: 3) {
+          Text(isEmptyMode ? "Ready for sources" : "No issues found")
+            .font(.subheadline)
+          Text(isEmptyMode ? "Scan sources or add metadata." : "Inventory graph is healthy.")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+        }
+      }
+
+      Spacer(minLength: 12)
 
       if issues.isEmpty {
-        VStack(alignment: .leading, spacing: 4) {
-          Text(isEmptyMode ? "No issues" : "No issues found")
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
-            .padding(.horizontal, 12)
-            .padding(.bottom, 2)
-
-          if isEmptyMode {
-            Text("Next action: scan sources or add metadata to inventory.")
-              .font(.caption)
-              .foregroundStyle(.secondary)
-              .padding(.horizontal, 12)
-              .padding(.bottom, 8)
-          }
-        }
+        Label("Clear", systemImage: "checkmark.circle.fill")
+          .font(.caption.weight(.medium))
+          .foregroundStyle(.green)
       } else {
-        VStack(alignment: .leading, spacing: 0) {
-          ForEach(previewRows) { row in
-            VStack(alignment: .leading, spacing: 4) {
-              HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Text(row.severityLabel)
-                  .font(.subheadline.weight(.semibold))
-                  .foregroundStyle(row.severityTint)
-                Text(row.credentialLabel)
-                  .font(.subheadline)
-                  .fontDesign(.monospaced)
-                  .lineLimit(1)
-                Spacer()
-              }
+        Text("\(issueRows.count) issues")
+          .font(.caption.weight(.medium))
+          .foregroundStyle(.secondary)
 
-              Text("state: \(row.stateLabel)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
-              Text("cause: \(row.issue.message)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
-
-              Text("action: \(row.issue.action)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .lineLimit(2)
-            }
-            .padding(.vertical, 8)
-            .padding(.horizontal, 12)
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(row.accessibilityLabel)
-
-            if row.id != previewRows.last?.id {
-              Divider()
-                .padding(.leading, 12)
-            }
-          }
-
-          if remainingIssueCount > 0 {
-            Divider()
-              .padding(.leading, 12)
-
-            Text(remainingIssueSummary)
-              .font(.caption.weight(.medium))
-              .foregroundStyle(.secondary)
-              .padding(.horizontal, 12)
-              .padding(.vertical, 8)
-          }
+        if remainingIssueCount > 0 {
+          Text("+\(remainingIssueCount)")
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(.thinMaterial, in: Capsule())
         }
       }
     }
+    .padding(.horizontal, 18)
+    .padding(.vertical, 12)
+    .frame(maxWidth: 760, minHeight: 68, alignment: .center)
+    .keydexFloatingGlassPanel(
+      tint: Color.white.opacity(0.18),
+      stroke: Color(nsColor: .separatorColor).opacity(0.45)
+    )
     .accessibilityIdentifier("keydex.doctor.panel")
     .accessibilityLabel("Credential repair queue")
     .accessibilityHint(accessibilityHint)
@@ -689,6 +1419,90 @@ private func stateTint(for state: CredentialState) -> Color {
   case .registered:
     .green
   }
+}
+
+private func stateSystemImage(for state: CredentialState) -> String {
+  switch state {
+  case .registered:
+    "checkmark.seal"
+  case .missingKeychainItem:
+    "key.slash"
+  case .plaintextFallback:
+    "doc.plaintext"
+  case .orphan:
+    "person.crop.circle.badge.exclamationmark"
+  case .expiring:
+    "clock.badge.exclamationmark"
+  case .expired:
+    "exclamationmark.octagon"
+  case .duplicate:
+    "doc.on.doc"
+  }
+}
+
+private func credentialAccent(for states: [CredentialState]) -> Color {
+  if states.contains(.missingKeychainItem) || states.contains(.expired) {
+    return .red
+  }
+
+  if states.contains(.plaintextFallback) || states.contains(.orphan) || states.contains(.expiring)
+    || states.contains(.duplicate)
+  {
+    return .orange
+  }
+
+  if states.contains(.registered) {
+    return .green
+  }
+
+  return .secondary
+}
+
+private func keychainTint(for row: CredentialRow) -> Color {
+  if row.states.contains(.missingKeychainItem) {
+    return .red
+  }
+
+  if row.states.contains(.orphan) {
+    return .orange
+  }
+
+  if row.keychainLocationCount > 0 {
+    return .green
+  }
+
+  return .secondary
+}
+
+private func keychainTint(for projection: CredentialProjection) -> Color {
+  keychainTint(for: CredentialRow(projection: projection))
+}
+
+private func keychainCount(for projection: CredentialProjection) -> Int {
+  CredentialRow(projection: projection).keychainLocationCount
+}
+
+private func keychainSummary(for projection: CredentialProjection) -> String {
+  let row = CredentialRow(projection: projection)
+  let count = row.keychainLocationCount
+
+  if row.states.contains(.missingKeychainItem) {
+    return "Metadata references a missing Keychain item"
+  }
+
+  if row.states.contains(.orphan), count > 0 {
+    return "Keychain item has no Keydex metadata"
+  }
+
+  if count == 1 {
+    return "1 Keychain item linked"
+  }
+
+  if count > 1 {
+    return "\(count) Keychain items linked"
+  }
+
+  return "No Keychain reference linked"
 }
 
 private func doctorSeverityOrder(_ severity: DoctorSeverity) -> Int {
@@ -841,6 +1655,8 @@ private struct EditableSettingsRow: Identifiable {
 private struct ShellSettingsConfig {
   var keychainAccess: Bool
   var requestPrompt: Bool
+  var displayMode: InventoryDisplayMode
+  var keychainReferences: [EditableSettingsRow]
   var scanSources: [ScanSourceRow]
   var scanPaths: [EditableSettingsRow]
   var ignoredSources: [EditableSettingsRow]
@@ -849,6 +1665,7 @@ private struct ShellSettingsConfig {
 
 private enum SettingsSection: String, CaseIterable, Identifiable {
   case permissions
+  case appearance
   case sources
   case paths
   case rules
@@ -859,6 +1676,8 @@ private enum SettingsSection: String, CaseIterable, Identifiable {
     switch self {
     case .permissions:
       "Permissions"
+    case .appearance:
+      "Appearance"
     case .sources:
       "Sources"
     case .paths:
@@ -869,10 +1688,15 @@ private enum SettingsSection: String, CaseIterable, Identifiable {
   }
 }
 
-private func sampleSettingsData() -> ShellSettingsConfig {
+private func sampleSettingsData(displayMode: InventoryDisplayMode = .list) -> ShellSettingsConfig {
   ShellSettingsConfig(
     keychainAccess: true,
     requestPrompt: false,
+    displayMode: displayMode,
+    keychainReferences: [
+      EditableSettingsRow("openai/default"),
+      EditableSettingsRow("npm/scoped"),
+    ],
     scanSources: [
       ScanSourceRow(
         title: "Keychain",
@@ -940,6 +1764,11 @@ private struct SettingsPanel: View {
               value: "\(enabledSourceCount)/\(settings.scanSources.count)",
               systemImage: "checklist"
             )
+            SettingsStatusPill(
+              title: "View",
+              value: settings.displayMode.title,
+              systemImage: settings.displayMode.systemImage
+            )
           }
         }
 
@@ -990,6 +1819,30 @@ private struct SettingsPanel: View {
                 isOn: $settings.requestPrompt,
                 accessibilityIdentifier: "keydex.settings.request-prompt"
               )
+            }
+
+            EditableSettingsListSection(
+              title: "Keychain References",
+              subtitle: "\(settings.keychainReferences.count) tracked",
+              systemImage: "key.fill",
+              textFieldLabel: "service/account",
+              addLabel: "Add keychain reference",
+              removeLabel: "Remove keychain reference",
+              rows: $settings.keychainReferences,
+              monospace: true,
+              valueFieldIdentifier: "keydex.settings.keychain-reference.value",
+              draftFieldIdentifier: "keydex.settings.keychain-reference.draft",
+              addButtonIdentifier: "keydex.settings.add-keychain-reference",
+              removeButtonIdentifier: "keydex.settings.remove-keychain-reference"
+            )
+
+          case .appearance:
+            SettingsGlassSection(
+              title: "Appearance",
+              subtitle: "\(settings.displayMode.title) · System light/dark",
+              systemImage: "sparkles"
+            ) {
+              SettingsDisplayModeRow(selection: $settings.displayMode)
             }
 
           case .sources:
@@ -1076,7 +1929,7 @@ private struct SettingsPanel: View {
   }
 
   private var settingsSummary: String {
-    "\(settings.scanPaths.count) paths · \(settings.ignoredSources.count) ignored · \(settings.unmanagedSources.count) unmanaged"
+    "\(settings.displayMode.title) · System appearance · \(settings.scanPaths.count) paths · \(settings.ignoredSources.count) ignored"
   }
 
   private var keychainPermissionStatus: String {
@@ -1143,7 +1996,7 @@ private struct EditableSettingsListSection: View {
         } label: {
           Label(addLabel, systemImage: "plus")
         }
-        .buttonStyle(.borderless)
+        .keydexGlassButton()
         .labelStyle(.iconOnly)
         .help(addLabel)
         .accessibilityLabel(addLabel)
@@ -1161,6 +2014,42 @@ private struct EditableSettingsListSection: View {
   private func addDraftValue() {
     rows.append(EditableSettingsRow(trimmedDraftValue))
     draftValue = ""
+  }
+}
+
+private struct SettingsDisplayModeRow: View {
+  @Binding var selection: InventoryDisplayMode
+
+  var body: some View {
+    HStack(alignment: .center, spacing: 10) {
+      Image(systemName: "rectangle.grid.2x2")
+        .font(.body.weight(.medium))
+        .foregroundStyle(.secondary)
+        .frame(width: 24)
+
+      VStack(alignment: .leading, spacing: 3) {
+        Text("Display mode")
+          .font(.body)
+        Text("Choose dense rows or scannable cards without changing graph truth")
+          .font(.caption)
+          .foregroundStyle(.secondary)
+          .fixedSize(horizontal: false, vertical: true)
+      }
+
+      Spacer(minLength: 12)
+
+      Picker("Display mode", selection: $selection) {
+        ForEach(InventoryDisplayMode.allCases) { mode in
+          Label(mode.title, systemImage: mode.systemImage).tag(mode)
+        }
+      }
+      .labelsHidden()
+      .pickerStyle(.segmented)
+      .frame(width: 180)
+      .accessibilityIdentifier("keydex.settings.display-mode")
+      .accessibilityLabel("Display mode")
+    }
+    .padding(.vertical, 8)
   }
 }
 
@@ -1302,5 +2191,97 @@ private struct SettingsDivider: View {
       .fill(.separator.opacity(0.55))
       .frame(height: 1)
       .padding(.leading, 34)
+  }
+}
+
+private struct KeydexGlassButtonModifier: ViewModifier {
+  let prominent: Bool
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    if #available(macOS 26.0, *) {
+      if prominent {
+        content.buttonStyle(.glassProminent)
+      } else {
+        content.buttonStyle(.glass)
+      }
+    } else if prominent {
+      content.buttonStyle(.borderedProminent)
+    } else {
+      content.buttonStyle(.bordered)
+    }
+  }
+}
+
+private struct KeydexGlassCardModifier: ViewModifier {
+  let tint: Color
+  let stroke: Color
+  let selected: Bool
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    let shape = RoundedRectangle(cornerRadius: 8, style: .continuous)
+
+    if #available(macOS 26.0, *) {
+      content
+        .glassEffect(.regular.tint(tint).interactive(), in: shape)
+        .overlay {
+          shape.stroke(stroke, lineWidth: selected ? 2 : 1)
+        }
+    } else {
+      content
+        .background(.regularMaterial, in: shape)
+        .overlay {
+          shape.stroke(stroke, lineWidth: selected ? 2 : 1)
+        }
+    }
+  }
+}
+
+private struct KeydexFloatingGlassPanelModifier: ViewModifier {
+  let tint: Color
+  let stroke: Color
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    let shape = RoundedRectangle(cornerRadius: 22, style: .continuous)
+
+    if #available(macOS 26.0, *) {
+      content
+        .glassEffect(.regular.tint(tint).interactive(), in: shape)
+        .overlay {
+          shape.stroke(stroke, lineWidth: 1)
+        }
+    } else {
+      content
+        .background(.ultraThinMaterial, in: shape)
+        .overlay {
+          shape.stroke(stroke, lineWidth: 1)
+        }
+    }
+  }
+}
+
+extension View {
+  fileprivate func keydexGlassButton(prominent: Bool = false) -> some View {
+    modifier(KeydexGlassButtonModifier(prominent: prominent))
+  }
+
+  fileprivate func keydexGlassCard(
+    tint: Color,
+    stroke: Color,
+    selected: Bool
+  ) -> some View {
+    modifier(
+      KeydexGlassCardModifier(
+        tint: tint,
+        stroke: stroke,
+        selected: selected
+      )
+    )
+  }
+
+  fileprivate func keydexFloatingGlassPanel(tint: Color, stroke: Color) -> some View {
+    modifier(KeydexFloatingGlassPanelModifier(tint: tint, stroke: stroke))
   }
 }

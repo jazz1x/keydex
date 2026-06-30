@@ -48,10 +48,12 @@ evidence_dir="${KEYDEX_ACCESSIBILITY_EVIDENCE_DIR:-tmp/accessibility-evidence}"
 head_sha="$(git rev-parse --short HEAD)"
 
 review_scenario default-window
+review_scenario card-view
 review_scenario empty-inventory
 review_scenario search-filter
 review_scenario inspector
 review_scenario settings
+review_scenario settings-appearance
 review_scenario settings-sources
 review_scenario settings-paths
 review_scenario settings-rules

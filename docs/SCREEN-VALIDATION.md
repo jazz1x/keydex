@@ -54,9 +54,10 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | --- | --- |
 | Empty Inventory | Show no indexed credentials and next action. |
 | Inventory Table | Dense credential scan view. |
+| Inventory Cards | Scannable card view with Keychain status and source previews. |
 | Inspector | Selected credential relationships. |
 | Doctor Panel | Repair queue grouped by severity. |
-| Settings | Permissions, scan paths, ignored sources. |
+| Settings | Permissions, appearance, scan paths, ignored sources. |
 | Search/Filter | Graph projection narrowing. |
 
 ## Viewport Matrix
@@ -76,7 +77,11 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Native Mac utility feel | Uses system controls, sidebar, toolbar, table, inspector. |
 | No dashboard theater | No decorative hero cards, orbs, bokeh, or marketing layout. |
 | Liquid Glass hierarchy | Material is used for sidebar, toolbar, inspector, popovers. |
+| Real glass controls | Command buttons use `.glass` or `.glassProminent` where available. |
+| Apple Music reference | Card, inspector, and repair rail are checked against Music for Mac's layered glass structure. |
 | Table legibility | Repeated rows do not use heavy material effects. |
+| Card legibility | Inventory cards keep 8 pt radius, stable height, and source previews. |
+| System appearance | Both Light and Dark modes are verified; no custom color palette is shipped. |
 | State consistency | State chips use canonical labels. |
 | Risk semantics | Warning/error color is reserved for real risk states. |
 
@@ -96,12 +101,14 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | --- | --- | --- | --- |
 | UI1 | Empty state | `empty-inventory` | Screenshot plus note of next action. |
 | UI2 | Healthy inventory | `default-window` | Screenshot with registered state rows. |
+| UI2A | Table inventory | `table-view` | Screenshot with grouped rows, selected pill, state chips, and source previews. |
+| UI2B | Card inventory | `card-view` | Screenshot with cards, state chips, Keychain badges, and source previews. |
 | UI3 | Plaintext fallback | `default-window` | Screenshot with warning label and source. |
 | UI4 | Missing Keychain item | `default-window` | Screenshot with error label and action. |
 | UI5 | Duplicate credential | `default-window` | Screenshot with duplicate state and relationship evidence. |
 | UI6 | Inspector sources | `inspector` | Screenshot showing stored/observed source relationships. |
 | UI7 | Doctor queue | `default-window` | Screenshot with grouped cause/action findings. |
-| UI8 | Settings permissions and rules | `settings`, `settings-sources`, `settings-paths`, `settings-rules` | Screenshots of Keychain access, scan sources, scan paths, ignored sources, and unmanaged sources. |
+| UI8 | Settings permissions, appearance, and rules | `settings`, `settings-appearance`, `settings-sources`, `settings-paths`, `settings-rules` | Screenshots of Keychain access, appearance mode controls, scan sources, scan paths, ignored sources, and unmanaged sources. |
 | UI9 | Search/filter | `search-filter` | Screenshot after graph projection filtering; compare with `default-window`. |
 | UI10 | Compact viewport | `compact-window` | Screenshot proving no overlap. |
 

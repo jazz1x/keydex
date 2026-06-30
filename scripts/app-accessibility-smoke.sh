@@ -122,6 +122,8 @@ run_scenario inspector \
   "Credential repair queue" \
   "Credential inspector" \
   "Inventory mode" \
+  "Display mode" \
+  "Register Keychain" \
   "Settings" \
   "missing-keychain-item" \
   "plaintext-fallback" \
@@ -136,5 +138,13 @@ run_scenario settings \
   "Enabled for inventory scan runs" \
   "Enable keychain access" \
   "Request runtime keychain prompt"
+
+run_scenario settings-appearance \
+  "Keydex settings" \
+  "Settings section" \
+  "Appearance" \
+  "Display mode" \
+  "Cards" \
+  "System light/dark"
 
 echo "app accessibility smoke clean"

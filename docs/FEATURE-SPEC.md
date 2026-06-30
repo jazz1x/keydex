@@ -100,10 +100,13 @@ until metadata proves that a reference is registered.
 | Surface | Behavior | Acceptance Criteria |
 | --- | --- | --- |
 | Sidebar | Navigate graph scopes. | All, Expiring, Plaintext, Orphans, Duplicates, Services, Tags exist. |
-| Inventory table | Show dense credential rows. | Rows use canonical states and source counts. |
+| Sidebar search | Narrow projection in place. | Search filters projection by service, account, tag, state, and source label. |
+| Inventory table | Show dense credential rows in grouped library sections. | Rows use canonical states, source counts, and selected pill state. |
+| Inventory cards | Show scannable credential cards. | Cards show service/account, canonical states, Keychain status, and source previews from the same graph projection as the table. |
 | Inspector | Show selected graph relationships. | Credential, sources, state, findings, notes, actions visible. |
 | Doctor panel | Show repair queue. | Findings grouped by severity and include cause/action. |
-| Settings | Show permissions and scan paths. | User can manage local Keychain permission preference, scan sources, scan paths, and ignored/unmanaged source rules. |
+| List/card display | Switch between list and card inventory layouts. | The selected mode and projection are preserved across sidebar selection changes. |
+| Settings | Show permissions, appearance, and scan paths. | User can manage local Keychain permission preference, Keychain references, light/dark appearance mode, scan sources, scan paths, and ignored/unmanaged source rules. |
 
 ## Security
 
