@@ -56,6 +56,7 @@ signing or notarization.
 | Screen proof | Required screenshots and accessibility notes. |
 | Release smoke | `make release-smoke` output manifest, checksums, DMG, and archive file list. |
 | Artifact inspection | Confirm archive/DMG contains expected files only. |
+| Release notes | `RELEASE-CANDIDATE.md` is current. |
 | Publish | GitHub release created from protected `main`. |
 
 ## Release Notes Template

@@ -57,7 +57,7 @@ incomplete until screen validation and accessibility evidence pass.
 | Feature behavior | `FEATURE-SPEC.md` | Acceptance criteria pass for each feature. |
 | Functional validation | `VALIDATION-SCENARIOS.md` | Required scenarios pass. |
 | Screen validation | `SCREEN-VALIDATION.md` | Screenshots and accessibility evidence pass. |
-| Release validation | `RELEASE-READINESS.md` | Release candidate checklist is complete. |
+| Release validation | `RELEASE-READINESS.md`, `RELEASE-CANDIDATE.md` | Release candidate checklist is complete. |
 | Test strategy | `TESTING-STRATEGY.md` | Tests exist at the closest stable boundary. |
 
 ## Acceptance Rules
@@ -68,4 +68,4 @@ incomplete until screen validation and accessibility evidence pass.
 - Every UI surface reads from the graph or a graph-derived projection.
 - Every metadata field must be safe to commit to a repository.
 - Every milestone has explicit feature and validation evidence.
-- Every release candidate passes `make guard` and `make quality`.
+- Every release candidate passes `make guard`, `make quality`, and `make release-smoke`.

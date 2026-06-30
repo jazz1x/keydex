@@ -42,6 +42,7 @@ When `--include-keychain` is used, Keydex reconciles metadata against live Keych
 ```bash
 make guard
 make quality
+make release-smoke
 make contract
 ```
 
@@ -60,4 +61,5 @@ make contract
 - [VALIDATION-SCENARIOS.md](docs/VALIDATION-SCENARIOS.md)
 - [SCREEN-VALIDATION.md](docs/SCREEN-VALIDATION.md)
 - [RELEASE-READINESS.md](docs/RELEASE-READINESS.md)
+- [RELEASE-CANDIDATE.md](docs/RELEASE-CANDIDATE.md)
 - [TESTING-STRATEGY.md](docs/TESTING-STRATEGY.md)
