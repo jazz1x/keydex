@@ -56,7 +56,7 @@ values.
 | Blocker | Required Evidence |
 | --- | --- |
 | Developer ID signing | `codesign --verify` against the Developer ID signed app. |
-| Notarization | `xcrun notarytool` success and stapled ticket evidence. |
+| Notarization | `xcrun notarytool` success and stapled ticket evidence from `SIGNING-NOTARIZATION.md`. |
 | Final DMG | Signed and notarized DMG or documented fallback decision. |
 | Release tag | Protected `main` tag and GitHub release notes. |
 | Screen proof | Required screenshots and accessibility notes from `SCREEN-VALIDATION.md`. |

@@ -57,7 +57,7 @@ incomplete until screen validation and accessibility evidence pass.
 | Feature behavior | `FEATURE-SPEC.md` | Acceptance criteria pass for each feature. |
 | Functional validation | `VALIDATION-SCENARIOS.md` | Required scenarios pass. |
 | Screen validation | `SCREEN-VALIDATION.md` | Screenshots and accessibility evidence pass. |
-| Release validation | `RELEASE-READINESS.md`, `RELEASE-CANDIDATE.md` | Release candidate checklist is complete. |
+| Release validation | `RELEASE-READINESS.md`, `RELEASE-CANDIDATE.md`, `SIGNING-NOTARIZATION.md` | Release candidate checklist is complete. |
 | Test strategy | `TESTING-STRATEGY.md` | Tests exist at the closest stable boundary. |
 
 ## Acceptance Rules
