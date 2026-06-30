@@ -62,6 +62,9 @@ The first CLI smoke gate is `scripts/cli-smoke.sh`. It uses tracked fixtures in
 | Doctor panel | Findings show cause and action. |
 | Settings | Scan path and permission controls render. |
 
+The first Doctor panel shell must read `CredentialDoctor().inspect(graph)` so repair
+queue rows stay graph-derived.
+
 ## Completion Rule
 
 No milestone is complete because code exists. A milestone is complete only when tests and
