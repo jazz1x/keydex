@@ -36,18 +36,40 @@ public struct CredentialDoctor: Sendable {
     inspect(InventoryGraph(records: records))
   }
 
+  public func inspect(
+    _ records: [CredentialRecord],
+    ignoring ignoredCredentials: Set<CredentialRef>
+  ) -> [DoctorIssue] {
+    inspect(InventoryGraph(records: records), ignoring: ignoredCredentials)
+  }
+
   public func inspect(_ graph: InventoryGraph) -> [DoctorIssue] {
+    inspect(graph, ignoring: [])
+  }
+
+  public func inspect(
+    _ graph: InventoryGraph,
+    ignoring ignoredCredentials: Set<CredentialRef>
+  ) -> [DoctorIssue] {
     graph.edges.compactMap { edge in
-      issue(for: edge, in: graph)
+      issue(for: edge, in: graph, ignoring: ignoredCredentials)
     }
   }
 
-  private func issue(for edge: InventoryEdge, in graph: InventoryGraph) -> DoctorIssue? {
+  private func issue(
+    for edge: InventoryEdge,
+    in graph: InventoryGraph,
+    ignoring ignoredCredentials: Set<CredentialRef>
+  ) -> DoctorIssue? {
     guard edge.kind == .hasState else {
       return nil
     }
 
     guard case .credential(let credential) = edge.from else {
+      return nil
+    }
+
+    if ignoredCredentials.contains(credential) {
       return nil
     }
 

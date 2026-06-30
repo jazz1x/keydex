@@ -41,6 +41,25 @@ func fileMetadataStoreLoadsCredentialRecordsWithoutSecretValues() async throws {
 }
 
 @Test
+func fileMetadataStoreLoadsIgnoredCredentialRefs() async throws {
+  let url = try writeMetadataFixture(
+    """
+    {
+      "records": [],
+      "ignoredCredentials": [
+        { "service": "bitbucket", "account": "jongyun" }
+      ]
+    }
+    """
+  )
+
+  let ignored = try await FileMetadataStore(url: url).ignoredCredentials()
+  let expectedRef = try CredentialRef.parse(service: "bitbucket", account: "jongyun")
+
+  #expect(ignored == [expectedRef])
+}
+
+@Test
 func fileMetadataStoreRejectsInvalidState() async throws {
   let url = try writeMetadataFixture(
     """

@@ -46,6 +46,25 @@ func doctorIgnoresRegisteredState() throws {
 }
 
 @Test
+func doctorIgnoresExplicitlyIgnoredCredentials() throws {
+  let ref = try CredentialRef.parse(service: "bitbucket", account: "jongyun")
+  let shellPath = try NonEmptyText.parse("~/.zshrc", field: "path")
+  let graph = InventoryGraph(
+    observations: [
+      CredentialObservation(
+        ref: ref,
+        state: .plaintextFallback,
+        location: .shellProfile(path: shellPath)
+      )
+    ]
+  )
+
+  let issues = CredentialDoctor().inspect(graph, ignoring: [ref])
+
+  #expect(issues.isEmpty)
+}
+
+@Test
 func doctorKeepsRecordInspectionAsGraphCompatibilityLayer() throws {
   let ref = try CredentialRef.parse(service: "bitbucket", account: "jongyun")
   let shellPath = try NonEmptyText.parse("~/.zshrc", field: "path")
