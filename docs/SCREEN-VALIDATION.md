@@ -29,6 +29,12 @@ The first source-level accessibility contract is `scripts/app-accessibility-cont
 It proves required SwiftUI surfaces expose stable accessibility labels and identifiers
 before permissioned screenshot or VoiceOver evidence is attached.
 
+Manual accessibility evidence is reviewed with
+`scripts/app-accessibility-evidence-review.sh`. It verifies local manifests and notes in
+`tmp/accessibility-evidence` for the same required scenarios as screen evidence. It is
+not a CI gate because VoiceOver, keyboard traversal, dynamic type, and contrast checks
+must be reviewed on a permissioned Mac session.
+
 The first source-level HIG and Liquid Glass contract is `scripts/app-design-contract.sh`.
 It proves the app keeps native Mac utility structure, graph-derived repair surfaces,
 and anti-theater visual rules wired before manual design review evidence is attached.
@@ -99,6 +105,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Local screen evidence | `scripts/app-screen-evidence.sh --list` and `make app-screen-evidence SCENARIO=<name>` | Captures local screenshot and manifest for manual screen review evidence in `tmp/screen-evidence` (not CI required). |
 | Local screen review | `make app-screen-evidence-review` | Verifies the local screenshot and manifest set for all required script scenarios. |
 | Accessibility contract | `scripts/app-accessibility-contract.sh` | Required app surfaces expose stable labels and identifiers. |
+| Accessibility evidence review | `make app-accessibility-evidence-review` | Verifies local VoiceOver, keyboard, state-label, and dynamic type notes for required scenarios. |
 | App design contract | `scripts/app-design-contract.sh` | Native Mac utility structure, graph repair surfaces, and anti-theater rules remain wired. |
 | Doctor shell | App source uses `CredentialDoctor().inspect(graph)` | The repair queue surface is graph-derived. |
 | Search shell | App source filters `CredentialProjection` rows | Search narrows graph projections without separate list truth. |
@@ -114,6 +121,24 @@ and anti-theater visual rules wired before manual design review evidence is atta
 - Does the visual hierarchy follow `DESIGN-SYSTEM.md`?
 - Does the screen avoid primary copy-secret behavior?
 - Are all state names canonical?
+
+## Accessibility Evidence Format
+
+For each required script scenario, create
+`tmp/accessibility-evidence/<scenario>.manifest` with these fields:
+
+- `scenario=<scenario>`
+- `git_sha=<short sha>`
+- `voiceover=pass`
+- `keyboard=pass`
+- `state_not_color_only=pass`
+- `dynamic_type=pass`
+- `notes=tmp/accessibility-evidence/<scenario>.md`
+- `reviewed_at=<ISO-8601 timestamp>`
+- `reviewer=<name or handle>`
+
+The paired notes file must start with `# Accessibility Evidence: <scenario>` and cover
+VoiceOver, Keyboard, State Not Color Only, Dynamic Type, and Open Issues.
 
 ## Completion Rule
 
