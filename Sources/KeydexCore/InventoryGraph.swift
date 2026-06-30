@@ -26,29 +26,36 @@ public struct InventoryGraph: Equatable, Sendable {
   public let nodes: Set<InventoryNode>
   public let edges: [InventoryEdge]
 
+  public init(observations: [CredentialObservation]) {
+    var nodes = Set<InventoryNode>()
+    var edges: [InventoryEdge] = []
+
+    for observation in observations {
+      Self.insert(
+        ref: observation.ref,
+        state: observation.state,
+        locations: [observation.location],
+        nodes: &nodes,
+        edges: &edges
+      )
+    }
+
+    self.nodes = nodes
+    self.edges = edges
+  }
+
   public init(records: [CredentialRecord]) {
     var nodes = Set<InventoryNode>()
     var edges: [InventoryEdge] = []
 
     for record in records {
-      let credentialNode = InventoryNode.credential(record.ref)
-      let stateNode = InventoryNode.state(record.state)
-
-      nodes.insert(credentialNode)
-      nodes.insert(stateNode)
-      edges.append(InventoryEdge(from: credentialNode, to: stateNode, kind: .hasState))
-
-      for location in record.locations {
-        let locationNode = InventoryNode.location(location)
-        nodes.insert(locationNode)
-        edges.append(
-          InventoryEdge(
-            from: credentialNode,
-            to: locationNode,
-            kind: Self.edgeKind(for: location)
-          )
-        )
-      }
+      Self.insert(
+        ref: record.ref,
+        state: record.state,
+        locations: record.locations,
+        nodes: &nodes,
+        edges: &edges
+      )
     }
 
     self.nodes = nodes
@@ -57,6 +64,40 @@ public struct InventoryGraph: Equatable, Sendable {
 
   public func outgoingEdges(from node: InventoryNode) -> [InventoryEdge] {
     edges.filter { $0.from == node }
+  }
+
+  private static func insert(
+    ref: CredentialRef,
+    state: CredentialState,
+    locations: [CredentialLocation],
+    nodes: inout Set<InventoryNode>,
+    edges: inout [InventoryEdge]
+  ) {
+    let credentialNode = InventoryNode.credential(ref)
+    let stateNode = InventoryNode.state(state)
+
+    nodes.insert(credentialNode)
+    nodes.insert(stateNode)
+    append(InventoryEdge(from: credentialNode, to: stateNode, kind: .hasState), to: &edges)
+
+    for location in locations {
+      let locationNode = InventoryNode.location(location)
+      nodes.insert(locationNode)
+      append(
+        InventoryEdge(
+          from: credentialNode,
+          to: locationNode,
+          kind: edgeKind(for: location)
+        ),
+        to: &edges
+      )
+    }
+  }
+
+  private static func append(_ edge: InventoryEdge, to edges: inout [InventoryEdge]) {
+    if !edges.contains(edge) {
+      edges.append(edge)
+    }
   }
 
   private static func edgeKind(for location: CredentialLocation) -> InventoryEdgeKind {

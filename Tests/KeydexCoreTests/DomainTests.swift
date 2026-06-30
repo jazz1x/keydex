@@ -54,3 +54,52 @@ func inventoryGraphProjectsRecordsIntoNodesAndEdges() throws {
     ]
   )
 }
+
+@Test
+func inventoryGraphProjectsObservationsIntoNodesAndEdges() throws {
+  let ref = try CredentialRef.parse(service: "bitbucket", account: "jongyun")
+  let envName = try NonEmptyText.parse("BITBUCKET_TOKEN", field: "name")
+  let shellPath = try NonEmptyText.parse("~/.zshrc", field: "path")
+  let observations = [
+    CredentialObservation(
+      ref: ref,
+      state: .plaintextFallback,
+      location: .environment(name: envName)
+    ),
+    CredentialObservation(
+      ref: ref,
+      state: .plaintextFallback,
+      location: .shellProfile(path: shellPath)
+    ),
+  ]
+
+  let graph = InventoryGraph(observations: observations)
+  let credentialNode = InventoryNode.credential(ref)
+
+  #expect(graph.nodes.contains(credentialNode))
+  #expect(graph.nodes.contains(.location(.environment(name: envName))))
+  #expect(graph.nodes.contains(.location(.shellProfile(path: shellPath))))
+  #expect(
+    graph.outgoingEdges(from: credentialNode).map(\.kind) == [
+      .hasState,
+      .observedIn,
+      .observedIn,
+    ]
+  )
+}
+
+@Test
+func inventoryGraphDoesNotDuplicateEquivalentEdges() throws {
+  let ref = try CredentialRef.parse(service: "openai", account: "jongyun")
+  let envName = try NonEmptyText.parse("OPENAI_API_KEY", field: "name")
+  let observation = CredentialObservation(
+    ref: ref,
+    state: .plaintextFallback,
+    location: .environment(name: envName)
+  )
+
+  let graph = InventoryGraph(observations: [observation, observation])
+  let credentialNode = InventoryNode.credential(ref)
+
+  #expect(graph.outgoingEdges(from: credentialNode).count == 2)
+}
