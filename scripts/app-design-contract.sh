@@ -60,7 +60,7 @@ for needle in \
   "SettingsDisplayModeRow" \
   ".pickerStyle(.segmented)" \
   ".keydexGlassButton(" \
-  ".keydexGlassCard(" \
+  ".keydexContentPanel(" \
   ".keydexFloatingGlassPanel(" \
   ".buttonStyle(.glass" \
   ".buttonStyle(.glassProminent" \

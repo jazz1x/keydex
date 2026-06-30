@@ -19,11 +19,9 @@ and honest about risk.
 | --- | --- | --- |
 | `surface.primary` | system background | main content |
 | `surface.sidebar` | Liquid Glass material | sidebar search, navigation, and scope filters |
-| `surface.inspector` | Liquid Glass material | selected item detail |
+| `surface.inspector` | regular material, 8 px radius | selected item detail |
 | `surface.card` | regular material, 8 px radius | inventory cards and grouped settings only |
 | `glass.sidebar.selection` | primary 0.055 alpha | selected sidebar rows |
-| `glass.card.tint` | white 0.12 alpha | inventory card glass tint |
-| `glass.inspector.tint` | white 0.10 alpha | inspector section glass tint |
 | `glass.floating.tint` | white 0.14 alpha | bottom repair rail tint |
 | `artwork.state.tint` | semantic state color 0.20 alpha | card artwork color field |
 | `text.primary` | label | credential names and actions |
@@ -62,18 +60,20 @@ and honest about risk.
 
 ## Liquid Glass Rules
 
-- Use Liquid Glass for hierarchy: sidebar, toolbar, inspector, popovers, and command
-  surfaces.
+- Use Liquid Glass for the functional layer: sidebar, toolbar controls, popovers,
+  floating repair rail, and command surfaces.
 - Apple Music for Mac is the local reference for layered glass: translucent sidebar,
   floating command clusters, grouped library rows, selected-pill states, and bottom glass rails.
 - Settings uses a material header plus grouped list sections; repeated rows stay plain
   and editable.
 - Native glass buttons use `.glass` or `.glassProminent` when available, with system
   button styles on older macOS versions.
-- Inventory cards use `glassEffect` when available, with material fallback on older
-  macOS versions.
+- Inventory cards are content-layer surfaces. They use regular material and state
+  artwork, not `glassEffect`, so repeated credentials stay readable.
 - The repair queue uses a floating glass rail instead of a hard split panel.
-- Do not use Liquid Glass for repeated table cells.
+- Do not use Liquid Glass for repeated table cells, repeated cards, or dense detail
+  sections.
+- Avoid stacked or nested glass. Group related controls into one glass surface instead.
 - Do not hide text contrast behind material effects.
 - Keep risk colors outside decorative materials when legibility would suffer.
 

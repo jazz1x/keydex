@@ -801,11 +801,7 @@ private struct CredentialInventoryCard: View {
       }
       .padding(10)
       .frame(maxWidth: .infinity, minHeight: 320, alignment: .topLeading)
-      .keydexGlassCard(
-        tint: cardGlassTint,
-        stroke: cardStroke,
-        selected: isSelected
-      )
+      .keydexContentPanel(stroke: cardStroke, selected: isSelected)
     }
     .buttonStyle(.plain)
     .accessibilityLabel(row.cardAccessibilityLabel)
@@ -819,9 +815,6 @@ private struct CredentialInventoryCard: View {
     return KeydexGlassTone.panelStroke
   }
 
-  private var cardGlassTint: Color {
-    KeydexGlassTone.cardTint
-  }
 }
 
 private struct CredentialArtworkPanel: View {
@@ -1045,11 +1038,7 @@ private struct InspectorGlassSection<Content: View>: View {
     }
     .padding(14)
     .frame(maxWidth: .infinity, alignment: .leading)
-    .keydexGlassCard(
-      tint: KeydexGlassTone.inspectorTint,
-      stroke: KeydexGlassTone.panelStroke,
-      selected: false
-    )
+    .keydexContentPanel(stroke: KeydexGlassTone.panelStroke, selected: false)
   }
 }
 
@@ -2088,8 +2077,6 @@ private struct SettingsDivider: View {
 
 private enum KeydexGlassTone {
   static let sidebarSelectionFill = Color.primary.opacity(0.055)
-  static let cardTint = Color.white.opacity(0.12)
-  static let inspectorTint = Color.white.opacity(0.10)
   static let floatingTint = Color.white.opacity(0.14)
   static let panelStroke = Color(nsColor: .separatorColor).opacity(0.36)
   static let artworkColorAlpha = 0.20
@@ -2125,32 +2112,13 @@ private struct KeydexGlassButtonModifier: ViewModifier {
   }
 }
 
-private struct KeydexGlassCardModifier: ViewModifier {
-  let tint: Color
+private struct KeydexContentPanelModifier: ViewModifier {
   let stroke: Color
   let selected: Bool
 
-  @ViewBuilder
   func body(content: Content) -> some View {
     let shape = RoundedRectangle(cornerRadius: 8, style: .continuous)
 
-    #if compiler(>=6.2)
-      if #available(macOS 26.0, *) {
-        content
-          .glassEffect(.regular.tint(tint).interactive(), in: shape)
-          .overlay {
-            shape.stroke(stroke, lineWidth: selected ? 2 : 1)
-          }
-      } else {
-        fallback(content: content, in: shape)
-      }
-    #else
-      fallback(content: content, in: shape)
-    #endif
-  }
-
-  @ViewBuilder
-  private func fallback(content: Content, in shape: RoundedRectangle) -> some View {
     content
       .background(.regularMaterial, in: shape)
       .overlay {
@@ -2197,14 +2165,9 @@ extension View {
     modifier(KeydexGlassButtonModifier(prominent: prominent))
   }
 
-  fileprivate func keydexGlassCard(
-    tint: Color,
-    stroke: Color,
-    selected: Bool
-  ) -> some View {
+  fileprivate func keydexContentPanel(stroke: Color, selected: Bool) -> some View {
     modifier(
-      KeydexGlassCardModifier(
-        tint: tint,
+      KeydexContentPanelModifier(
         stroke: stroke,
         selected: selected
       )
