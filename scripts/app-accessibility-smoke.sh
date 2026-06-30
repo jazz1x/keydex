@@ -132,8 +132,9 @@ run_scenario settings \
   "Credential inventory table" \
   "Keydex settings" \
   "Settings section" \
-  "Current status" \
-  "Read-only sample scope" \
-  "Enable keychain access"
+  "Keychain" \
+  "Enabled for inventory scan runs" \
+  "Enable keychain access" \
+  "Request runtime keychain prompt"
 
 echo "app accessibility smoke clean"

@@ -36,6 +36,12 @@ review_scenario() {
   expect_file_contains "$manifest_path" "screenshot=$screenshot_path"
   expect_file_contains "$manifest_path" "captured_at="
 
+  case "$scenario" in
+    settings | settings-sources | settings-paths | settings-rules)
+      expect_file_contains "$manifest_path" "width=720 height=520"
+      ;;
+  esac
+
   printf 'reviewed=%s\n' "$scenario"
 }
 

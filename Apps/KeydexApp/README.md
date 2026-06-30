@@ -12,15 +12,19 @@ from `KeydexCore.InventoryGraph` and `CredentialProjection`.
 
 ## Settings Shell
 
-The macOS shell now includes a non-mutating Settings sheet (toolbar gear button)
-showing sample controls for:
+The macOS shell now includes a material-backed Settings sheet (toolbar gear button) with
+local controls for:
 
 - Keychain permission/status
 - Source scan toggles (Keychain, Shell, Environment, Config)
-- Scan paths
-- Ignored/unmanaged source lists
+- Editable scan paths
+- Editable ignored/unmanaged source lists
 
-All values are sample-only and read-only by design (no runtime keychain access).
+Values are local app state for the current run. The shell still avoids runtime keychain
+access and does not persist settings yet.
+
+The Settings sheet uses a glass-style header, segmented section rail, and grouped list
+sections so scan controls feel native without becoming a dashboard.
 
 ## Local Run
 
