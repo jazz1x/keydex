@@ -58,7 +58,9 @@ expect_file_contains Sources/KeydexCore/InventoryGraph.swift "init(observations:
 expect_file_contains Sources/KeydexCore/InventoryGraph.swift "InventoryGraphSummary"
 expect_file_contains Package.swift "KeydexSources"
 expect_file_contains Sources/KeydexSources/EnvironmentScanner.swift "EnvironmentScanner"
+expect_file_contains Sources/KeydexSources/ShellProfileScanner.swift "ShellProfileScanner"
 expect_file_contains Sources/keydex/main.swift "InventoryGraph(observations:"
+expect_file_contains Sources/keydex/main.swift "ShellProfileScanner"
 expect_file_contains README.md "GRAPH-WORKFLOW.md"
 
 echo "4) verification contract..."

@@ -65,6 +65,8 @@ The first graph implementation is intentionally small:
 - deterministic construction from `CredentialObservation`
 - compatibility construction from `CredentialRecord`
 - environment variable scanning through `EnvironmentScanner`
+- shell profile scanning through `ShellProfileScanner`
 - `scan env` projects observations through `InventoryGraph`
+- `scan shell` projects observations through `InventoryGraph`
 
 Findings, tags, and duplicate edges can be added when the doctor and UI need them.
