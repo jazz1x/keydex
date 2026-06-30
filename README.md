@@ -34,7 +34,7 @@ First-run success means:
 
 - `swift run keydex --help` lists `list`, `where`, `doctor`, `reminders`, and `scan`.
 - `swift run keydex list --metadata Tests/Fixtures/metadata.json` prints fixture
-  credentials without secret values.
+  credentials with status symbols and without secret values.
 - `swift run keydex reminders --metadata Tests/Fixtures/metadata.json --now 2026-07-01`
   reports the expired fixture reminder.
 - `make guard` passes format, tests, app build, and forbidden-pattern checks.
@@ -147,6 +147,11 @@ Rules:
 
 ## Commands
 
+CLI output follows [CLI-INTERFACE.md](docs/CLI-INTERFACE.md): `▶` for command summaries,
+`ⓘ` for informational states, `✅` for clean/registered, `⚠️` for warnings, `❌` for
+errors, and bracket scopes such as `[graph]`, `[env]`, `[shell]`, and `[keychain]`.
+ANSI color is TTY-only and respects `NO_COLOR`.
+
 | Command | Description |
 | --- | --- |
 | `swift run keydex list` | List indexed credentials. |
@@ -188,7 +193,7 @@ swift run keydex reminders \
 Expected fixture output:
 
 ```text
-expired: aws/jongyun expires 2026-01-01
+❌ expired: aws/jongyun expires 2026-01-01
   notify: 2025-12-02 (30d before)
 ```
 
@@ -237,6 +242,7 @@ Keydex follows one rule first: **state must not lie**.
 - [GOALS.md](docs/GOALS.md) - product goals, non-goals, milestones, completion gates
 - [PRODUCT-PLAN.md](docs/PRODUCT-PLAN.md) - total goal answers and milestone evidence
 - [FEATURE-SPEC.md](docs/FEATURE-SPEC.md) - feature behavior and acceptance criteria
+- [CLI-INTERFACE.md](docs/CLI-INTERFACE.md) - status symbols, scope labels, and color rules
 - [VALIDATION-SCENARIOS.md](docs/VALIDATION-SCENARIOS.md) - functional validation scenarios
 - [SCREEN-VALIDATION.md](docs/SCREEN-VALIDATION.md) - screenshot and accessibility evidence
 - [GRAPH-WORKFLOW.md](docs/GRAPH-WORKFLOW.md) - graph traversal and workflow contract
