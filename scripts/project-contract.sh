@@ -40,6 +40,7 @@ done
 expect_file scripts/app-accessibility-smoke.sh
 expect_file scripts/app-accessibility-evidence-review.sh
 expect_file scripts/app-design-contract.sh
+expect_file scripts/release-signing-readiness.sh
 
 echo "1) project goals contract..."
 for goal in G1 G2 G3 G4 G5 G6 G7 G8; do
@@ -151,6 +152,7 @@ expect_file_contains Makefile "app-design-contract"
 expect_file_contains Makefile "app-screen-evidence"
 expect_file_contains Makefile "app-screen-evidence-review"
 expect_file_contains Makefile "release-smoke"
+expect_file_contains Makefile "release-signing-readiness"
 expect_file_contains scripts/app-window-smoke.sh "stable on-screen window"
 expect_file_contains scripts/app-window-smoke.sh "KEYDEX_APP_WINDOW_PRESET=default"
 expect_file_contains scripts/app-accessibility-contract.sh "keydex.inventory.table"
@@ -204,7 +206,11 @@ expect_file_contains scripts/release-smoke.sh "dmg="
 expect_file_contains scripts/release-smoke.sh "dmg_checksum="
 expect_file_contains scripts/release-smoke.sh "known_limits=app bundle signed ad-hoc (unsigned identity); unsigned DMG; Developer ID signing and notarization remain future gates"
 expect_file_contains scripts/release-smoke.sh "dmg_path"
+expect_file_contains scripts/release-signing-readiness.sh "Developer ID Application"
+expect_file_contains scripts/release-signing-readiness.sh "notarytool"
+expect_file_contains scripts/release-signing-readiness.sh "stapler"
 expect_file_contains docs/RELEASE-READINESS.md "make release-smoke"
+expect_file_contains docs/RELEASE-READINESS.md "make release-signing-readiness"
 expect_file_contains docs/RELEASE-READINESS.md "make app-screen-evidence-review"
 expect_file_contains scripts/quality.sh "scripts/app-accessibility-contract.sh"
 expect_file_contains scripts/quality.sh "scripts/app-design-contract.sh"

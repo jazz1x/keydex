@@ -22,6 +22,15 @@ secret-bearing, account-specific boundary.
 | Team ID | `TEAMID` | Reference only; not a secret value. |
 | Release DMG | `tmp/release-smoke/keydex-<sha>-Darwin-arm64.dmg` | Generated artifact, not committed. |
 
+Before attempting the signing flow, run:
+
+```bash
+make release-signing-readiness
+```
+
+This command only checks local prerequisites. It does not submit artifacts, read secret
+values, or replace the signing and notarization evidence below.
+
 ## Credential Setup
 
 Create or update the notary profile interactively:

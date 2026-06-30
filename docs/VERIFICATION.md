@@ -20,6 +20,7 @@ prove its own contract will drift into wishful UI.
 | Quality | `make quality` | CLI docs, state taxonomy, workflow wiring, and project contract. |
 | CLI Smoke | `scripts/cli-smoke.sh` | Fixture-backed `list`, `where`, `doctor`, and `scan config` outputs. |
 | Release Smoke | `scripts/release-smoke.sh` | Release-mode artifacts bundle locally, ad-hoc sign cleanly, create unsigned DMG smoke evidence, checksum cleanly, and omit fixture metadata. |
+| Release Signing Readiness | `scripts/release-signing-readiness.sh` | Local Developer ID Application identity and Apple notarization tools exist before public app signing. |
 | Security | GitHub Actions `gitleaks` and `trivy` | Secret leaks, high-risk dependency and config findings. |
 | Branch Protection | GitHub `main` protection | Required checks, PR flow, linear history, and force-push prevention. |
 

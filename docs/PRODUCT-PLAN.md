@@ -68,7 +68,7 @@ Keydex is complete when it can safely answer:
 | M2 | Complete for graph-based findings. |
 | M3 | Complete for metadata-backed CLI commands and keychain reconciliation. |
 | M4 | In progress with SwiftUI shell, graph-derived inventory surfaces, accessibility contract, runtime accessibility smoke, local screen evidence scenarios, screen evidence review gate, design contract, and accessibility evidence review gate. |
-| M5 | In progress with local release smoke artifacts, ad-hoc app codesign evidence, unsigned DMG evidence, and checksum evidence; Developer ID signing and notarization remain incomplete. |
+| M5 | In progress with local release smoke artifacts, ad-hoc app codesign evidence, unsigned DMG evidence, checksum evidence, and signing readiness gate; Developer ID signing and notarization remain incomplete. |
 
 ## Release Shape
 
