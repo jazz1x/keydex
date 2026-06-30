@@ -41,6 +41,7 @@ values.
 | Drift and contracts | `make quality`. |
 | Release artifact smoke | `make release-smoke`. |
 | Signing readiness | `make release-signing-readiness` before public app release. |
+| Signing evidence | `make release-signing-evidence-review` before claiming a trusted Mac app release. |
 | Required CI | `guard`, `quality`, `release-smoke`, `gitleaks`, `trivy`. |
 | Screen evidence | `scripts/app-screen-evidence.sh` local output plus `make app-screen-evidence-review` before app release. |
 | Security boundary | `gitleaks`, `trivy`, forbidden-pattern scan, release artifact inspection. |

@@ -42,6 +42,8 @@ expect_file scripts/app-accessibility-evidence-template.sh
 expect_file scripts/app-accessibility-evidence-review.sh
 expect_file scripts/app-design-contract.sh
 expect_file scripts/release-signing-readiness.sh
+expect_file scripts/release-signing-evidence-template.sh
+expect_file scripts/release-signing-evidence-review.sh
 
 echo "1) project goals contract..."
 for goal in G1 G2 G3 G4 G5 G6 G7 G8; do
@@ -155,6 +157,8 @@ expect_file_contains Makefile "app-screen-evidence"
 expect_file_contains Makefile "app-screen-evidence-review"
 expect_file_contains Makefile "release-smoke"
 expect_file_contains Makefile "release-signing-readiness"
+expect_file_contains Makefile "release-signing-evidence-template"
+expect_file_contains Makefile "release-signing-evidence-review"
 expect_file_contains scripts/app-window-smoke.sh "stable on-screen window"
 expect_file_contains scripts/app-window-smoke.sh "KEYDEX_APP_WINDOW_PRESET=default"
 expect_file_contains scripts/app-accessibility-contract.sh "keydex.inventory.table"
@@ -217,8 +221,16 @@ expect_file_contains scripts/release-smoke.sh "dmg_path"
 expect_file_contains scripts/release-signing-readiness.sh "Developer ID Application"
 expect_file_contains scripts/release-signing-readiness.sh "notarytool"
 expect_file_contains scripts/release-signing-readiness.sh "stapler"
+expect_file_contains scripts/release-signing-evidence-template.sh "developer_id_identity=pending"
+expect_file_contains scripts/release-signing-evidence-template.sh "notarization=pending"
+expect_file_contains scripts/release-signing-evidence-template.sh "stapler_validate=pending"
+expect_file_contains scripts/release-signing-evidence-review.sh "developer_id_identity=pass"
+expect_file_contains scripts/release-signing-evidence-review.sh "Developer ID Application"
+expect_file_contains scripts/release-signing-evidence-review.sh "xcrun stapler validate"
 expect_file_contains docs/RELEASE-READINESS.md "make release-smoke"
 expect_file_contains docs/RELEASE-READINESS.md "make release-signing-readiness"
+expect_file_contains docs/RELEASE-READINESS.md "make release-signing-evidence-template"
+expect_file_contains docs/RELEASE-READINESS.md "make release-signing-evidence-review"
 expect_file_contains docs/RELEASE-READINESS.md "make app-screen-evidence-review"
 expect_file_contains scripts/quality.sh "scripts/app-accessibility-contract.sh"
 expect_file_contains scripts/quality.sh "scripts/app-design-contract.sh"

@@ -31,6 +31,12 @@ make release-signing-readiness
 This command only checks local prerequisites. It does not submit artifacts, read secret
 values, or replace the signing and notarization evidence below.
 
+Create a local evidence shell before filling final release evidence:
+
+```bash
+make release-signing-evidence-template
+```
+
 ## Credential Setup
 
 Create or update the notary profile interactively:
@@ -93,6 +99,15 @@ xcrun stapler validate tmp/release-smoke/keydex-<sha>-Darwin-arm64.dmg
 | Stapled ticket | `xcrun stapler validate`. |
 | Artifact checksum | `shasum -a 256`. |
 | Release notes | `RELEASE-CANDIDATE.md`. |
+
+After the evidence fields and notes are filled, run:
+
+```bash
+make release-signing-evidence-review
+```
+
+The review gate must pass before `RELEASE-CANDIDATE.md` can claim public Mac app signing
+and notarization are complete.
 
 ## References
 

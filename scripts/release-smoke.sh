@@ -14,6 +14,31 @@ command -v hdiutil >/dev/null 2>&1 || fail "missing dependency: hdiutil"
 command -v plutil >/dev/null 2>&1 || fail "missing dependency: plutil"
 command -v codesign >/dev/null 2>&1 || fail "missing dependency: codesign"
 
+verify_dmg() {
+  local path="$1"
+  local output=""
+
+  for attempt in 1 2 3 4 5; do
+    if output="$(hdiutil verify "$path" 2>&1)"; then
+      printf '%s\n' "$output"
+      return 0
+    fi
+
+    case "$output" in
+      *"Resource temporarily unavailable"*)
+        sleep 1
+        ;;
+      *)
+        printf '%s\n' "$output" >&2
+        return 1
+        ;;
+    esac
+  done
+
+  printf '%s\n' "$output" >&2
+  return 1
+}
+
 sha="$(git rev-parse --short HEAD)"
 platform="$(uname -s)-$(uname -m)"
 output_root="${KEYDEX_RELEASE_SMOKE_DIR:-tmp/release-smoke}"
@@ -81,7 +106,7 @@ codesign --verify --deep --strict "$payload_dir/Keydex.app"
 } >"$payload_dir/manifest.txt"
 
 hdiutil create -volname "Keydex" -srcfolder "$payload_dir/Keydex.app" -ov -format UDZO "$dmg_path"
-hdiutil verify "$dmg_path"
+verify_dmg "$dmg_path"
 shasum -a 256 "$dmg_path" >"$dmg_checksum_path"
 shasum -a 256 -c "$dmg_checksum_path" >/dev/null
 
