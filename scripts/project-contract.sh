@@ -140,6 +140,7 @@ expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift "SettingsP
 expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift "InventoryGraph(records: [])"
 expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift ".accessibilityIdentifier(\"keydex.shell\")"
 expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift "KEYDEX_APP_INVENTORY_MODE"
+expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift ".state(.duplicate)"
 expect_file_contains Sources/KeydexCore/Doctor.swift "inspect(_ graph: InventoryGraph)"
 expect_file_contains Sources/KeydexCore/Doctor.swift "credential: CredentialRef"
 expect_file_contains Sources/keydex/main.swift "CredentialDoctor().inspect(graph)"
