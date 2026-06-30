@@ -28,6 +28,7 @@ for identifier in \
   keydex.toolbar.inventory-mode \
   keydex.toolbar.settings \
   keydex.inspector \
+  keydex.settings.section-picker \
   keydex.settings.panel; do
   expect_file_contains "$app_source" ".accessibilityIdentifier(\"$identifier\")"
 done
@@ -39,6 +40,7 @@ for label in \
   "Credential inventory table" \
   "Credential repair queue" \
   "Credential inspector" \
+  "Settings section" \
   "Keydex settings"; do
   expect_file_contains "$app_source" ".accessibilityLabel(\"$label\")"
 done

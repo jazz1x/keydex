@@ -82,7 +82,7 @@ before permissioned screenshot or VoiceOver evidence is attached.
 | UI5 | Duplicate credential | `default-window` | Screenshot with duplicate state and relationship evidence. |
 | UI6 | Inspector sources | `inspector` | Screenshot showing stored/observed source relationships. |
 | UI7 | Doctor queue | `default-window` | Screenshot with grouped cause/action findings. |
-| UI8 | Settings permissions | `settings` | Screenshot of Keychain access and scan path settings. |
+| UI8 | Settings permissions and rules | `settings`, `settings-sources`, `settings-paths`, `settings-rules` | Screenshots of Keychain access, scan sources, scan paths, ignored sources, and unmanaged sources. |
 | UI9 | Search/filter | `search-filter` | Screenshot after graph projection filtering; compare with `default-window`. |
 | UI10 | Compact viewport | `compact-window` | Screenshot proving no overlap. |
 

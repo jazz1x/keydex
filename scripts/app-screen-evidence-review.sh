@@ -47,6 +47,9 @@ review_scenario empty-inventory empty default
 review_scenario search-filter sample default
 review_scenario inspector sample default
 review_scenario settings sample default
+review_scenario settings-sources sample default
+review_scenario settings-paths sample default
+review_scenario settings-rules sample default
 review_scenario compact-window sample compact
 
 echo "app screen evidence review clean"

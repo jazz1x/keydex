@@ -74,6 +74,9 @@ list_scenarios() {
     search-filter \
     inspector \
     settings \
+    settings-sources \
+    settings-paths \
+    settings-rules \
     compact-window
 }
 
@@ -97,7 +100,7 @@ case "$scenario" in
   search-filter | inspector)
     inventory_mode="sample"
     ;;
-  settings)
+  settings | settings-sources | settings-paths | settings-rules)
     inventory_mode="sample"
     window_selector="settings"
     ;;
@@ -106,7 +109,7 @@ case "$scenario" in
     window_preset="compact"
     ;;
   *)
-    fail "unknown screen evidence scenario: $scenario. Supported scenarios: default-window, empty-inventory, search-filter, inspector, settings, compact-window"
+    fail "unknown screen evidence scenario: $scenario. Supported scenarios: default-window, empty-inventory, search-filter, inspector, settings, settings-sources, settings-paths, settings-rules, compact-window"
     ;;
 esac
 

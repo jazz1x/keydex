@@ -83,6 +83,7 @@ struct CredentialInventoryShellView: View {
   @State private var selectedCredentialID: CredentialRow.ID?
   @State private var searchText: String
   @State private var isShowingSettings: Bool
+  @State private var selectedSettingsSection: SettingsSection
   @State private var inventoryMode: InventoryMode
 
   init() {
@@ -94,6 +95,7 @@ struct CredentialInventoryShellView: View {
     _selectedCredentialID = State(initialValue: initialScenario.selectedCredentialID)
     _searchText = State(initialValue: initialScenario.searchText)
     _isShowingSettings = State(initialValue: initialScenario.showsSettings)
+    _selectedSettingsSection = State(initialValue: initialScenario.settingsSection)
     _inventoryMode = State(initialValue: initialMode)
   }
 
@@ -325,8 +327,11 @@ struct CredentialInventoryShellView: View {
       selectedCredentialID = nil
     }
     .sheet(isPresented: $isShowingSettings) {
-      SettingsPanel(sample: sampleSettingsData())
-        .frame(minWidth: 560, minHeight: 480)
+      SettingsPanel(
+        sample: sampleSettingsData(),
+        selectedSection: $selectedSettingsSection
+      )
+      .frame(minWidth: 560, minHeight: 480)
     }
   }
 
@@ -379,6 +384,9 @@ private enum AppScreenScenario: String, CaseIterable {
   case searchFilter = "search-filter"
   case inspector
   case settings
+  case settingsSources = "settings-sources"
+  case settingsPaths = "settings-paths"
+  case settingsRules = "settings-rules"
   case compactWindow = "compact-window"
 
   static var supportedValues: String {
@@ -389,7 +397,8 @@ private enum AppScreenScenario: String, CaseIterable {
     switch self {
     case .emptyInventory:
       .empty
-    case .defaultWindow, .searchFilter, .inspector, .settings, .compactWindow:
+    case .defaultWindow, .searchFilter, .inspector, .settings, .settingsSources,
+      .settingsPaths, .settingsRules, .compactWindow:
       .sample
     }
   }
@@ -398,7 +407,8 @@ private enum AppScreenScenario: String, CaseIterable {
     switch self {
     case .searchFilter:
       .state(.plaintextFallback)
-    case .defaultWindow, .emptyInventory, .inspector, .settings, .compactWindow:
+    case .defaultWindow, .emptyInventory, .inspector, .settings, .settingsSources,
+      .settingsPaths, .settingsRules, .compactWindow:
       .all
     }
   }
@@ -407,7 +417,8 @@ private enum AppScreenScenario: String, CaseIterable {
     switch self {
     case .inspector:
       "hashicorp-vault|infra"
-    case .defaultWindow, .emptyInventory, .searchFilter, .settings, .compactWindow:
+    case .defaultWindow, .emptyInventory, .searchFilter, .settings, .settingsSources,
+      .settingsPaths, .settingsRules, .compactWindow:
       nil
     }
   }
@@ -416,17 +427,33 @@ private enum AppScreenScenario: String, CaseIterable {
     switch self {
     case .searchFilter:
       "github"
-    case .defaultWindow, .emptyInventory, .inspector, .settings, .compactWindow:
+    case .defaultWindow, .emptyInventory, .inspector, .settings, .settingsSources,
+      .settingsPaths, .settingsRules, .compactWindow:
       ""
     }
   }
 
   var showsSettings: Bool {
     switch self {
-    case .settings:
+    case .settings, .settingsSources, .settingsPaths, .settingsRules:
       true
     case .defaultWindow, .emptyInventory, .searchFilter, .inspector, .compactWindow:
       false
+    }
+  }
+
+  var settingsSection: SettingsSection {
+    switch self {
+    case .settings:
+      .permissions
+    case .settingsSources:
+      .sources
+    case .settingsPaths:
+      .paths
+    case .settingsRules:
+      .rules
+    case .defaultWindow, .emptyInventory, .searchFilter, .inspector, .compactWindow:
+      .permissions
     }
   }
 }
@@ -781,6 +808,28 @@ private struct ShellSettingsConfig {
   let unmanagedSources: [String]
 }
 
+private enum SettingsSection: String, CaseIterable, Identifiable {
+  case permissions
+  case sources
+  case paths
+  case rules
+
+  var id: String { rawValue }
+
+  var title: String {
+    switch self {
+    case .permissions:
+      "Permissions"
+    case .sources:
+      "Sources"
+    case .paths:
+      "Paths"
+    case .rules:
+      "Rules"
+    }
+  }
+}
+
 private func sampleSettingsData() -> ShellSettingsConfig {
   ShellSettingsConfig(
     keychainPermissionState: "Read-only sample scope",
@@ -826,6 +875,7 @@ private func sampleSettingsData() -> ShellSettingsConfig {
 
 private struct SettingsPanel: View {
   let sample: ShellSettingsConfig
+  @Binding var selectedSection: SettingsSection
 
   var body: some View {
     VStack(alignment: .leading, spacing: 16) {
@@ -834,63 +884,79 @@ private struct SettingsPanel: View {
         .padding(.top, 12)
         .padding(.horizontal, 16)
 
-      Form {
-        Section("Keychain Permission") {
-          LabeledContent("Current status") {
-            Text(sample.keychainPermissionState)
-              .foregroundStyle(.secondary)
-          }
-          Toggle("Enable keychain access", isOn: .constant(sample.keychainAccess))
-            .disabled(true)
-          Toggle("Request runtime keychain prompt", isOn: .constant(sample.requestPrompt))
-            .disabled(true)
+      Picker("Settings section", selection: $selectedSection) {
+        ForEach(SettingsSection.allCases) { section in
+          Text(section.title).tag(section)
         }
+      }
+      .pickerStyle(.segmented)
+      .padding(.horizontal, 16)
+      .accessibilityIdentifier("keydex.settings.section-picker")
+      .accessibilityLabel("Settings section")
 
-        Section("Scan Sources") {
-          ForEach(sample.scanSources) { source in
-            Toggle(isOn: .constant(source.enabled)) {
-              VStack(alignment: .leading, spacing: 2) {
-                Text(source.title)
-                  .font(.subheadline)
-                Text(source.detail)
+      Form {
+        switch selectedSection {
+        case .permissions:
+          Section("Keychain Permission") {
+            LabeledContent("Current status") {
+              Text(sample.keychainPermissionState)
+                .foregroundStyle(.secondary)
+            }
+            Toggle("Enable keychain access", isOn: .constant(sample.keychainAccess))
+              .disabled(true)
+            Toggle("Request runtime keychain prompt", isOn: .constant(sample.requestPrompt))
+              .disabled(true)
+          }
+
+        case .sources:
+          Section("Scan Sources") {
+            ForEach(sample.scanSources) { source in
+              Toggle(isOn: .constant(source.enabled)) {
+                VStack(alignment: .leading, spacing: 2) {
+                  Text(source.title)
+                    .font(.subheadline)
+                  Text(source.detail)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
+              }
+              .disabled(true)
+            }
+          }
+
+        case .paths:
+          Section("Scan Paths") {
+            ForEach(sample.scanPaths, id: \.self) { path in
+              TextField("Path", text: .constant(path))
+                .textFieldStyle(.roundedBorder)
+                .disabled(true)
+                .font(.system(.body, design: .monospaced))
+            }
+          }
+
+        case .rules:
+          if !sample.ignoredSources.isEmpty || !sample.unmanagedSources.isEmpty {
+            Section("Ignored / unmanaged sources") {
+              if !sample.ignoredSources.isEmpty {
+                Text("Ignored")
+                  .font(.subheadline.weight(.medium))
+              }
+              ForEach(sample.ignoredSources, id: \.self) { source in
+                Text(source)
                   .font(.caption)
                   .foregroundStyle(.secondary)
               }
-            }
-            .disabled(true)
-          }
-        }
 
-        Section("Scan Paths") {
-          ForEach(sample.scanPaths, id: \.self) { path in
-            TextField("Path", text: .constant(path))
-              .textFieldStyle(.roundedBorder)
-              .disabled(true)
-              .font(.system(.body, design: .monospaced))
-          }
-        }
-
-        if !sample.ignoredSources.isEmpty || !sample.unmanagedSources.isEmpty {
-          Section("Ignored / unmanaged sources") {
-            if !sample.ignoredSources.isEmpty {
-              Text("Ignored")
-                .font(.subheadline.weight(.medium))
-            }
-            ForEach(sample.ignoredSources, id: \.self) { source in
-              Text(source)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            }
-
-            if !sample.unmanagedSources.isEmpty {
-              Text("Unmanaged")
-                .font(.subheadline.weight(.medium))
-                .padding(.top, 4)
-            }
-            ForEach(sample.unmanagedSources, id: \.self) { source in
-              Text(source)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+              if !sample.unmanagedSources.isEmpty {
+                Text("Unmanaged")
+                  .font(.subheadline.weight(.medium))
+                  .padding(.top, 4)
+              }
+              ForEach(sample.unmanagedSources, id: \.self) { source in
+                Text(source)
+                  .font(.caption)
+                  .foregroundStyle(.secondary)
+              }
             }
           }
         }
