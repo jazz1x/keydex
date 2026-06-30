@@ -40,6 +40,7 @@ CLI, app, and release evidence.
 | `scan env` | Fixture environment produces graph summary. |
 | `scan shell` | Fixture profile produces graph summary. |
 | `scan config` | Fixture config file produces graph summary. |
+| `scan keychain` | Keychain item references produce orphan graph summary without values. |
 | `list` | Metadata fixture graph prints rows. |
 | `where` | Metadata fixture graph prints source relationships. |
 | `doctor` | Metadata fixture graph prints findings. |

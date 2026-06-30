@@ -1,6 +1,7 @@
 import ArgumentParser
 import Foundation
 import KeydexCore
+import KeydexKeychain
 import KeydexSources
 import KeydexStore
 
@@ -131,7 +132,7 @@ struct Scan: ParsableCommand {
   static let configuration = CommandConfiguration(
     abstract: "Scan local configuration for credential hints.")
 
-  @Argument(help: "Scan target: env, shell, or config.")
+  @Argument(help: "Scan target: env, shell, config, or keychain.")
   var target: String
 
   @Option(help: "Config file path to scan. Repeat for multiple files.")
@@ -170,8 +171,18 @@ struct Scan: ParsableCommand {
         graph: \(summary.locationCount) sources, \(summary.edgeCount) edges
         """
       )
+    case "keychain":
+      let references = try MacOSKeychain().inventoryReferences()
+      let observations = KeychainInventoryScanner().observations(from: references)
+      let summary = InventoryGraph(observations: observations).summary
+      print(
+        """
+        keydex scan keychain: \(summary.credentialCount) credential references
+        graph: \(summary.locationCount) sources, \(summary.edgeCount) edges
+        """
+      )
     default:
-      throw ValidationError("scan target must be env, shell, or config")
+      throw ValidationError("scan target must be env, shell, config, or keychain")
     }
   }
 

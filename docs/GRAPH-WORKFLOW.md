@@ -67,9 +67,11 @@ The first graph implementation is intentionally small:
 - environment variable scanning through `EnvironmentScanner`
 - shell profile scanning through `ShellProfileScanner`
 - config file scanning through `ConfigFileScanner`
+- Keychain item reference scanning through `KeychainInventoryScanner`
 - `scan env` projects observations through `InventoryGraph`
 - `scan shell` projects observations through `InventoryGraph`
 - `scan config` projects observations through `InventoryGraph`
+- `scan keychain` projects item references through `InventoryGraph`
 - `list` and `where` project credentials through `CredentialProjection`
 - doctor findings through `CredentialDoctor.inspect(InventoryGraph)`
 
