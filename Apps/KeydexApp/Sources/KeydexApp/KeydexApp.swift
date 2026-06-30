@@ -14,6 +14,7 @@ struct KeydexApp: App {
 struct CredentialInventoryShellView: View {
   @State private var selectedSidebar = SidebarSelection.all
   @State private var selectedCredentialID: CredentialRow.ID?
+  @State private var searchText = ""
 
   private let graph = sampleCredentialGraph()
 
@@ -34,6 +35,7 @@ struct CredentialInventoryShellView: View {
 
   private var rows: [CredentialRow] {
     projectedCredentials(for: selectedSidebar)
+      .filter { rowMatchesSearch($0) }
       .map(CredentialRow.init)
       .sorted { lhs, rhs in
         if lhs.service == rhs.service {
@@ -85,6 +87,7 @@ struct CredentialInventoryShellView: View {
             Text("\(row.locations.count)")
           }
         }
+        .searchable(text: $searchText, prompt: "Find service, account, state, location")
         .navigationTitle(selectedSidebar.title)
         .font(.system(.body, design: .monospaced))
         .frame(minHeight: 320)
@@ -147,6 +150,21 @@ struct CredentialInventoryShellView: View {
     case .service(let service):
       projectedCredentials.filter { $0.ref.service.value == service }
     }
+  }
+
+  private func rowMatchesSearch(_ projection: CredentialProjection) -> Bool {
+    let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+    let normalizedQuery = trimmed.lowercased()
+    let searchHaystack = [
+      projection.ref.service.value,
+      projection.ref.account.value,
+      projection.states.map { $0.rawValue }.joined(separator: " "),
+      projection.locations.map(locationLabel).joined(separator: " "),
+    ]
+    .joined(separator: " ")
+    .lowercased()
+
+    return trimmed.isEmpty || searchHaystack.contains(normalizedQuery)
   }
 }
 

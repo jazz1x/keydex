@@ -64,6 +64,8 @@ The first CLI smoke gate is `scripts/cli-smoke.sh`. It uses tracked fixtures in
 
 The first Doctor panel shell must read `CredentialDoctor().inspect(graph)` so repair
 queue rows stay graph-derived.
+The first search shell must filter `CredentialProjection` rows by service, account,
+state, and source label without creating a separate list source of truth.
 
 ## Completion Rule
 
