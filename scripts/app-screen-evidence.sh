@@ -70,10 +70,12 @@ window_report() {
 list_scenarios() {
   printf '%s\n' \
     default-window \
+    card-view \
     empty-inventory \
     search-filter \
     inspector \
     settings \
+    settings-appearance \
     settings-sources \
     settings-paths \
     settings-rules \
@@ -94,13 +96,16 @@ case "$scenario" in
   default-window)
     inventory_mode="sample"
     ;;
+  card-view)
+    inventory_mode="sample"
+    ;;
   empty-inventory)
     inventory_mode="empty"
     ;;
   search-filter | inspector)
     inventory_mode="sample"
     ;;
-  settings | settings-sources | settings-paths | settings-rules)
+  settings | settings-appearance | settings-sources | settings-paths | settings-rules)
     inventory_mode="sample"
     window_selector="settings"
     ;;
@@ -109,7 +114,7 @@ case "$scenario" in
     window_preset="compact"
     ;;
   *)
-    fail "unknown screen evidence scenario: $scenario. Supported scenarios: default-window, empty-inventory, search-filter, inspector, settings, settings-sources, settings-paths, settings-rules, compact-window"
+    fail "unknown screen evidence scenario: $scenario. Supported scenarios: default-window, card-view, empty-inventory, search-filter, inspector, settings, settings-appearance, settings-sources, settings-paths, settings-rules, compact-window"
     ;;
 esac
 

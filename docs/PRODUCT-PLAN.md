@@ -47,6 +47,7 @@ Keydex is complete when it can safely answer:
 | No vault | Secret values stay in Keychain or explicit external secret stores. |
 | Repair oriented | Unhealthy states lead to cause and action, not just warning labels. |
 | Native Mac | The UI feels like a focused Mac utility, not a dashboard or web shell. |
+| Appearance behavior | The app uses only system light/dark and standard Mac material; no custom color theme. |
 
 ## Milestone Plan
 
@@ -56,7 +57,7 @@ Keydex is complete when it can safely answer:
 | M1 Inventory Graph | Observations become graph nodes and edges | Env and shell observations produce graph summaries. |
 | M2 Doctor | Graph states become findings | Doctor emits severity, credential, state, cause, action, and locations. |
 | M3 CLI | Daily CLI workflows work | `scan`, `list`, `where`, and `doctor` operate over graph/store fixtures. |
-| M4 Mac App | Native SwiftUI inventory app | Sidebar, table, inspector, doctor panel, settings, screen validation pass. |
+| M4 Mac App | Native SwiftUI inventory app | Sidebar search and grouped list/card sections, inspector, doctor panel, settings, screen validation pass. |
 | M5 Distribution | Downloadable app and CLI release | Release readiness evidence is complete. |
 
 ## Current Position

@@ -43,15 +43,28 @@ reject_file_contains() {
 echo "1) native Mac utility structure..."
 for needle in \
   "NavigationSplitView" \
-  ".listStyle(.sidebar)" \
+  "MusicSidebarView" \
+  "MusicSidebarSection" \
+  "MusicSidebarRow" \
   "Table(rows" \
-  ".searchable(" \
+  "CredentialCardGrid" \
+  "CredentialInspectorPanel" \
+  "GraphBackdropView" \
+  "InventoryDisplayMode" \
+  "TextField(\"Search\"" \
   "ToolbarItem" \
   "ContentUnavailableView" \
   "ScrollView {" \
   "SettingsGlassSection" \
   "SettingsStatusPill" \
+  "SettingsDisplayModeRow" \
   ".pickerStyle(.segmented)" \
+  ".keydexGlassButton(" \
+  ".keydexGlassCard(" \
+  ".keydexFloatingGlassPanel(" \
+  ".buttonStyle(.glass" \
+  ".buttonStyle(.glassProminent" \
+  ".glassEffect(.regular" \
   ".background(.regularMaterial" \
   ".background(.ultraThinMaterial)" \
   ".background(.thinMaterial" \
@@ -66,8 +79,8 @@ for needle in \
   "canonicalStateLabel" \
   "stateTint(for:" \
   "doctorSeverityTint" \
-  "cause: \\(row.issue.message)" \
-  "action: \\(row.issue.action)" \
+  "primaryIssue.issue.action" \
+  "Cause: \\(issue.message). Action: \\(issue.action)." \
   ".textSelection(.enabled)"; do
   expect_file_contains "$app_source" "$needle"
 done
@@ -78,6 +91,7 @@ for needle in \
   "Graph visible" \
   "Risk without theater" \
   "Liquid Glass Rules" \
+  "Inventory Cards" \
   "No dashboard theater" \
   "No decorative cards inside cards"; do
   expect_any_file_contains "$needle" docs/DESIGN-SYSTEM.md docs/DESIGN-FOUNDATION.md

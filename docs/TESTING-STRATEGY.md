@@ -17,13 +17,14 @@ CLI, app, and release evidence.
 | App screen tests | Prove SwiftUI surfaces render the graph truth. |
 | Release smoke tests | Prove local release artifacts build, bundle, ad-hoc sign, create DMG, run, checksum, and omit fixture metadata. |
 
-## Required Test Themes
+## Required Test Axes
 
-| Theme | Required Evidence |
+| Axis | Required Evidence |
 | --- | --- |
 | Parse don't validate | Raw text becomes typed values at boundaries. |
 | Graph projection | Commands and screens read graph output. |
 | Secret boundary | Values are input only; metadata and output omit them. |
+| System appearance | App renders with system light and dark appearance without custom color variants. |
 | State truth | Canonical state names stay stable. |
 | Cause/action | Doctor issues explain repair. |
 | UI fit | Screens do not overlap or truncate critical text. |
@@ -58,7 +59,10 @@ The first CLI smoke gate is `scripts/cli-smoke.sh`. It uses tracked fixtures in
 | Surface | Minimum Test |
 | --- | --- |
 | Sidebar | Scope selection changes graph projection. |
+| Sidebar search | Search narrows the current projection without introducing separate list source. |
 | Table | Rows show canonical state and source counts. |
+| Card/list modes | Inventory mode switch preserves filtered projection and selected rows. |
+| Row grouping | Grouped library rows expose context without creating custom hierarchy visuals. |
 | Inspector | Selection shows relationships. |
 | Doctor panel | Findings show cause and action. |
 | Settings | Scan path and permission controls render. |

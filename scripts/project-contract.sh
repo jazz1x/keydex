@@ -181,10 +181,12 @@ expect_file_contains scripts/app-screen-evidence.sh "screencapture"
 expect_file_contains scripts/app-screen-evidence.sh "--list"
 for scenario in \
   default-window \
+  card-view \
   empty-inventory \
   search-filter \
   inspector \
   settings \
+  settings-appearance \
   settings-sources \
   settings-paths \
   settings-rules \

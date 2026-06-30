@@ -18,8 +18,9 @@ and honest about risk.
 | Token | Value | Use |
 | --- | --- | --- |
 | `surface.primary` | system background | main content |
-| `surface.sidebar` | Liquid Glass material | navigation and scope filters |
+| `surface.sidebar` | Liquid Glass material | sidebar search, navigation, and scope filters |
 | `surface.inspector` | Liquid Glass material | selected item detail |
+| `surface.card` | regular material, 8 px radius | inventory cards and grouped settings only |
 | `text.primary` | label | credential names and actions |
 | `text.secondary` | secondary label | metadata and source paths |
 | `risk.info` | blue | neutral findings |
@@ -29,17 +30,19 @@ and honest about risk.
 | `spacing.panel` | 16 px | inspector and popover padding |
 | `radius.control` | system default | buttons, fields, segmented controls |
 | `radius.card` | 8 px max | repeated issue rows only |
+| `appearance.mode` | system light/dark | no product-level custom palettes |
 
 ## App Surfaces
 
 | Surface | Role | Required Controls |
 | --- | --- | --- |
 | Sidebar | Scope navigation | All, Expiring, Plaintext, Orphans, Duplicates, Services, Tags |
-| Toolbar | Global actions | search, scan, register, doctor, settings |
-| Inventory Table | Primary working view | sortable columns, state chips, source count, last observed |
+| Toolbar | Global actions | search, scan, register, display mode, doctor, settings |
+| Inventory Table | Primary working view | grouped list rows, selected pill, sortable columns, state chips, source count, last observed |
+| Inventory Cards | Secondary scan view | credential, state chips, Keychain badge, source previews |
 | Inspector | Relationship detail | credential, sources, graph edges, expiry, notes, actions |
 | Doctor Panel | Repair queue | severity groups, cause, action, affected nodes |
-| Settings | Permissions and rules | Keychain access, scan paths, ignored sources |
+| Settings | Permissions, appearance, and rules | Keychain access, system appearance mode, scan paths, ignored sources |
 
 ## Component Contracts
 
@@ -56,11 +59,25 @@ and honest about risk.
 
 - Use Liquid Glass for hierarchy: sidebar, toolbar, inspector, popovers, and command
   surfaces.
+- Apple Music for Mac is the local reference for layered glass: translucent sidebar,
+  floating command clusters, grouped library rows, selected-pill states, and bottom glass rails.
 - Settings uses a material header plus grouped list sections; repeated rows stay plain
   and editable.
+- Native glass buttons use `.glass` or `.glassProminent` when available, with system
+  button styles on older macOS versions.
+- Inventory cards use `glassEffect` when available, with material fallback on older
+  macOS versions.
+- The repair queue uses a floating glass rail instead of a hard split panel.
 - Do not use Liquid Glass for repeated table cells.
 - Do not hide text contrast behind material effects.
 - Keep risk colors outside decorative materials when legibility would suffer.
+
+## System Appearance
+
+- The app follows system appearance only (Light/Dark) and stays within system contrast settings.
+- Colors are semantically driven by state; risk semantics never depend on decorative accents.
+- Settings can select display mode but cannot enable custom app color schemes.
+- Avoid decorative gradients, orbs, and glow-only hierarchy.
 
 ## Interaction Rules
 
