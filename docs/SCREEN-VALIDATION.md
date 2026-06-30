@@ -76,6 +76,7 @@ required screenshot and accessibility evidence below.
 | Build shell | `swift build --product KeydexApp` | The SwiftUI app compiles against graph projections. |
 | Window shell | `scripts/app-window-smoke.sh` | The app launches and publishes the default window. |
 | Doctor shell | App source uses `CredentialDoctor().inspect(graph)` | The repair queue surface is graph-derived. |
+| Search shell | App source filters `CredentialProjection` rows | Search narrows graph projections without separate list truth. |
 
 ## Screen Review Checklist
 

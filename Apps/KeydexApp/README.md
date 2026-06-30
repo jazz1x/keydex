@@ -22,3 +22,5 @@ Notes:
 - It does not read secrets and does not access the live keychain.
 - It now renders a native Doctor panel in the shell (`CredentialDoctor().inspect(graph)`) showing
   severity, credential, state, cause, and action for each detected issue.
+- It also exposes a toolbar search to filter graph-derived credential rows by service, account,
+  state raw value, and source location labels.
