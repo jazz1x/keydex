@@ -56,6 +56,8 @@ for needle in \
   "CredentialInspectorPanel" \
   "InventoryBackdropView" \
   "InventoryDisplayMode" \
+  "isCardLibrarySurface" \
+  "KeydexCardGridLayout" \
   "KeydexRailLayout" \
   "KeydexCardArtworkLayout" \
   "sidebarMilkyWashLight = Color(red: 0.98" \
@@ -114,6 +116,8 @@ for needle in \
   "Liquid Glass Rules" \
   "Sidebar search is not a nested glass card" \
   "Music's Library and Playlist tile hierarchy" \
+  "Card mode uses a two-column Music-like library surface" \
+  "adaptive bounded columns" \
   "no second outer card shell" \
   "single poster frame only" \
   "music-player-like repair rail" \
