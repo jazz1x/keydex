@@ -392,7 +392,7 @@ private struct MusicSidebarView: View {
 
   var body: some View {
     ScrollView {
-      VStack(alignment: .leading, spacing: 18) {
+      VStack(alignment: .leading, spacing: KeydexSidebarLayout.sectionSpacing) {
         MusicSearchField(searchText: $searchText)
           .padding(.horizontal, 4)
           .padding(.top, 20)
@@ -430,10 +430,10 @@ private struct MusicSidebarView: View {
           }
         }
       }
-      .padding(.horizontal, 12)
-      .padding(.bottom, 18)
+      .padding(.horizontal, KeydexSidebarLayout.contentHorizontalPadding)
+      .padding(.bottom, KeydexSidebarLayout.contentBottomPadding)
     }
-    .background(.ultraThinMaterial)
+    .keydexSidebarGlass()
     .accessibilityIdentifier("keydex.sidebar.scopes")
     .accessibilityLabel("Credential scopes")
     .navigationSplitViewColumnWidth(min: 220, ideal: 240, max: 280)
@@ -455,9 +455,7 @@ private struct MusicSearchField: View {
         .font(.title3)
         .accessibilityLabel("Search credentials")
     }
-    .padding(.horizontal, 12)
-    .frame(height: 40)
-    .keydexControlGlassPanel(cornerRadius: 12)
+    .keydexSidebarSearchRow()
     .accessibilityIdentifier("keydex.sidebar.search")
   }
 }
@@ -467,7 +465,7 @@ private struct MusicSidebarSection<Content: View>: View {
   @ViewBuilder var content: Content
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 6) {
+    VStack(alignment: .leading, spacing: KeydexSidebarLayout.titleSpacing) {
       if let title {
         Text(title)
           .font(.caption.weight(.semibold))
@@ -475,7 +473,7 @@ private struct MusicSidebarSection<Content: View>: View {
           .padding(.horizontal, 4)
       }
 
-      VStack(alignment: .leading, spacing: 2) {
+      VStack(alignment: .leading, spacing: KeydexSidebarLayout.rowSpacing) {
         content
       }
     }
@@ -494,8 +492,8 @@ private struct MusicSidebarRow: View {
         .foregroundStyle(selected ? Color.accentColor : .primary)
         .lineLimit(1)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
+        .padding(.horizontal, KeydexSidebarLayout.rowHorizontalPadding)
+        .frame(height: KeydexSidebarLayout.rowHeight)
         .background(rowBackground)
         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
@@ -831,7 +829,7 @@ private struct CredentialInventoryCard: View {
 
   private var cardStroke: Color {
     if isSelected {
-      return Color.accentColor
+      return Color.accentColor.opacity(0.65)
     }
 
     return KeydexGlassTone.panelStroke
@@ -2136,6 +2134,18 @@ private enum KeydexRailLayout {
   static let scrollContentBottomPadding: CGFloat = railHeight + bottomMargin + 56
 }
 
+private enum KeydexSidebarLayout {
+  static let contentHorizontalPadding: CGFloat = 12
+  static let contentBottomPadding: CGFloat = 18
+  static let sectionSpacing: CGFloat = 18
+  static let titleSpacing: CGFloat = 6
+  static let rowSpacing: CGFloat = 2
+  static let rowHeight: CGFloat = 34
+  static let rowHorizontalPadding: CGFloat = 10
+  static let searchRowHeight: CGFloat = 40
+  static let searchHorizontalPadding: CGFloat = 10
+}
+
 private struct KeydexGlassButtonModifier: ViewModifier {
   let prominent: Bool
 
@@ -2179,7 +2189,7 @@ private struct KeydexContentPanelModifier: ViewModifier {
         content
           .glassEffect(.regular.tint(KeydexGlassTone.contentGlassTint).interactive(), in: shape)
           .overlay {
-            shape.stroke(stroke, lineWidth: selected ? 2 : 1)
+            shape.stroke(stroke, lineWidth: selected ? 1.5 : 1)
           }
       } else {
         fallback(content: content, in: shape)
@@ -2194,7 +2204,7 @@ private struct KeydexContentPanelModifier: ViewModifier {
     content
       .background(KeydexGlassTone.contentPanelFill, in: shape)
       .overlay {
-        shape.stroke(stroke, lineWidth: selected ? 2 : 1)
+        shape.stroke(stroke, lineWidth: selected ? 1.5 : 1)
       }
   }
 }
@@ -2305,6 +2315,50 @@ private struct KeydexFloatingGlassPanelModifier: ViewModifier {
   }
 }
 
+private struct KeydexSidebarGlassModifier: ViewModifier {
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    #if compiler(>=6.2)
+      if #available(macOS 26.0, *) {
+        content
+          .background(.ultraThinMaterial)
+          .backgroundExtensionEffect()
+          .overlay(alignment: .trailing) {
+            sidebarDivider
+          }
+      } else {
+        fallback(content: content)
+      }
+    #else
+      fallback(content: content)
+    #endif
+  }
+
+  @ViewBuilder
+  private func fallback(content: Content) -> some View {
+    content
+      .background(.ultraThinMaterial)
+      .overlay(alignment: .trailing) {
+        sidebarDivider
+      }
+  }
+
+  private var sidebarDivider: some View {
+    Rectangle()
+      .fill(.separator.opacity(0.22))
+      .frame(width: 1)
+  }
+}
+
+private struct KeydexSidebarSearchRowModifier: ViewModifier {
+  func body(content: Content) -> some View {
+    content
+      .padding(.horizontal, KeydexSidebarLayout.searchHorizontalPadding)
+      .frame(height: KeydexSidebarLayout.searchRowHeight)
+      .contentShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+  }
+}
+
 extension View {
   fileprivate func keydexGlassButton(prominent: Bool = false) -> some View {
     modifier(KeydexGlassButtonModifier(prominent: prominent))
@@ -2329,5 +2383,13 @@ extension View {
 
   fileprivate func keydexFloatingGlassPanel(tint: Color, stroke: Color) -> some View {
     modifier(KeydexFloatingGlassPanelModifier(tint: tint, stroke: stroke))
+  }
+
+  fileprivate func keydexSidebarGlass() -> some View {
+    modifier(KeydexSidebarGlassModifier())
+  }
+
+  fileprivate func keydexSidebarSearchRow() -> some View {
+    modifier(KeydexSidebarSearchRowModifier())
   }
 }
