@@ -76,13 +76,13 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | --- | --- |
 | Native Mac utility feel | Uses system controls, sidebar, toolbar, table, inspector. |
 | No dashboard theater | No decorative hero cards, orbs, bokeh, or marketing layout. |
-| Liquid Glass hierarchy | Native `glassEffect` is used for card posters, inspector sections, toolbar controls, popovers, and the Doctor rail on macOS 26+. |
+| Liquid Glass hierarchy | Native `glassEffect` is used for card posters, inspector sections, toolbar controls, popovers, and the reserved Doctor rail on macOS 26+. |
 | Real glass controls | Command buttons use `.glass` or `.glassProminent` where available. |
-| Apple Music reference | Native sidebar material, poster cards, and the music-player-like repair rail are checked against Music for Mac's content/glass layering. |
+| Apple Music reference | Native sidebar material, poster cards, and the music-player-like footer rail are checked against Music for Mac's content/glass layering. |
 | Toolbar cluster | Sample and display mode controls are grouped into one glass cluster. |
 | Sidebar glass | Sidebar is the glass slab with a subtle warm milky wash; scroll content background is hidden and search is a plain row on that material, not nested glass. |
-| Rail layering | Scrollable content continues behind the bottom Doctor rail. |
-| Table rail inset | List/table mode reserves scroll room below the floating Doctor rail. |
+| Rail layering | The bottom Doctor rail sits in a reserved footer, not as an overlay on rows or cards. |
+| Table rail inset | List/table mode uses the footer boundary directly; no artificial scroll spacer is required. |
 | Table legibility | Repeated rows do not use heavy material effects. |
 | Card legibility | Inventory cards keep 8 pt radius, stable poster height, and source previews. |
 | Card hierarchy | Card mode follows Music Library/Playlist tiles: sidebar plus flowing adaptive card shelf, bounded tile widths, one framed poster first, metadata below, no persistent inspector pane, no second outer card shell, and no nested material badges inside the poster. |
