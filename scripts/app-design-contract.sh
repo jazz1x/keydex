@@ -58,14 +58,13 @@ for needle in \
   "KeydexSidebarMaterialView" \
   "Table(rows" \
   "CredentialCardGrid" \
-  "CredentialMusicDetailSheet" \
+  "CredentialMusicDetailView" \
   "MusicSourceTrackRow" \
   "MusicSearchResultHeader" \
   "CredentialInspectorPanel" \
   "InventoryBackdropView" \
   "InventoryDisplayMode" \
   "isCardLibrarySurface" \
-  "cardDetailSheetBinding" \
   "KeydexRailFooter" \
   "KeydexRailLaneBackground" \
   "KeydexCardGridLayout" \
@@ -145,7 +144,7 @@ for needle in \
   "layout.sidebar.search" \
   "layout.card.textDeck" \
   "two-line title/caption deck" \
-  "Music-like credential detail sheet" \
+  "Music-like credential detail page" \
   "poster-only credential artwork" \
   "Card mode uses a two-column Music-like library surface" \
   "adaptive bounded columns" \
@@ -195,6 +194,9 @@ for forbidden in \
   "Copy secret"; do
   reject_file_contains "$app_source" "$forbidden"
 done
+
+reject_file_contains "$app_source" "CredentialMusicDetailSheet"
+reject_file_contains "$app_source" "cardDetailSheetBinding"
 
 if awk '
   /private struct CredentialInventoryCard/ { in_card = 1 }

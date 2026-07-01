@@ -110,7 +110,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | UI2 | Healthy inventory | `default-window` | Screenshot with registered state rows. |
 | UI2A | Table inventory | `table-view` | Screenshot with grouped rows, selected pill, state chips, and source previews. |
 | UI2B | Card inventory | `card-view` | Screenshot with cards, state chips, Keychain badges, and source previews. |
-| UI2C | Card click detail | `card-detail` | Screenshot showing the Music-like selected card sheet with artwork, actions, and source rows. |
+| UI2C | Card click detail | `card-detail` | Screenshot showing the Music-like selected card detail page with back affordance, artwork, actions, and source rows inside the main content pane. |
 | UI3 | Plaintext fallback | `default-window` | Screenshot with warning label and source. |
 | UI4 | Missing Keychain item | `default-window` | Screenshot with error label and action. |
 | UI5 | Duplicate credential | `default-window` | Screenshot with duplicate state and relationship evidence. |

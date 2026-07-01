@@ -54,7 +54,7 @@ and honest about risk.
 | Toolbar | Global actions | glass mode cluster, register, settings |
 | App Icons | App and menu bar identity | bundled Keydex app icon, monochrome template menu bar icon |
 | Inventory Table | Primary working view | grouped list rows, selected pill, sortable columns, state chips, source count, last observed |
-| Inventory Cards | Secondary scan view | poster-only credential artwork, two-line title/caption deck below, source count affordance, Music-like detail sheet on click |
+| Inventory Cards | Secondary scan view | poster-only credential artwork, two-line title/caption deck below, source count affordance, Music-like detail page on click |
 | Inspector | Relationship detail | credential, sources, graph edges, expiry, notes, actions |
 | Doctor Panel | Repair queue | reserved 90 pt music-player-like footer lane with centered rail, severity, cause, action, and count controls |
 | Settings | Permissions, appearance, and rules | Keychain access, system appearance mode, scan paths, ignored sources |
@@ -111,10 +111,11 @@ and honest about risk.
 - Repeated inventory cards follow a single poster frame only contract. Card mode
   has no repeated capsule badge strip below each poster; account, canonical state,
   and Keychain status compress into one plain caption below the title.
-- Clicking an inventory card opens a Music-like credential detail sheet: large poster
-  artwork, compact action cluster, status chip, and source rows that read like a
-  playlist track list. Card click detail must not reintroduce a persistent right
-  inspector into card mode.
+- Clicking an inventory card opens a Music-like credential detail page inside the
+  content pane: back-to-library affordance, large poster artwork, compact action
+  cluster, status chip, and source rows that read like a playlist track list. Card
+  click detail must not reintroduce a persistent right inspector or modal sheet
+  into card mode.
 - Poster surfaces may use semantic state-color media wash. They must not use decorative
   graph lines, constellations, glow-only hierarchy, or fake analytics imagery.
 - Poster glyphs stay subdued so the credential card reads like Music library artwork,

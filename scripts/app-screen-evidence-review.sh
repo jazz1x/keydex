@@ -37,7 +37,7 @@ review_scenario() {
   expect_file_contains "$manifest_path" "captured_at="
 
   case "$scenario" in
-    card-detail | settings | settings-appearance | settings-sources | settings-paths | settings-rules)
+    settings | settings-appearance | settings-sources | settings-paths | settings-rules)
       expect_file_contains "$manifest_path" "width=720 height=520"
       ;;
   esac
