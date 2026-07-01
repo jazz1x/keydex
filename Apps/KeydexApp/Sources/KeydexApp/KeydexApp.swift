@@ -430,20 +430,39 @@ private struct KeydexRailFooter<Content: View>: View {
     ZStack(alignment: .center) {
       KeydexRailLaneBackground()
 
-      content
-        .padding(.horizontal, KeydexRailLayout.horizontalMargin)
-        .padding(.top, KeydexRailLayout.footerTopPadding)
-        .padding(.bottom, KeydexRailLayout.footerBottomPadding)
-        .frame(maxWidth: .infinity)
+      railContent
     }
     .frame(height: KeydexRailLayout.footerLaneHeight)
     .accessibilityElement(children: .contain)
+  }
+
+  @ViewBuilder
+  private var railContent: some View {
+    #if compiler(>=6.2)
+      if #available(macOS 26.0, *) {
+        GlassEffectContainer(spacing: KeydexRailLayout.glassContainerSpacing) {
+          paddedContent
+        }
+      } else {
+        paddedContent
+      }
+    #else
+      paddedContent
+    #endif
+  }
+
+  private var paddedContent: some View {
+    content
+      .padding(.horizontal, KeydexRailLayout.horizontalMargin)
+      .padding(.top, KeydexRailLayout.footerTopPadding)
+      .padding(.bottom, KeydexRailLayout.footerBottomPadding)
+      .frame(maxWidth: .infinity)
   }
 }
 
 private struct KeydexRailLaneBackground: View {
   var body: some View {
-    KeydexRailLaneMaterialView()
+    Color.clear
       .overlay(alignment: .top) {
         Rectangle()
           .fill(.separator.opacity(KeydexRailLayout.footerSeparatorAlpha))
@@ -1818,6 +1837,7 @@ private struct DoctorIssueRow: Identifiable {
 private struct DoctorPanel: View {
   let issues: [DoctorIssue]
   let isEmptyMode: Bool
+  @State private var isHovered = false
 
   private var issueRows: [DoctorIssueRow] {
     issues.map(DoctorIssueRow.init)
@@ -1843,6 +1863,10 @@ private struct DoctorPanel: View {
     return "Showing \(previewRows.count) of \(issueRows.count) repair issues."
   }
 
+  private var feedbackTrigger: String {
+    "\(issueRows.count)|\(primaryIssue?.id ?? "clear")"
+  }
+
   var body: some View {
     HStack(alignment: .center, spacing: 16) {
       Label {
@@ -1853,6 +1877,7 @@ private struct DoctorPanel: View {
           .font(.body.weight(.semibold))
           .frame(width: 30, height: 30)
           .background(KeydexGlassTone.railControlFill, in: Circle())
+          .symbolEffect(.bounce, value: feedbackTrigger)
       }
       .foregroundStyle(issues.isEmpty ? .green : .primary)
 
@@ -1870,11 +1895,13 @@ private struct DoctorPanel: View {
               .fontDesign(.monospaced)
               .lineLimit(1)
           }
+          .contentTransition(.opacity)
 
           Text(primaryIssue.issue.action)
             .font(.caption)
             .foregroundStyle(.secondary)
             .lineLimit(1)
+            .contentTransition(.opacity)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(primaryIssue.accessibilityLabel)
@@ -1898,6 +1925,7 @@ private struct DoctorPanel: View {
         Text("\(issueRows.count) issues")
           .font(.caption.weight(.medium))
           .foregroundStyle(.secondary)
+          .contentTransition(.numericText())
 
         if remainingIssueCount > 0 {
           Text("+\(remainingIssueCount)")
@@ -1906,6 +1934,7 @@ private struct DoctorPanel: View {
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .background(KeydexGlassTone.railControlFill, in: Capsule())
+            .contentTransition(.numericText())
         }
       }
     }
@@ -1917,6 +1946,13 @@ private struct DoctorPanel: View {
       alignment: .center
     )
     .keydexFloatingGlassPanel(stroke: KeydexGlassTone.railFloatingStroke)
+    .scaleEffect(isHovered ? 1.012 : 1.0)
+    .onHover { hovering in
+      isHovered = hovering
+    }
+    .animation(.snappy(duration: 0.18, extraBounce: 0.08), value: isHovered)
+    .animation(.snappy(duration: 0.24, extraBounce: 0.12), value: feedbackTrigger)
+    .sensoryFeedback(issues.isEmpty ? .success : .warning, trigger: feedbackTrigger)
     .accessibilityIdentifier("keydex.doctor.panel")
     .accessibilityLabel("Credential repair queue")
     .accessibilityHint(accessibilityHint)
@@ -3014,7 +3050,7 @@ private enum KeydexGlassTone {
   static let contentGlassTint = Color.white.opacity(0.06)
   static let controlGlassTint = Color.white.opacity(0.10)
   static let floatingTint = Color.white.opacity(0.20)
-  static let railFloatingStroke = Color(nsColor: .separatorColor).opacity(0.18)
+  static let railFloatingStroke = Color(nsColor: .separatorColor).opacity(0.24)
   static let railControlFill = Color.primary.opacity(0.045)
   static let panelStroke = Color(nsColor: .separatorColor).opacity(0.30)
   static let stateChipFillAlpha = 0.08
@@ -3035,10 +3071,11 @@ private enum KeydexRailLayout {
   static let footerLaneHeight: CGFloat = 90
   static let footerTopPadding: CGFloat = 12
   static let footerBottomPadding: CGFloat = 16
-  static let footerSeparatorAlpha = 0.12
+  static let footerSeparatorAlpha = 0.08
   static let railHeight: CGFloat = 58
   static let maxWidth: CGFloat = 760
   static let cornerRadius: CGFloat = 29
+  static let glassContainerSpacing: CGFloat = 12
 }
 
 private enum KeydexCardArtworkLayout {
@@ -3236,7 +3273,8 @@ private struct KeydexFloatingGlassPanelModifier: ViewModifier {
     #if compiler(>=6.2)
       if #available(macOS 26.0, *) {
         content
-          .glassEffect(.regular.interactive(), in: shape)
+          .glassEffect(.clear.interactive(), in: shape)
+          .glassEffectTransition(.materialize)
           .overlay {
             shape.stroke(stroke, lineWidth: 1)
           }
@@ -3271,25 +3309,6 @@ private struct KeydexSidebarMaterialView: NSViewRepresentable {
 
   private func configure(_ view: NSVisualEffectView) {
     view.material = .sidebar
-    view.blendingMode = .withinWindow
-    view.state = .active
-    view.isEmphasized = false
-  }
-}
-
-private struct KeydexRailLaneMaterialView: NSViewRepresentable {
-  func makeNSView(context _: Context) -> NSVisualEffectView {
-    let view = NSVisualEffectView()
-    configure(view)
-    return view
-  }
-
-  func updateNSView(_ nsView: NSVisualEffectView, context _: Context) {
-    configure(nsView)
-  }
-
-  private func configure(_ view: NSVisualEffectView) {
-    view.material = .headerView
     view.blendingMode = .withinWindow
     view.state = .active
     view.isEmphasized = false

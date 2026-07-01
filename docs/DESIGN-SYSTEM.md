@@ -26,8 +26,8 @@ and honest about risk.
 | `glass.content.tint` | white 0.06 alpha | card and inspector glass shell tint |
 | `glass.control.tint` | white 0.10 alpha | toolbar mode cluster tint |
 | `glass.poster.tint` | semantic state color 0.18 alpha | card poster glass tint |
-| `glass.floating.refraction` | native regular interactive glass; no tint path | centered Doctor rail surface |
-| `surface.footerRail` | native header/footer visual effect lane + 90 pt content reserve + top separator 0.12 alpha | Apple Music-like footer rail and bottom player lane |
+| `glass.floating.refraction` | native clear interactive glass + materialize transition; no tint path | centered Doctor rail surface |
+| `surface.footerRail` | transparent footer lane + 90 pt content reserve + top separator 0.08 alpha | Apple Music-like footer rail and bottom player lane |
 | `artwork.state.tint` | semantic state color 0.18 alpha | card poster color field |
 | `artwork.poster.symbol` | 50 pt size + 0.50 alpha | subdued credential glyph inside poster |
 | `artwork.poster.wash` | semantic state color 0.03 alpha + white 0.06 highlight | Apple Music-like poster media wash |
@@ -56,7 +56,7 @@ and honest about risk.
 | Inventory Table | Primary working view | grouped list rows, selected pill, sortable columns, state chips, user-owned tag metadata, source count, last observed |
 | Inventory Cards | Secondary scan view | poster-only credential artwork, two-line title/caption deck below, source count affordance, Music-like detail page on click |
 | Inspector | Relationship detail | credential, sources, graph edges, expiry, notes, actions |
-| Doctor Panel | Repair queue | music-player-like footer lane with centered rail, 90 pt content reserve, severity, cause, action, and count controls |
+| Doctor Panel | Repair queue | transparent music-player-like footer lane with centered clear glass rail, 90 pt content reserve, severity, cause, action, and count controls |
 | Settings | Permissions, appearance, tags, and rules | Keychain access, system appearance mode, scan paths, user-owned tags, ignored sources |
 
 ## Component Contracts
@@ -124,12 +124,16 @@ and honest about risk.
 - Poster glyphs stay subdued so the credential card reads like Music library artwork,
   not a dashboard status tile.
 - The repair queue uses a centered music-player-like repair rail inside a
-  native visual effect footer lane instead of a hard split panel or opaque
-  painted overlay. The lane has a 0.12 alpha top separator, and scrollable
-  content keeps a 90 pt reserve so rows and playlist-style cards are never
-  occluded while the material still has real content behind it.
-- The floating repair rail uses native interactive glass with no tint path; do
-  not simulate Liquid Glass by painting a clear or milky overlay on top.
+  transparent footer lane instead of a hard split panel or opaque painted overlay.
+  The lane has a 0.08 alpha top separator, and scrollable content keeps a 90 pt
+  reserve so rows and playlist-style cards are never occluded while the glass
+  still has real content behind it.
+- The floating repair rail uses native clear interactive glass with materialize
+  transition and no tint path; do not simulate Liquid Glass by painting a clear
+  or milky overlay on top.
+- Doctor rail feedback uses native SwiftUI feedback hooks: symbol bounce,
+  numeric content transitions, macOS hover scale, and sensory feedback on state
+  changes.
 - Do not use heavy Liquid Glass for repeated table cells or dense detail sections.
   Repeated credential posters may use low-tint native glass; the card shell stays unframed.
 - Repeated state and metadata chips use flat semantic fills and strokes, not material

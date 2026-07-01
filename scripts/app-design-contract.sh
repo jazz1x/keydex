@@ -80,10 +80,9 @@ for needle in \
   "footerReserveHeight: KeydexRailLayout.footerLaneHeight" \
   "footerTopPadding" \
   "footerBottomPadding" \
-  "footerSeparatorAlpha = 0.12" \
-  "KeydexRailLaneMaterialView" \
-  "view.material = .headerView" \
-  "view.blendingMode = .withinWindow" \
+  "footerSeparatorAlpha = 0.08" \
+  "GlassEffectContainer(spacing: KeydexRailLayout.glassContainerSpacing)" \
+  "Color.clear" \
   "searchTopPadding: CGFloat = 12" \
   "searchRowHeight: CGFloat = 36" \
   "searchHorizontalPadding: CGFloat = 12" \
@@ -113,7 +112,11 @@ for needle in \
   ".keydexControlGlassPanel(" \
   ".keydexContentPanel(" \
   ".keydexFloatingGlassPanel(" \
-  ".glassEffect(.regular.interactive(), in: shape)" \
+  ".glassEffect(.clear.interactive(), in: shape)" \
+  ".glassEffectTransition(.materialize)" \
+  ".symbolEffect(.bounce" \
+  ".sensoryFeedback(" \
+  ".onHover" \
   ".buttonStyle(.glass" \
   ".buttonStyle(.glassProminent" \
   ".glassEffect(.regular" \
@@ -163,7 +166,9 @@ for needle in \
   "music-player-like repair rail" \
   "surface.footerRail" \
   "90 pt content reserve" \
-  "native visual effect footer lane" \
+  "transparent footer lane" \
+  "native clear interactive glass" \
+  "macOS hover scale" \
   "user-owned tag metadata" \
   "footer rail" \
   "no color wash overlay" \
