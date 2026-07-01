@@ -848,31 +848,25 @@ private struct CredentialInventoryCard: View {
 
   var body: some View {
     Button(action: selectAction) {
-      VStack(alignment: .leading, spacing: 12) {
+      VStack(alignment: .leading, spacing: 8) {
         CredentialArtworkPanel(
           row: row,
-          height: 196,
+          height: KeydexCardGridLayout.posterHeight,
           selected: isSelected
         )
 
-        VStack(alignment: .leading, spacing: 9) {
-          CredentialStateSummaryView(states: row.states)
-
-          HStack(spacing: 8) {
-            KeychainStatusBadge(row: row)
-
-            SourceCountBadge(count: row.locations.count)
-          }
-
-          Text(row.primaryLocationTitle)
-            .font(.caption)
-            .foregroundStyle(.secondary)
-            .lineLimit(1)
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .padding(.horizontal, 2)
+        Text(row.cardMetadataLine)
+          .font(.caption)
+          .foregroundStyle(.secondary)
+          .lineLimit(1)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .padding(.horizontal, 2)
       }
-      .frame(maxWidth: .infinity, minHeight: 284, alignment: .topLeading)
+      .frame(
+        maxWidth: .infinity,
+        minHeight: KeydexCardGridLayout.cardMinimumHeight,
+        alignment: .topLeading
+      )
     }
     .buttonStyle(.plain)
     .accessibilityLabel(row.cardAccessibilityLabel)
@@ -1060,24 +1054,6 @@ private struct KeychainStatusBadge: View {
             lineWidth: 1
           )
       }
-  }
-}
-
-private struct SourceCountBadge: View {
-  let count: Int
-
-  var body: some View {
-    Label("\(count)", systemImage: "list.bullet.rectangle")
-      .font(.caption.weight(.medium))
-      .foregroundStyle(.secondary)
-      .padding(.horizontal, 8)
-      .padding(.vertical, 4)
-      .background(KeydexGlassTone.metadataChipFill, in: Capsule())
-      .overlay {
-        Capsule()
-          .stroke(KeydexGlassTone.metadataChipStroke, lineWidth: 1)
-      }
-      .help("\(count) source locations")
   }
 }
 
@@ -1286,6 +1262,10 @@ private struct CredentialRow: Identifiable {
     }
 
     return "key"
+  }
+
+  var cardMetadataLine: String {
+    "\(canonicalStateLabel(states)) · \(keychainStatusTitle) · \(primaryLocationTitle)"
   }
 
   var cardAccessibilityLabel: String {
@@ -2234,8 +2214,6 @@ private enum KeydexGlassTone {
   static let stateChipStrokeAlpha = 0.24
   static let metadataChipFillAlpha = 0.07
   static let metadataChipStrokeAlpha = 0.22
-  static let metadataChipFill = Color.primary.opacity(0.035)
-  static let metadataChipStroke = Color(nsColor: .separatorColor).opacity(0.28)
   static let posterBadgeFill = Color.primary.opacity(0.045)
   static let posterBadgeStroke = Color(nsColor: .separatorColor).opacity(0.22)
   static let artworkColorAlpha = 0.22
@@ -2261,8 +2239,10 @@ private enum KeydexCardArtworkLayout {
 private enum KeydexCardGridLayout {
   static let minimumColumnWidth: CGFloat = 212
   static let maximumColumnWidth: CGFloat = 304
+  static let posterHeight: CGFloat = 240
   static let columnSpacing: CGFloat = 18
   static let rowSpacing: CGFloat = 18
+  static let cardMinimumHeight: CGFloat = 266
   static let contentBottomPadding: CGFloat = 24
 }
 
