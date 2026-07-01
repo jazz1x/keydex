@@ -48,7 +48,7 @@ and honest about risk.
 | Sidebar | Scope navigation | All, Expiring, Plaintext, Orphans, Duplicates, Services, Tags |
 | Toolbar | Global actions | glass mode cluster, register, settings |
 | Inventory Table | Primary working view | grouped list rows, selected pill, sortable columns, state chips, source count, last observed |
-| Inventory Cards | Secondary scan view | poster-style credential artwork, metadata below, state chips, Keychain badge, source previews |
+| Inventory Cards | Secondary scan view | poster-style credential artwork, one compact metadata caption, source count affordance |
 | Inspector | Relationship detail | credential, sources, graph edges, expiry, notes, actions |
 | Doctor Panel | Repair queue | reserved music-player-like footer rail with severity, cause, action, and count controls |
 | Settings | Permissions, appearance, and rules | Keychain access, system appearance mode, scan paths, ignored sources |
@@ -89,7 +89,7 @@ and honest about risk.
 - Inventory cards are content-layer tiles. On macOS 26+, only the credential poster
   uses native `glassEffect`; older macOS versions fall back to material and low-alpha fills.
 - Card mode follows Music's Library and Playlist tile hierarchy: poster/artwork first,
-  title and metadata underneath, no extra nested glass controls inside repeated cards.
+  primary title inside the poster surface, and one compact metadata caption below.
 - Card mode uses a two-column Music-like library surface: sidebar plus flowing card
   content. The persistent inspector stays in list mode, where dense operational
   review is the primary task.
@@ -97,9 +97,9 @@ and honest about risk.
   shelf of artwork tiles instead of stretching into dashboard banners.
 - Repeated inventory cards have no second outer card shell. Selection belongs on
   the poster outline so the artwork remains the only framed tile.
-- Repeated inventory cards follow a single poster frame only contract. Badge,
-  Keychain, and source metadata use flat fills and strokes instead of nested
-  material capsules.
+- Repeated inventory cards follow a single poster frame only contract. Card mode
+  has no repeated capsule badge strip below each poster; state,
+  Keychain, and source detail compress into one plain caption.
 - Poster surfaces may use semantic state-color media wash. They must not use decorative
   graph lines, constellations, glow-only hierarchy, or fake analytics imagery.
 - Poster glyphs stay subdued so the credential card reads like Music library artwork,

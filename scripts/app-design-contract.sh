@@ -121,6 +121,7 @@ for needle in \
   "adaptive bounded columns" \
   "no second outer card shell" \
   "single poster frame only" \
+  "no repeated capsule badge strip" \
   "music-player-like repair rail" \
   "reserved footer rail" \
   "warm milky wash" \
@@ -164,6 +165,15 @@ if awk '
   END { exit found ? 0 : 1 }
 ' "$app_source"; then
   fail "CredentialInventoryCard must not use a second outer card shell"
+fi
+
+if awk '
+  /private struct CredentialInventoryCard/ { in_card = 1 }
+  /private struct CredentialArtworkPanel/ { in_card = 0 }
+  in_card && /(CredentialStateSummaryView|KeychainStatusBadge|SourceCountBadge)\(/ { found = 1 }
+  END { exit found ? 0 : 1 }
+' "$app_source"; then
+  fail "CredentialInventoryCard must not render a repeated capsule badge strip"
 fi
 
 if awk '
