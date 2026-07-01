@@ -47,6 +47,7 @@ for needle in \
   "MusicSearchField" \
   "MusicSidebarSection" \
   "MusicSidebarRow" \
+  "KeydexSidebarWashLayer" \
   "MusicToolbarCluster" \
   "KeydexSidebarLayout" \
   "KeydexSidebarMaterialView" \
@@ -56,7 +57,13 @@ for needle in \
   "InventoryBackdropView" \
   "InventoryDisplayMode" \
   "KeydexRailLayout" \
+  "KeydexCardArtworkLayout" \
+  "sidebarMilkyWashLight = Color(red: 0.98" \
+  "sidebarMilkyWashDark = Color.white.opacity(0.08)" \
+  ".scrollContentBackground(.hidden)" \
+  "ZStack(alignment: .topLeading)" \
   "stateChipFillAlpha" \
+  "posterSymbolAlpha" \
   "TextField(\"Search\"" \
   "ToolbarItem" \
   "ContentUnavailableView" \
@@ -110,9 +117,12 @@ for needle in \
   "no second outer card shell" \
   "single poster frame only" \
   "music-player-like repair rail" \
-  "milky wash" \
+  "warm milky wash" \
   "native macOS sidebar visual effect" \
+  "Sidebar scroll content hides its own background" \
+  "Sidebar wash is layered above the native material" \
   "semantic state-color media wash" \
+  "Poster glyphs stay subdued" \
   "flat semantic fills and strokes" \
   "Source metadata uses list/document symbols" \
   "does not expose graph-derived implementation language" \

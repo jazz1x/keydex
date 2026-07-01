@@ -19,16 +19,17 @@ and honest about risk.
 | --- | --- | --- |
 | `surface.primary` | system background | main content |
 | `surface.sidebar` | native sidebar visual effect + background extension + milky wash | sidebar slab, navigation, and scope filters |
-| `glass.sidebar.wash` | light: white 0.78 alpha; dark: white 0.06 alpha | Apple Music-like sidebar milky wash |
+| `glass.sidebar.wash` | light: warm white 0.86 alpha; dark: white 0.08 alpha | Apple Music-like sidebar milky wash |
 | `surface.inspector` | native Liquid Glass, 8 px radius | selected item detail |
 | `surface.card` | poster-only native Liquid Glass, 8 px radius | inventory card artwork and grouped settings only |
 | `glass.sidebar.selection` | primary 0.045 alpha | selected sidebar rows |
 | `glass.content.tint` | white 0.07 alpha | card and inspector glass shell tint |
 | `glass.control.tint` | white 0.12 alpha | toolbar mode cluster tint |
-| `glass.poster.tint` | semantic state color 0.30 alpha | card poster glass tint |
+| `glass.poster.tint` | semantic state color 0.22 alpha | card poster glass tint |
 | `glass.floating.tint` | white 0.20 alpha | bottom repair rail tint |
-| `artwork.state.tint` | semantic state color 0.30 alpha | card poster color field |
-| `artwork.poster.wash` | semantic state color 0.05 alpha + white 0.08 highlight | Apple Music-like poster media wash |
+| `artwork.state.tint` | semantic state color 0.22 alpha | card poster color field |
+| `artwork.poster.symbol` | 50 pt size + 0.50 alpha | subdued credential glyph inside poster |
+| `artwork.poster.wash` | semantic state color 0.04 alpha + white 0.08 highlight | Apple Music-like poster media wash |
 | `text.primary` | label | credential names and actions |
 | `text.secondary` | secondary label | metadata and source paths |
 | `risk.info` | blue | neutral findings |
@@ -70,8 +71,14 @@ and honest about risk.
 - Apple Music for Mac is the local reference for layered glass: translucent sidebar,
   floating command clusters, grouped library rows, selected-pill states, and bottom glass rails.
 - Sidebar glass uses the native macOS sidebar visual effect, then extends behind the
-  hidden titlebar, with a subtle milky wash so the slab reads like Music's
+  hidden titlebar, with a subtle warm milky wash so the slab reads like Music's
   full-height navigation rail instead of a gray app panel.
+- Sidebar scroll content hides its own background so the native sidebar material,
+  not a default scroll fill, is the visible surface.
+- Sidebar wash is layered above the native material and below row content, preserving
+  text contrast while matching Music's warm translucent slab.
+- Sidebar content also owns the wash layer because macOS scroll containers can draw
+  their own neutral background above the split-view material.
 - Sidebar search is not a nested glass card. It is a plain search row on the sidebar
   material, matching Music's Library and Playlist navigation.
 - Toolbar mode controls stay in one glass cluster instead of separate floating islands.
@@ -90,6 +97,8 @@ and honest about risk.
   material capsules.
 - Poster surfaces may use semantic state-color media wash. They must not use decorative
   graph lines, constellations, glow-only hierarchy, or fake analytics imagery.
+- Poster glyphs stay subdued so the credential card reads like Music library artwork,
+  not a dashboard status tile.
 - The repair queue uses a centered music-player-like repair rail instead of a
   hard split panel. Scrollable content may pass behind the rail so the glass has
   real pixels underneath.
