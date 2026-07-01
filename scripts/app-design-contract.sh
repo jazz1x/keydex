@@ -48,6 +48,7 @@ for needle in \
   "MusicSidebarSection" \
   "MusicSidebarRow" \
   "MusicToolbarCluster" \
+  "KeydexSidebarLayout" \
   "Table(rows" \
   "CredentialCardGrid" \
   "CredentialInspectorPanel" \
@@ -63,6 +64,8 @@ for needle in \
   "SettingsDisplayModeRow" \
   ".pickerStyle(.segmented)" \
   ".keydexGlassButton(" \
+  ".keydexSidebarGlass()" \
+  ".keydexSidebarSearchRow()" \
   ".keydexControlGlassPanel(" \
   ".keydexContentPanel(" \
   ".keydexFloatingGlassPanel(" \
@@ -70,6 +73,7 @@ for needle in \
   ".buttonStyle(.glass" \
   ".buttonStyle(.glassProminent" \
   ".glassEffect(.regular" \
+  ".backgroundExtensionEffect()" \
   ".background(.regularMaterial" \
   ".background(.ultraThinMaterial)" \
   ".background(.thinMaterial" \
@@ -96,6 +100,8 @@ for needle in \
   "Graph visible" \
   "Risk without theater" \
   "Liquid Glass Rules" \
+  "Sidebar search is not a nested glass card" \
+  "Music's Library and Playlist tile hierarchy" \
   "Inventory Cards" \
   "No dashboard theater" \
   "No decorative cards inside cards"; do

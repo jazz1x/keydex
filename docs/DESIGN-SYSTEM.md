@@ -18,12 +18,12 @@ and honest about risk.
 | Token | Value | Use |
 | --- | --- | --- |
 | `surface.primary` | system background | main content |
-| `surface.sidebar` | Liquid Glass material | sidebar search, navigation, and scope filters |
+| `surface.sidebar` | Liquid Glass material | sidebar slab, navigation, and scope filters |
 | `surface.inspector` | native Liquid Glass, 8 px radius | selected item detail |
 | `surface.card` | native Liquid Glass, 8 px radius | inventory cards and grouped settings only |
 | `glass.sidebar.selection` | primary 0.055 alpha | selected sidebar rows |
 | `glass.content.tint` | white 0.10 alpha | card and inspector glass shell tint |
-| `glass.control.tint` | white 0.12 alpha | search field and toolbar mode cluster tint |
+| `glass.control.tint` | white 0.12 alpha | toolbar mode cluster tint |
 | `glass.poster.tint` | semantic state color 0.30 alpha | card poster glass tint |
 | `glass.floating.tint` | white 0.15 alpha | bottom repair rail tint |
 | `artwork.state.tint` | semantic state color 0.30 alpha | card poster color field |
@@ -58,15 +58,17 @@ and honest about risk.
 | Source badge | Names the source kind without exposing secret values. |
 | Graph edge row | Shows relationship, origin, and confidence. |
 | Doctor issue row | Shows severity, state, cause, and action. |
-| Search field | Filters graph projections, not separate ad hoc lists. |
+| Search field | Plain sidebar search row; filters graph projections, not separate ad hoc lists. |
 | Register button | Creates metadata for an existing secret store item. |
 
 ## Liquid Glass Rules
 
-- Use Liquid Glass for the functional layer: sidebar search, toolbar controls, popovers,
+- Use Liquid Glass for the functional layer: sidebar slab, toolbar controls, popovers,
   floating repair rail, and command surfaces.
 - Apple Music for Mac is the local reference for layered glass: translucent sidebar,
   floating command clusters, grouped library rows, selected-pill states, and bottom glass rails.
+- Sidebar search is not a nested glass card. It is a plain search row on the sidebar
+  material, matching Music's Library and Playlist navigation.
 - Toolbar mode controls stay in one glass cluster instead of separate floating islands.
 - Settings uses a material header plus grouped list sections; repeated rows stay plain
   and editable.
@@ -75,6 +77,8 @@ and honest about risk.
 - Inventory cards are content-layer surfaces. On macOS 26+, the card shell and state
   poster use native `glassEffect`; older macOS versions fall back to material and
   low-alpha fills.
+- Card mode follows Music's Library and Playlist tile hierarchy: poster/artwork first,
+  title and metadata underneath, no extra nested glass controls inside repeated cards.
 - The repair queue uses a full-width floating glass rail instead of a hard split panel.
   Scrollable content may pass behind the rail so the glass has real pixels underneath.
 - Do not use heavy Liquid Glass for repeated table cells or dense detail sections.
