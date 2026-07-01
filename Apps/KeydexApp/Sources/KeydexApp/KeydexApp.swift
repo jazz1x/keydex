@@ -770,20 +770,9 @@ private struct CredentialInventoryCard: View {
   var body: some View {
     Button(action: selectAction) {
       VStack(alignment: .leading, spacing: 12) {
-        CredentialArtworkPanel(row: row, height: 176)
+        CredentialArtworkPanel(row: row, height: 196)
 
-        VStack(alignment: .leading, spacing: 10) {
-          VStack(alignment: .leading, spacing: 4) {
-            Text(row.service)
-              .font(.headline)
-              .lineLimit(1)
-            Text(row.account)
-              .font(.callout)
-              .fontDesign(.monospaced)
-              .foregroundStyle(.secondary)
-              .lineLimit(1)
-          }
-
+        VStack(alignment: .leading, spacing: 9) {
           CredentialStateSummaryView(states: row.states)
 
           HStack(spacing: 8) {
@@ -800,7 +789,7 @@ private struct CredentialInventoryCard: View {
         }
       }
       .padding(10)
-      .frame(maxWidth: .infinity, minHeight: 320, alignment: .topLeading)
+      .frame(maxWidth: .infinity, minHeight: 304, alignment: .topLeading)
       .keydexContentPanel(stroke: cardStroke, selected: isSelected)
     }
     .buttonStyle(.plain)
@@ -823,12 +812,8 @@ private struct CredentialArtworkPanel: View {
 
   var body: some View {
     ZStack {
-      RoundedRectangle(cornerRadius: 6, style: .continuous)
-        .fill(.thinMaterial)
-        .overlay {
-          RoundedRectangle(cornerRadius: 6, style: .continuous)
-            .fill(panelFill)
-        }
+      panelShape
+        .keydexArtworkGlass(tint: panelFill, stroke: accentColor.opacity(isPoster ? 0.24 : 0.12))
         .overlay(alignment: .topTrailing) {
           Text("\(row.locations.count)")
             .font(.caption.weight(.semibold))
@@ -845,18 +830,32 @@ private struct CredentialArtworkPanel: View {
               .foregroundStyle(accentColor)
               .lineLimit(1)
 
-            Text("\(row.locations.count) graph sources")
-              .font(.caption)
-              .foregroundStyle(.secondary)
-              .lineLimit(1)
+            if isPoster {
+              Text(row.service)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(.primary)
+                .lineLimit(1)
+
+              Text(row.account)
+                .font(.callout)
+                .fontDesign(.monospaced)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+            } else {
+              Text("\(row.locations.count) graph sources")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+            }
           }
           .padding(12)
         }
 
       Image(systemName: row.keychainStatusSystemImage)
-        .font(.system(size: height > 120 ? 54 : 34, weight: .semibold))
+        .font(.system(size: isPoster ? 62 : 34, weight: .semibold))
         .foregroundStyle(accentColor)
         .symbolRenderingMode(.hierarchical)
+        .opacity(isPoster ? 0.82 : 1)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .accessibilityHidden(true)
     }
@@ -867,8 +866,20 @@ private struct CredentialArtworkPanel: View {
     accentColor.opacity(KeydexGlassTone.artworkColorAlpha)
   }
 
+  private var panelRadius: CGFloat {
+    isPoster ? 8 : 6
+  }
+
+  private var isPoster: Bool {
+    height > 120
+  }
+
   private var accentColor: Color {
     credentialAccent(for: row.states)
+  }
+
+  private var panelShape: RoundedRectangle {
+    RoundedRectangle(cornerRadius: panelRadius, style: .continuous)
   }
 }
 
@@ -1280,7 +1291,7 @@ private struct DoctorPanel: View {
     }
     .padding(.horizontal, 18)
     .padding(.vertical, 12)
-    .frame(maxWidth: 760, minHeight: 68, alignment: .center)
+    .frame(maxWidth: .infinity, minHeight: 68, alignment: .center)
     .keydexFloatingGlassPanel(
       tint: KeydexGlassTone.floatingTint,
       stroke: KeydexGlassTone.panelStroke
@@ -2077,9 +2088,11 @@ private struct SettingsDivider: View {
 
 private enum KeydexGlassTone {
   static let sidebarSelectionFill = Color.primary.opacity(0.055)
+  static let contentPanelFill = Color.primary.opacity(0.035)
+  static let contentGlassTint = Color.white.opacity(0.10)
   static let floatingTint = Color.white.opacity(0.14)
   static let panelStroke = Color(nsColor: .separatorColor).opacity(0.36)
-  static let artworkColorAlpha = 0.20
+  static let artworkColorAlpha = 0.30
 }
 
 private struct KeydexGlassButtonModifier: ViewModifier {
@@ -2116,13 +2129,72 @@ private struct KeydexContentPanelModifier: ViewModifier {
   let stroke: Color
   let selected: Bool
 
+  @ViewBuilder
   func body(content: Content) -> some View {
     let shape = RoundedRectangle(cornerRadius: 8, style: .continuous)
 
+    #if compiler(>=6.2)
+      if #available(macOS 26.0, *) {
+        content
+          .glassEffect(.regular.tint(KeydexGlassTone.contentGlassTint).interactive(), in: shape)
+          .overlay {
+            shape.stroke(stroke, lineWidth: selected ? 2 : 1)
+          }
+      } else {
+        fallback(content: content, in: shape)
+      }
+    #else
+      fallback(content: content, in: shape)
+    #endif
+  }
+
+  @ViewBuilder
+  private func fallback(content: Content, in shape: RoundedRectangle) -> some View {
     content
-      .background(.regularMaterial, in: shape)
+      .background(KeydexGlassTone.contentPanelFill, in: shape)
       .overlay {
         shape.stroke(stroke, lineWidth: selected ? 2 : 1)
+      }
+  }
+}
+
+private struct KeydexArtworkGlassModifier: ViewModifier {
+  let tint: Color
+  let stroke: Color
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    let shape = RoundedRectangle(cornerRadius: 8, style: .continuous)
+
+    #if compiler(>=6.2)
+      if #available(macOS 26.0, *) {
+        content
+          .foregroundStyle(.clear)
+          .glassEffect(.regular.tint(tint).interactive(), in: shape)
+          .overlay {
+            shape.fill(tint)
+          }
+          .overlay {
+            shape.stroke(stroke, lineWidth: 1)
+          }
+      } else {
+        fallback(content: content, in: shape)
+      }
+    #else
+      fallback(content: content, in: shape)
+    #endif
+  }
+
+  @ViewBuilder
+  private func fallback(content: Content, in shape: RoundedRectangle) -> some View {
+    content
+      .foregroundStyle(.clear)
+      .background(.thinMaterial, in: shape)
+      .overlay {
+        shape.fill(tint)
+      }
+      .overlay {
+        shape.stroke(stroke, lineWidth: 1)
       }
   }
 }
@@ -2172,6 +2244,10 @@ extension View {
         selected: selected
       )
     )
+  }
+
+  fileprivate func keydexArtworkGlass(tint: Color, stroke: Color) -> some View {
+    modifier(KeydexArtworkGlassModifier(tint: tint, stroke: stroke))
   }
 
   fileprivate func keydexFloatingGlassPanel(tint: Color, stroke: Color) -> some View {

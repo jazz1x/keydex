@@ -19,11 +19,13 @@ and honest about risk.
 | --- | --- | --- |
 | `surface.primary` | system background | main content |
 | `surface.sidebar` | Liquid Glass material | sidebar search, navigation, and scope filters |
-| `surface.inspector` | regular material, 8 px radius | selected item detail |
-| `surface.card` | regular material, 8 px radius | inventory cards and grouped settings only |
+| `surface.inspector` | native Liquid Glass, 8 px radius | selected item detail |
+| `surface.card` | native Liquid Glass, 8 px radius | inventory cards and grouped settings only |
 | `glass.sidebar.selection` | primary 0.055 alpha | selected sidebar rows |
+| `glass.content.tint` | white 0.10 alpha | card and inspector glass shell tint |
+| `glass.poster.tint` | semantic state color 0.30 alpha | card poster glass tint |
 | `glass.floating.tint` | white 0.14 alpha | bottom repair rail tint |
-| `artwork.state.tint` | semantic state color 0.20 alpha | card artwork color field |
+| `artwork.state.tint` | semantic state color 0.30 alpha | card poster color field |
 | `text.primary` | label | credential names and actions |
 | `text.secondary` | secondary label | metadata and source paths |
 | `risk.info` | blue | neutral findings |
@@ -42,7 +44,7 @@ and honest about risk.
 | Sidebar | Scope navigation | All, Expiring, Plaintext, Orphans, Duplicates, Services, Tags |
 | Toolbar | Global actions | search, scan, register, display mode, doctor, settings |
 | Inventory Table | Primary working view | grouped list rows, selected pill, sortable columns, state chips, source count, last observed |
-| Inventory Cards | Secondary scan view | credential, state chips, Keychain badge, source previews |
+| Inventory Cards | Secondary scan view | poster-style credential surface, state chips, Keychain badge, source previews |
 | Inspector | Relationship detail | credential, sources, graph edges, expiry, notes, actions |
 | Doctor Panel | Repair queue | severity groups, cause, action, affected nodes |
 | Settings | Permissions, appearance, and rules | Keychain access, system appearance mode, scan paths, ignored sources |
@@ -68,11 +70,12 @@ and honest about risk.
   and editable.
 - Native glass buttons use `.glass` or `.glassProminent` when available, with system
   button styles on older macOS versions.
-- Inventory cards are content-layer surfaces. They use regular material and state
-  artwork, not `glassEffect`, so repeated credentials stay readable.
-- The repair queue uses a floating glass rail instead of a hard split panel.
-- Do not use Liquid Glass for repeated table cells, repeated cards, or dense detail
-  sections.
+- Inventory cards are content-layer surfaces. On macOS 26+, the card shell and state
+  poster use native `glassEffect`; older macOS versions fall back to material and
+  low-alpha fills.
+- The repair queue uses a full-width floating glass rail instead of a hard split panel.
+- Do not use heavy Liquid Glass for repeated table cells or dense detail sections.
+  Repeated credential cards may use low-tint native glass shells.
 - Avoid stacked or nested glass. Group related controls into one glass surface instead.
 - Do not hide text contrast behind material effects.
 - Keep risk colors outside decorative materials when legibility would suffer.
