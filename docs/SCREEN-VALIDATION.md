@@ -78,14 +78,14 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | No dashboard theater | No decorative hero cards, orbs, bokeh, or marketing layout. |
 | Liquid Glass hierarchy | Native `glassEffect` is used for card posters, inspector sections, toolbar controls, popovers, and the Doctor rail on macOS 26+. |
 | Real glass controls | Command buttons use `.glass` or `.glassProminent` where available. |
-| Apple Music reference | Native sidebar material, poster cards, and the full-width repair rail are checked against Music for Mac's content/glass layering. |
+| Apple Music reference | Native sidebar material, poster cards, and the music-player-like repair rail are checked against Music for Mac's content/glass layering. |
 | Toolbar cluster | Sample and display mode controls are grouped into one glass cluster. |
-| Sidebar glass | Sidebar is the glass slab; search is a plain row on that material, not nested glass. |
+| Sidebar glass | Sidebar is the glass slab with a subtle milky wash; search is a plain row on that material, not nested glass. |
 | Rail layering | Scrollable content continues behind the bottom Doctor rail. |
 | Table rail inset | List/table mode reserves scroll room below the floating Doctor rail. |
 | Table legibility | Repeated rows do not use heavy material effects. |
 | Card legibility | Inventory cards keep 8 pt radius, stable poster height, and source previews. |
-| Card hierarchy | Card mode follows Music Library/Playlist tiles: one framed poster first, metadata below, no second outer card shell. |
+| Card hierarchy | Card mode follows Music Library/Playlist tiles: one framed poster first, metadata below, no second outer card shell, and no nested material badges inside the poster. |
 | Poster media wash | Credential posters use semantic color wash without graph-line or constellation decoration. |
 | Source icons | Source metadata uses list/document symbols, not connected-dot graph glyphs. |
 | System appearance | Both Light and Dark modes are verified; no custom color palette is shipped. |

@@ -18,16 +18,17 @@ and honest about risk.
 | Token | Value | Use |
 | --- | --- | --- |
 | `surface.primary` | system background | main content |
-| `surface.sidebar` | native sidebar visual effect + background extension | sidebar slab, navigation, and scope filters |
+| `surface.sidebar` | native sidebar visual effect + background extension + milky wash | sidebar slab, navigation, and scope filters |
+| `glass.sidebar.wash` | light: white 0.78 alpha; dark: white 0.06 alpha | Apple Music-like sidebar milky wash |
 | `surface.inspector` | native Liquid Glass, 8 px radius | selected item detail |
 | `surface.card` | poster-only native Liquid Glass, 8 px radius | inventory card artwork and grouped settings only |
-| `glass.sidebar.selection` | primary 0.055 alpha | selected sidebar rows |
+| `glass.sidebar.selection` | primary 0.045 alpha | selected sidebar rows |
 | `glass.content.tint` | white 0.07 alpha | card and inspector glass shell tint |
 | `glass.control.tint` | white 0.12 alpha | toolbar mode cluster tint |
-| `glass.poster.tint` | semantic state color 0.36 alpha | card poster glass tint |
-| `glass.floating.tint` | white 0.15 alpha | bottom repair rail tint |
-| `artwork.state.tint` | semantic state color 0.36 alpha | card poster color field |
-| `artwork.poster.wash` | semantic state color 0.08 alpha + white 0.06 highlight | Apple Music-like poster media wash |
+| `glass.poster.tint` | semantic state color 0.30 alpha | card poster glass tint |
+| `glass.floating.tint` | white 0.20 alpha | bottom repair rail tint |
+| `artwork.state.tint` | semantic state color 0.30 alpha | card poster color field |
+| `artwork.poster.wash` | semantic state color 0.05 alpha + white 0.08 highlight | Apple Music-like poster media wash |
 | `text.primary` | label | credential names and actions |
 | `text.secondary` | secondary label | metadata and source paths |
 | `risk.info` | blue | neutral findings |
@@ -48,7 +49,7 @@ and honest about risk.
 | Inventory Table | Primary working view | grouped list rows, selected pill, sortable columns, state chips, source count, last observed |
 | Inventory Cards | Secondary scan view | poster-style credential artwork, metadata below, state chips, Keychain badge, source previews |
 | Inspector | Relationship detail | credential, sources, graph edges, expiry, notes, actions |
-| Doctor Panel | Repair queue | severity groups, cause, action, affected nodes |
+| Doctor Panel | Repair queue | music-player-like floating capsule with severity, cause, action, and count controls |
 | Settings | Permissions, appearance, and rules | Keychain access, system appearance mode, scan paths, ignored sources |
 
 ## Component Contracts
@@ -69,7 +70,8 @@ and honest about risk.
 - Apple Music for Mac is the local reference for layered glass: translucent sidebar,
   floating command clusters, grouped library rows, selected-pill states, and bottom glass rails.
 - Sidebar glass uses the native macOS sidebar visual effect, then extends behind the
-  hidden titlebar so the slab reads like Music's full-height navigation rail.
+  hidden titlebar, with a subtle milky wash so the slab reads like Music's
+  full-height navigation rail instead of a gray app panel.
 - Sidebar search is not a nested glass card. It is a plain search row on the sidebar
   material, matching Music's Library and Playlist navigation.
 - Toolbar mode controls stay in one glass cluster instead of separate floating islands.
@@ -83,10 +85,14 @@ and honest about risk.
   title and metadata underneath, no extra nested glass controls inside repeated cards.
 - Repeated inventory cards have no second outer card shell. Selection belongs on
   the poster outline so the artwork remains the only framed tile.
+- Repeated inventory cards follow a single poster frame only contract. Badge,
+  Keychain, and source metadata use flat fills and strokes instead of nested
+  material capsules.
 - Poster surfaces may use semantic state-color media wash. They must not use decorative
   graph lines, constellations, glow-only hierarchy, or fake analytics imagery.
-- The repair queue uses a full-width floating glass rail instead of a hard split panel.
-  Scrollable content may pass behind the rail so the glass has real pixels underneath.
+- The repair queue uses a centered music-player-like repair rail instead of a
+  hard split panel. Scrollable content may pass behind the rail so the glass has
+  real pixels underneath.
 - Do not use heavy Liquid Glass for repeated table cells or dense detail sections.
   Repeated credential posters may use low-tint native glass; the card shell stays unframed.
 - Repeated state and metadata chips use flat semantic fills and strokes, not material

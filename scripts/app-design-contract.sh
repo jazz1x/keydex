@@ -108,6 +108,9 @@ for needle in \
   "Sidebar search is not a nested glass card" \
   "Music's Library and Playlist tile hierarchy" \
   "no second outer card shell" \
+  "single poster frame only" \
+  "music-player-like repair rail" \
+  "milky wash" \
   "native macOS sidebar visual effect" \
   "semantic state-color media wash" \
   "flat semantic fills and strokes" \
@@ -143,6 +146,33 @@ if awk '
   END { exit found ? 0 : 1 }
 ' "$app_source"; then
   fail "CredentialInventoryCard must not use a second outer card shell"
+fi
+
+if awk '
+  /private struct CredentialArtworkPanel/ { in_artwork = 1 }
+  /private struct CredentialPosterWash/ { in_artwork = 0 }
+  in_artwork && /\.background\(\.(ultraThinMaterial|thinMaterial|regularMaterial)/ { found = 1 }
+  END { exit found ? 0 : 1 }
+' "$app_source"; then
+  fail "CredentialArtworkPanel must keep badges flat inside the single poster frame"
+fi
+
+if awk '
+  /private struct DoctorPanel/ { in_doctor = 1 }
+  /private func stateTint/ { in_doctor = 0 }
+  in_doctor && /frame\(maxWidth: \.infinity/ { found = 1 }
+  END { exit found ? 0 : 1 }
+' "$app_source"; then
+  fail "DoctorPanel must use the centered music-player-like repair rail width"
+fi
+
+if awk '
+  /private struct MusicSearchField/ { in_search = 1 }
+  /private struct MusicSidebarSection/ { in_search = 0 }
+  in_search && /\.background\(/ { found = 1 }
+  END { exit found ? 0 : 1 }
+' "$app_source"; then
+  fail "MusicSearchField must remain a plain row on the sidebar material"
 fi
 
 echo "app design contract clean"
