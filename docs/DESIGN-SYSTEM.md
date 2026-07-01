@@ -20,7 +20,7 @@ and honest about risk.
 | `surface.primary` | system background | main content |
 | `surface.sidebar` | native sidebar visual effect + background extension | sidebar slab, navigation, and scope filters |
 | `surface.inspector` | native Liquid Glass, 8 px radius | selected item detail |
-| `surface.card` | native Liquid Glass, 8 px radius | inventory cards and grouped settings only |
+| `surface.card` | poster-only native Liquid Glass, 8 px radius | inventory card artwork and grouped settings only |
 | `glass.sidebar.selection` | primary 0.055 alpha | selected sidebar rows |
 | `glass.content.tint` | white 0.07 alpha | card and inspector glass shell tint |
 | `glass.control.tint` | white 0.12 alpha | toolbar mode cluster tint |
@@ -46,7 +46,7 @@ and honest about risk.
 | Sidebar | Scope navigation | All, Expiring, Plaintext, Orphans, Duplicates, Services, Tags |
 | Toolbar | Global actions | glass mode cluster, register, settings |
 | Inventory Table | Primary working view | grouped list rows, selected pill, sortable columns, state chips, source count, last observed |
-| Inventory Cards | Secondary scan view | poster-style credential surface, state chips, Keychain badge, source previews |
+| Inventory Cards | Secondary scan view | poster-style credential artwork, metadata below, state chips, Keychain badge, source previews |
 | Inspector | Relationship detail | credential, sources, graph edges, expiry, notes, actions |
 | Doctor Panel | Repair queue | severity groups, cause, action, affected nodes |
 | Settings | Permissions, appearance, and rules | Keychain access, system appearance mode, scan paths, ignored sources |
@@ -77,17 +77,18 @@ and honest about risk.
   and editable.
 - Native glass buttons use `.glass` or `.glassProminent` when available, with system
   button styles on older macOS versions.
-- Inventory cards are content-layer surfaces. On macOS 26+, the card shell and state
-  poster use native `glassEffect`; older macOS versions fall back to material and
-  low-alpha fills.
+- Inventory cards are content-layer tiles. On macOS 26+, only the credential poster
+  uses native `glassEffect`; older macOS versions fall back to material and low-alpha fills.
 - Card mode follows Music's Library and Playlist tile hierarchy: poster/artwork first,
   title and metadata underneath, no extra nested glass controls inside repeated cards.
+- Repeated inventory cards have no second outer card shell. Selection belongs on
+  the poster outline so the artwork remains the only framed tile.
 - Poster surfaces may use semantic state-color media wash. They must not use decorative
   graph lines, constellations, glow-only hierarchy, or fake analytics imagery.
 - The repair queue uses a full-width floating glass rail instead of a hard split panel.
   Scrollable content may pass behind the rail so the glass has real pixels underneath.
 - Do not use heavy Liquid Glass for repeated table cells or dense detail sections.
-  Repeated credential cards may use low-tint native glass shells.
+  Repeated credential posters may use low-tint native glass; the card shell stays unframed.
 - Repeated state and metadata chips use flat semantic fills and strokes, not material
   capsules, so table/card density stays closer to Music library rows.
 - Source metadata uses list/document symbols, never connected-dot graph glyphs.

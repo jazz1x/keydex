@@ -107,6 +107,7 @@ for needle in \
   "Liquid Glass Rules" \
   "Sidebar search is not a nested glass card" \
   "Music's Library and Playlist tile hierarchy" \
+  "no second outer card shell" \
   "native macOS sidebar visual effect" \
   "semantic state-color media wash" \
   "flat semantic fills and strokes" \
@@ -134,5 +135,14 @@ for forbidden in \
   "Copy secret"; do
   reject_file_contains "$app_source" "$forbidden"
 done
+
+if awk '
+  /private struct CredentialInventoryCard/ { in_card = 1 }
+  /private struct CredentialArtworkPanel/ { in_card = 0 }
+  in_card && /keydexContentPanel\(/ { found = 1 }
+  END { exit found ? 0 : 1 }
+' "$app_source"; then
+  fail "CredentialInventoryCard must not use a second outer card shell"
+fi
 
 echo "app design contract clean"

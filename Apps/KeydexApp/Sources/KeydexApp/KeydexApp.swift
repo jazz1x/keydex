@@ -806,7 +806,11 @@ private struct CredentialInventoryCard: View {
   var body: some View {
     Button(action: selectAction) {
       VStack(alignment: .leading, spacing: 12) {
-        CredentialArtworkPanel(row: row, height: 196)
+        CredentialArtworkPanel(
+          row: row,
+          height: 196,
+          selected: isSelected
+        )
 
         VStack(alignment: .leading, spacing: 9) {
           CredentialStateSummaryView(states: row.states)
@@ -823,33 +827,24 @@ private struct CredentialInventoryCard: View {
             .lineLimit(1)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .padding(.horizontal, 2)
       }
-      .padding(10)
-      .frame(maxWidth: .infinity, minHeight: 304, alignment: .topLeading)
-      .keydexContentPanel(stroke: cardStroke, selected: isSelected)
+      .frame(maxWidth: .infinity, minHeight: 284, alignment: .topLeading)
     }
     .buttonStyle(.plain)
     .accessibilityLabel(row.cardAccessibilityLabel)
   }
-
-  private var cardStroke: Color {
-    if isSelected {
-      return Color.accentColor.opacity(0.65)
-    }
-
-    return KeydexGlassTone.panelStroke
-  }
-
 }
 
 private struct CredentialArtworkPanel: View {
   let row: CredentialRow
   var height: CGFloat = 82
+  var selected = false
 
   var body: some View {
     ZStack {
       panelShape
-        .keydexArtworkGlass(tint: panelFill, stroke: accentColor.opacity(isPoster ? 0.24 : 0.12))
+        .keydexArtworkGlass(tint: panelFill, stroke: panelStroke)
         .overlay {
           if isPoster {
             CredentialPosterWash(accentColor: accentColor)
@@ -906,6 +901,14 @@ private struct CredentialArtworkPanel: View {
 
   private var panelFill: Color {
     accentColor.opacity(KeydexGlassTone.artworkColorAlpha)
+  }
+
+  private var panelStroke: Color {
+    if selected {
+      return Color.accentColor.opacity(0.74)
+    }
+
+    return accentColor.opacity(isPoster ? 0.20 : 0.12)
   }
 
   private var panelRadius: CGFloat {
