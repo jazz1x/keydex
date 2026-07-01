@@ -850,6 +850,12 @@ private struct CredentialArtworkPanel: View {
     ZStack {
       panelShape
         .keydexArtworkGlass(tint: panelFill, stroke: accentColor.opacity(isPoster ? 0.24 : 0.12))
+        .overlay {
+          if isPoster {
+            CredentialPosterWash(accentColor: accentColor)
+              .clipShape(panelShape)
+          }
+        }
         .overlay(alignment: .topTrailing) {
           Text("\(row.locations.count)")
             .font(.caption.weight(.semibold))
@@ -888,10 +894,10 @@ private struct CredentialArtworkPanel: View {
         }
 
       Image(systemName: row.keychainStatusSystemImage)
-        .font(.system(size: isPoster ? 62 : 34, weight: .semibold))
+        .font(.system(size: isPoster ? 70 : 34, weight: .semibold))
         .foregroundStyle(accentColor)
         .symbolRenderingMode(.hierarchical)
-        .opacity(isPoster ? 0.82 : 1)
+        .opacity(isPoster ? 0.76 : 1)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .accessibilityHidden(true)
     }
@@ -916,6 +922,21 @@ private struct CredentialArtworkPanel: View {
 
   private var panelShape: RoundedRectangle {
     RoundedRectangle(cornerRadius: panelRadius, style: .continuous)
+  }
+}
+
+private struct CredentialPosterWash: View {
+  let accentColor: Color
+
+  var body: some View {
+    ZStack(alignment: .top) {
+      Rectangle()
+        .fill(accentColor.opacity(KeydexGlassTone.posterWashHighAlpha))
+
+      Rectangle()
+        .fill(Color.white.opacity(KeydexGlassTone.posterHighlightAlpha))
+        .frame(height: 42)
+    }
   }
 }
 
@@ -2133,8 +2154,8 @@ private struct SettingsDivider: View {
 
 private enum KeydexGlassTone {
   static let sidebarSelectionFill = Color.primary.opacity(0.055)
-  static let contentPanelFill = Color.primary.opacity(0.035)
-  static let contentGlassTint = Color.white.opacity(0.10)
+  static let contentPanelFill = Color.primary.opacity(0.020)
+  static let contentGlassTint = Color.white.opacity(0.07)
   static let controlGlassTint = Color.white.opacity(0.12)
   static let floatingTint = Color.white.opacity(0.15)
   static let panelStroke = Color(nsColor: .separatorColor).opacity(0.30)
@@ -2144,7 +2165,9 @@ private enum KeydexGlassTone {
   static let metadataChipStrokeAlpha = 0.22
   static let metadataChipFill = Color.primary.opacity(0.035)
   static let metadataChipStroke = Color(nsColor: .separatorColor).opacity(0.28)
-  static let artworkColorAlpha = 0.30
+  static let artworkColorAlpha = 0.36
+  static let posterWashHighAlpha = 0.08
+  static let posterHighlightAlpha = 0.06
 }
 
 private enum KeydexRailLayout {
@@ -2335,13 +2358,34 @@ private struct KeydexFloatingGlassPanelModifier: ViewModifier {
   }
 }
 
+private struct KeydexSidebarMaterialView: NSViewRepresentable {
+  func makeNSView(context _: Context) -> NSVisualEffectView {
+    let view = NSVisualEffectView()
+    configure(view)
+    return view
+  }
+
+  func updateNSView(_ nsView: NSVisualEffectView, context _: Context) {
+    configure(nsView)
+  }
+
+  private func configure(_ view: NSVisualEffectView) {
+    view.material = .sidebar
+    view.blendingMode = .behindWindow
+    view.state = .active
+    view.isEmphasized = false
+  }
+}
+
 private struct KeydexSidebarGlassModifier: ViewModifier {
   @ViewBuilder
   func body(content: Content) -> some View {
     #if compiler(>=6.2)
       if #available(macOS 26.0, *) {
         content
-          .background(.ultraThinMaterial)
+          .background {
+            KeydexSidebarMaterialView()
+          }
           .backgroundExtensionEffect()
           .overlay(alignment: .trailing) {
             sidebarDivider
@@ -2357,7 +2401,9 @@ private struct KeydexSidebarGlassModifier: ViewModifier {
   @ViewBuilder
   private func fallback(content: Content) -> some View {
     content
-      .background(.ultraThinMaterial)
+      .background {
+        KeydexSidebarMaterialView()
+      }
       .overlay(alignment: .trailing) {
         sidebarDivider
       }

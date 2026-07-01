@@ -49,6 +49,7 @@ for needle in \
   "MusicSidebarRow" \
   "MusicToolbarCluster" \
   "KeydexSidebarLayout" \
+  "KeydexSidebarMaterialView" \
   "Table(rows" \
   "CredentialCardGrid" \
   "CredentialInspectorPanel" \
@@ -76,6 +77,8 @@ for needle in \
   ".buttonStyle(.glassProminent" \
   ".glassEffect(.regular" \
   ".backgroundExtensionEffect()" \
+  "NSVisualEffectView" \
+  "view.material = .sidebar" \
   ".background(.regularMaterial" \
   ".background(.ultraThinMaterial)" \
   ".background(.thinMaterial" \
@@ -104,6 +107,8 @@ for needle in \
   "Liquid Glass Rules" \
   "Sidebar search is not a nested glass card" \
   "Music's Library and Playlist tile hierarchy" \
+  "native macOS sidebar visual effect" \
+  "semantic state-color media wash" \
   "flat semantic fills and strokes" \
   "Source metadata uses list/document symbols" \
   "Inventory Cards" \
