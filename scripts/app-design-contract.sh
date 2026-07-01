@@ -53,6 +53,7 @@ for needle in \
   "CredentialInspectorPanel" \
   "GraphBackdropView" \
   "InventoryDisplayMode" \
+  "KeydexRailLayout" \
   "TextField(\"Search\"" \
   "ToolbarItem" \
   "ContentUnavailableView" \
@@ -65,6 +66,7 @@ for needle in \
   ".keydexControlGlassPanel(" \
   ".keydexContentPanel(" \
   ".keydexFloatingGlassPanel(" \
+  "scrollContentBottomPadding" \
   ".buttonStyle(.glass" \
   ".buttonStyle(.glassProminent" \
   ".glassEffect(.regular" \

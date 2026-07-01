@@ -25,7 +25,7 @@ and honest about risk.
 | `glass.content.tint` | white 0.10 alpha | card and inspector glass shell tint |
 | `glass.control.tint` | white 0.12 alpha | search field and toolbar mode cluster tint |
 | `glass.poster.tint` | semantic state color 0.30 alpha | card poster glass tint |
-| `glass.floating.tint` | white 0.18 alpha | bottom repair rail tint |
+| `glass.floating.tint` | white 0.15 alpha | bottom repair rail tint |
 | `artwork.state.tint` | semantic state color 0.30 alpha | card poster color field |
 | `text.primary` | label | credential names and actions |
 | `text.secondary` | secondary label | metadata and source paths |
@@ -76,6 +76,7 @@ and honest about risk.
   poster use native `glassEffect`; older macOS versions fall back to material and
   low-alpha fills.
 - The repair queue uses a full-width floating glass rail instead of a hard split panel.
+  Scrollable content may pass behind the rail so the glass has real pixels underneath.
 - Do not use heavy Liquid Glass for repeated table cells or dense detail sections.
   Repeated credential cards may use low-tint native glass shells.
 - Avoid stacked or nested glass. Group related controls into one glass surface instead.
