@@ -85,6 +85,7 @@ and honest about risk.
   Repeated credential cards may use low-tint native glass shells.
 - Repeated state and metadata chips use flat semantic fills and strokes, not material
   capsules, so table/card density stays closer to Music library rows.
+- Source metadata uses list/document symbols, never connected-dot graph glyphs.
 - Avoid stacked or nested glass. Group related controls into one glass surface instead.
 - Do not hide text contrast behind material effects.
 - Keep risk colors outside decorative materials when legibility would suffer.

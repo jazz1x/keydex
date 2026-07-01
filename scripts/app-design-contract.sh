@@ -105,6 +105,7 @@ for needle in \
   "Sidebar search is not a nested glass card" \
   "Music's Library and Playlist tile hierarchy" \
   "flat semantic fills and strokes" \
+  "Source metadata uses list/document symbols" \
   "Inventory Cards" \
   "No dashboard theater" \
   "no graph, constellation" \
@@ -122,6 +123,8 @@ for forbidden in \
   "Path(" \
   "addLine(" \
   "GraphBackdropView" \
+  "point.3.connected" \
+  "trianglepath" \
   "shadow(" \
   "Copy secret"; do
   reject_file_contains "$app_source" "$forbidden"
