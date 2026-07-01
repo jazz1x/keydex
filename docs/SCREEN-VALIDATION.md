@@ -80,9 +80,9 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Real glass controls | Command buttons use `.glass` or `.glassProminent` where available. |
 | Apple Music reference | Native sidebar material, poster cards, and the music-player-like footer rail are checked against Music for Mac's content/glass layering. |
 | Toolbar cluster | Sample and display mode controls are grouped into one glass cluster. |
-| Sidebar glass | Sidebar is the glass slab with a subtle neutral milk wash; scroll content background is hidden and search opens as a plain 12/36/12 pt row on that material, not nested glass. |
-| Rail layering | The bottom Doctor rail sits in a reserved 90 pt material footer lane with a top separator, not as an overlay on rows or cards. |
-| Table rail inset | List/table mode uses the footer boundary directly; no artificial scroll spacer is required. |
+| Sidebar glass | Sidebar is the native glass slab with no color wash overlay; scroll content background is hidden and search opens as a plain 12/36/12 pt row on that material, not nested glass. |
+| Rail layering | The bottom Doctor rail is composited in a native material footer lane with a top separator and 90 pt content reserve, not as an opaque painted panel. |
+| Table rail inset | List/table mode keeps the 90 pt footer reserve so final rows remain reachable under the material rail. |
 | Table legibility | Repeated rows do not use heavy material effects. |
 | Card legibility | Inventory cards keep 8 pt radius, stable 248 pt poster height, title/caption text below the poster, and source previews. |
 | Card hierarchy | Card mode follows Music Library/Playlist tiles: sidebar plus page title, section heading, flowing adaptive card shelf, bounded tile widths, one framed poster first, two-line title/caption deck below, no repeated service/account/status text stack inside the poster, no persistent inspector pane, no second outer card shell, and no nested material badges inside the poster. |

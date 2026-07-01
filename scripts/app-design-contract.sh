@@ -51,7 +51,6 @@ for needle in \
   "MusicSearchField" \
   "MusicSidebarSection" \
   "MusicSidebarRow" \
-  "KeydexSidebarWashLayer" \
   "MusicToolbarCluster" \
   "MusicContentSectionHeader" \
   "KeydexSidebarLayout" \
@@ -78,14 +77,13 @@ for needle in \
   "posterToTextSpacing" \
   "textDeckSpacing" \
   "footerLaneHeight: CGFloat = 90" \
+  "footerReserveHeight: KeydexRailLayout.footerLaneHeight" \
   "footerTopPadding" \
   "footerBottomPadding" \
   "footerSeparatorAlpha = 0.12" \
-  ".fill(.ultraThinMaterial)" \
-  "railLaneWash" \
-  "railFloatingTint" \
-  "sidebarMilkyWashLight = Color(red: 0.99" \
-  "sidebarMilkyWashDark = Color.white.opacity(0.08)" \
+  "KeydexRailLaneMaterialView" \
+  "view.material = .headerView" \
+  "view.blendingMode = .withinWindow" \
   "searchTopPadding: CGFloat = 12" \
   "searchRowHeight: CGFloat = 36" \
   "searchHorizontalPadding: CGFloat = 12" \
@@ -103,8 +101,11 @@ for needle in \
   "ContentUnavailableView" \
   "ScrollView {" \
   "SettingsGlassSection" \
+  "SettingsToggleRow" \
   "SettingsStatusPill" \
   "SettingsDisplayModeRow" \
+  ".labelsHidden()" \
+  ".frame(width: 54, alignment: .trailing)" \
   ".pickerStyle(.segmented)" \
   ".keydexGlassButton(" \
   ".keydexSidebarGlass()" \
@@ -112,6 +113,7 @@ for needle in \
   ".keydexControlGlassPanel(" \
   ".keydexContentPanel(" \
   ".keydexFloatingGlassPanel(" \
+  ".glassEffect(.regular.interactive(), in: shape)" \
   ".buttonStyle(.glass" \
   ".buttonStyle(.glassProminent" \
   ".glassEffect(.regular" \
@@ -160,14 +162,14 @@ for needle in \
   "Search results show a lightweight Music-like result header" \
   "music-player-like repair rail" \
   "surface.footerRail" \
-  "reserved 90 pt music-player-like footer lane" \
-  "90 pt reserved milky ultra-thin material footer lane" \
+  "90 pt content reserve" \
+  "native visual effect footer lane" \
   "user-owned tag metadata" \
-  "reserved footer rail" \
-  "neutral milk wash" \
+  "footer rail" \
+  "no color wash overlay" \
   "native macOS sidebar visual effect" \
   "Sidebar scroll content hides its own background" \
-  "Sidebar wash is layered above the native material" \
+  "Sidebar content sits directly on native material" \
   "Sidebar navigation opens at its top anchor" \
   "Music-like content cadence" \
   "semantic state-color media wash" \
