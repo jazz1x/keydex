@@ -59,4 +59,9 @@ echo "8) app accessibility contract..."
 echo "9) app design contract..."
 ./scripts/app-design-contract.sh
 
+echo "10) app menubar smoke script contract..."
+expect_file_contains scripts/app-menubar-smoke.sh "Keydex"
+expect_file_contains scripts/app-menubar-smoke.sh "Open Keydex"
+expect_file_contains scripts/app-menubar-smoke.sh "Quit Keydex"
+
 echo "quality gate clean"

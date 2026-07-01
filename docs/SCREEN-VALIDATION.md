@@ -126,6 +126,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | --- | --- | --- |
 | Build shell | `swift build --product KeydexApp` | The SwiftUI app compiles against graph projections. |
 | Window shell | `scripts/app-window-smoke.sh` | The app launches and publishes the default window. |
+| Menu bar shell | `make app-menubar-smoke` | The app exposes the Keydex menu bar item plus Open and Quit actions. |
 | Local screen evidence | `scripts/app-screen-evidence.sh --list` and `make app-screen-evidence SCENARIO=<name>` | Captures local screenshot and manifest for manual screen review evidence in `tmp/screen-evidence` (not CI required). |
 | Local screen review | `make app-screen-evidence-review` | Verifies the local screenshot and manifest set for all required script scenarios. |
 | Accessibility contract | `scripts/app-accessibility-contract.sh` | Required app surfaces expose stable labels and identifiers. |
