@@ -19,12 +19,12 @@ and honest about risk.
 | --- | --- | --- |
 | `surface.primary` | system background | main content |
 | `surface.sidebar` | native sidebar visual effect + background extension + milky wash | sidebar slab, navigation, and scope filters |
-| `glass.sidebar.wash` | light: warm white 0.86 alpha; dark: white 0.08 alpha | Apple Music-like sidebar milky wash |
+| `glass.sidebar.wash` | light: neutral milk white 0.84 alpha; dark: white 0.08 alpha | Apple Music-like sidebar milky wash |
 | `surface.inspector` | native Liquid Glass, 8 px radius | selected item detail |
 | `surface.card` | poster-only native Liquid Glass, 8 px radius | inventory card artwork and grouped settings only |
 | `glass.sidebar.selection` | primary 0.045 alpha | selected sidebar rows |
 | `glass.content.tint` | white 0.07 alpha | card and inspector glass shell tint |
-| `glass.control.tint` | white 0.12 alpha | toolbar mode cluster tint |
+| `glass.control.tint` | white 0.10 alpha | toolbar mode cluster tint |
 | `glass.poster.tint` | semantic state color 0.22 alpha | card poster glass tint |
 | `glass.floating.tint` | white 0.20 alpha | reserved bottom repair rail tint |
 | `artwork.state.tint` | semantic state color 0.22 alpha | card poster color field |
@@ -79,6 +79,8 @@ and honest about risk.
   text contrast while matching Music's warm translucent slab.
 - Sidebar content also owns the wash layer because macOS scroll containers can draw
   their own neutral background above the split-view material.
+- Sidebar navigation opens at its top anchor so the search row and first selected
+  item are visible when card and list surfaces open.
 - Sidebar search is not a nested glass card. It is a plain search row on the sidebar
   material, matching Music's Library and Playlist navigation.
 - Toolbar mode controls stay in one glass cluster instead of separate floating islands.
@@ -90,6 +92,8 @@ and honest about risk.
   uses native `glassEffect`; older macOS versions fall back to material and low-alpha fills.
 - Card mode follows Music's Library and Playlist tile hierarchy: poster/artwork first,
   primary title inside the poster surface, and one compact metadata caption below.
+- Card mode uses Music-like content cadence: page title, section heading with
+  chevron, then poster shelf.
 - Card mode uses a two-column Music-like library surface: sidebar plus flowing card
   content. The persistent inspector stays in list mode, where dense operational
   review is the primary task.

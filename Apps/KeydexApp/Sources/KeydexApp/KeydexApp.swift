@@ -393,9 +393,9 @@ private struct MusicToolbarCluster: View {
       .accessibilityIdentifier("keydex.toolbar.display-mode")
       .accessibilityLabel("Display mode")
     }
-    .padding(.horizontal, 7)
-    .padding(.vertical, 5)
-    .keydexControlGlassPanel(cornerRadius: 20)
+    .padding(.horizontal, 6)
+    .padding(.vertical, 4)
+    .keydexControlGlassPanel(cornerRadius: 18)
     .accessibilityIdentifier("keydex.toolbar.mode-cluster")
     .accessibilityLabel("Inventory and display controls")
   }
@@ -431,51 +431,61 @@ private struct MusicSidebarView: View {
   }
 
   var body: some View {
-    ScrollView {
-      VStack(alignment: .leading, spacing: KeydexSidebarLayout.sectionSpacing) {
-        MusicSearchField(searchText: $searchText)
-          .padding(.horizontal, 4)
-          .padding(.top, 20)
+    ScrollViewReader { scrollProxy in
+      ScrollView {
+        VStack(alignment: .leading, spacing: KeydexSidebarLayout.sectionSpacing) {
+          Color.clear
+            .frame(height: 0)
+            .accessibilityHidden(true)
+            .id(KeydexSidebarScrollAnchor.top)
 
-        MusicSidebarSection(title: nil) {
-          ForEach(inventoryItems, id: \.self) { item in
-            MusicSidebarRow(
-              item: item,
-              selected: selectedSidebar == item
-            ) {
-              selectedSidebar = item
+          MusicSearchField(searchText: $searchText)
+            .padding(.horizontal, 4)
+            .padding(.top, KeydexSidebarLayout.searchTopPadding)
+
+          MusicSidebarSection(title: nil) {
+            ForEach(inventoryItems, id: \.self) { item in
+              MusicSidebarRow(
+                item: item,
+                selected: selectedSidebar == item
+              ) {
+                selectedSidebar = item
+              }
+            }
+          }
+
+          MusicSidebarSection(title: "Library") {
+            ForEach(libraryItems, id: \.self) { item in
+              MusicSidebarRow(
+                item: item,
+                selected: selectedSidebar == item
+              ) {
+                selectedSidebar = item
+              }
+            }
+          }
+
+          MusicSidebarSection(title: "Services") {
+            ForEach(serviceItems, id: \.self) { item in
+              MusicSidebarRow(
+                item: item,
+                selected: selectedSidebar == item
+              ) {
+                selectedSidebar = item
+              }
             }
           }
         }
-
-        MusicSidebarSection(title: "Library") {
-          ForEach(libraryItems, id: \.self) { item in
-            MusicSidebarRow(
-              item: item,
-              selected: selectedSidebar == item
-            ) {
-              selectedSidebar = item
-            }
-          }
-        }
-
-        MusicSidebarSection(title: "Services") {
-          ForEach(serviceItems, id: \.self) { item in
-            MusicSidebarRow(
-              item: item,
-              selected: selectedSidebar == item
-            ) {
-              selectedSidebar = item
-            }
-          }
-        }
+        .padding(.horizontal, KeydexSidebarLayout.contentHorizontalPadding)
+        .padding(.bottom, KeydexSidebarLayout.contentBottomPadding)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+        .background(KeydexSidebarWashLayer())
       }
-      .padding(.horizontal, KeydexSidebarLayout.contentHorizontalPadding)
-      .padding(.bottom, KeydexSidebarLayout.contentBottomPadding)
-      .frame(maxWidth: .infinity, alignment: .topLeading)
-      .background(KeydexSidebarWashLayer())
+      .scrollContentBackground(.hidden)
+      .onAppear {
+        scrollProxy.scrollTo(KeydexSidebarScrollAnchor.top, anchor: .top)
+      }
     }
-    .scrollContentBackground(.hidden)
     .keydexSidebarGlass()
     .accessibilityIdentifier("keydex.sidebar.scopes")
     .accessibilityLabel("Credential scopes")
@@ -814,30 +824,54 @@ private struct CredentialCardGrid: View {
       InventoryBackdropView()
 
       ScrollView {
-        VStack(alignment: .leading, spacing: 18) {
+        VStack(alignment: .leading, spacing: KeydexCardGridLayout.pageToSectionSpacing) {
           Text(title)
-            .font(.largeTitle.weight(.semibold))
+            .font(.largeTitle.weight(.bold))
             .lineLimit(1)
 
-          LazyVGrid(columns: columns, alignment: .leading, spacing: KeydexCardGridLayout.rowSpacing)
-          {
-            ForEach(rows) { row in
-              CredentialInventoryCard(
-                row: row,
-                isSelected: selectedCredentialID == row.id
-              ) {
-                selectedCredentialID = row.id
+          VStack(alignment: .leading, spacing: KeydexCardGridLayout.sectionToGridSpacing) {
+            MusicContentSectionHeader(title: "Credential Library")
+
+            LazyVGrid(
+              columns: columns,
+              alignment: .leading,
+              spacing: KeydexCardGridLayout.rowSpacing
+            ) {
+              ForEach(rows) { row in
+                CredentialInventoryCard(
+                  row: row,
+                  isSelected: selectedCredentialID == row.id
+                ) {
+                  selectedCredentialID = row.id
+                }
               }
             }
           }
         }
-        .padding(.horizontal, 24)
-        .padding(.top, 26)
+        .padding(.horizontal, KeydexCardGridLayout.contentHorizontalPadding)
+        .padding(.top, KeydexCardGridLayout.contentTopPadding)
         .padding(.bottom, KeydexCardGridLayout.contentBottomPadding)
       }
     }
     .accessibilityIdentifier("keydex.inventory.cards")
     .accessibilityLabel("Credential inventory cards")
+  }
+}
+
+private struct MusicContentSectionHeader: View {
+  let title: String
+
+  var body: some View {
+    HStack(alignment: .firstTextBaseline, spacing: 6) {
+      Text(title)
+        .font(.title2.weight(.bold))
+
+      Image(systemName: "chevron.right")
+        .font(.title3.weight(.semibold))
+        .foregroundStyle(.secondary)
+        .accessibilityHidden(true)
+    }
+    .accessibilityElement(children: .combine)
   }
 }
 
@@ -2201,12 +2235,12 @@ private struct SettingsDivider: View {
 }
 
 private enum KeydexGlassTone {
-  static let sidebarMilkyWashLight = Color(red: 0.98, green: 0.97, blue: 0.94).opacity(0.86)
+  static let sidebarMilkyWashLight = Color(red: 0.98, green: 0.98, blue: 0.95).opacity(0.84)
   static let sidebarMilkyWashDark = Color.white.opacity(0.08)
   static let sidebarSelectionFill = Color.primary.opacity(0.045)
   static let contentPanelFill = Color.primary.opacity(0.020)
   static let contentGlassTint = Color.white.opacity(0.07)
-  static let controlGlassTint = Color.white.opacity(0.12)
+  static let controlGlassTint = Color.white.opacity(0.10)
   static let floatingTint = Color.white.opacity(0.20)
   static let railControlFill = Color.primary.opacity(0.045)
   static let panelStroke = Color(nsColor: .separatorColor).opacity(0.30)
@@ -2237,9 +2271,13 @@ private enum KeydexCardArtworkLayout {
 }
 
 private enum KeydexCardGridLayout {
+  static let contentHorizontalPadding: CGFloat = 24
+  static let contentTopPadding: CGFloat = 20
   static let minimumColumnWidth: CGFloat = 212
   static let maximumColumnWidth: CGFloat = 304
   static let posterHeight: CGFloat = 240
+  static let pageToSectionSpacing: CGFloat = 20
+  static let sectionToGridSpacing: CGFloat = 14
   static let columnSpacing: CGFloat = 18
   static let rowSpacing: CGFloat = 18
   static let cardMinimumHeight: CGFloat = 266
@@ -2249,6 +2287,7 @@ private enum KeydexCardGridLayout {
 private enum KeydexSidebarLayout {
   static let contentHorizontalPadding: CGFloat = 12
   static let contentBottomPadding: CGFloat = 18
+  static let searchTopPadding: CGFloat = 20
   static let sectionSpacing: CGFloat = 18
   static let titleSpacing: CGFloat = 6
   static let rowSpacing: CGFloat = 2
@@ -2256,6 +2295,10 @@ private enum KeydexSidebarLayout {
   static let rowHorizontalPadding: CGFloat = 10
   static let searchRowHeight: CGFloat = 40
   static let searchHorizontalPadding: CGFloat = 10
+}
+
+private enum KeydexSidebarScrollAnchor {
+  static let top = "keydex.sidebar.top"
 }
 
 private struct KeydexGlassButtonModifier: ViewModifier {
@@ -2470,6 +2513,7 @@ private struct KeydexSidebarGlassModifier: ViewModifier {
       if #available(macOS 26.0, *) {
         ZStack(alignment: .topLeading) {
           sidebarMilkyWash
+            .ignoresSafeArea(edges: .top)
           content
         }
         .background {
@@ -2491,6 +2535,7 @@ private struct KeydexSidebarGlassModifier: ViewModifier {
   private func fallback(content: Content) -> some View {
     ZStack(alignment: .topLeading) {
       sidebarMilkyWash
+        .ignoresSafeArea(edges: .top)
       content
     }
     .background {

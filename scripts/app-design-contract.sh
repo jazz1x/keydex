@@ -49,6 +49,7 @@ for needle in \
   "MusicSidebarRow" \
   "KeydexSidebarWashLayer" \
   "MusicToolbarCluster" \
+  "MusicContentSectionHeader" \
   "KeydexSidebarLayout" \
   "KeydexSidebarMaterialView" \
   "Table(rows" \
@@ -66,6 +67,8 @@ for needle in \
   "sidebarMilkyWashLight = Color(red: 0.98" \
   "sidebarMilkyWashDark = Color.white.opacity(0.08)" \
   ".scrollContentBackground(.hidden)" \
+  "ScrollViewReader" \
+  "KeydexSidebarScrollAnchor" \
   "ZStack(alignment: .topLeading)" \
   "stateChipFillAlpha" \
   "posterSymbolAlpha" \
@@ -128,6 +131,8 @@ for needle in \
   "native macOS sidebar visual effect" \
   "Sidebar scroll content hides its own background" \
   "Sidebar wash is layered above the native material" \
+  "Sidebar navigation opens at its top anchor" \
+  "Music-like content cadence" \
   "semantic state-color media wash" \
   "Poster glyphs stay subdued" \
   "flat semantic fills and strokes" \
