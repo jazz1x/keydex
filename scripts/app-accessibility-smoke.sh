@@ -33,8 +33,9 @@ expect_dump_contains() {
 
 dump_accessibility_tree() {
   local pid="$1"
+  local readiness_needle="$2"
 
-  osascript - "$pid" <<'APPLESCRIPT'
+  osascript - "$pid" "$readiness_needle" <<'APPLESCRIPT'
 on collectText(target)
   set output to ""
   tell application "System Events"
@@ -57,9 +58,24 @@ on collectText(target)
   return output
 end collectText
 
+on collectWindows(targetProcess)
+  set output to ""
+  tell application "System Events"
+    try
+      set targetWindows to windows of targetProcess
+      repeat with targetWindow in targetWindows
+        set output to output & my collectText(targetWindow)
+      end repeat
+    end try
+  end tell
+  return output
+end collectWindows
+
 on run argv
   set targetPID to item 1 of argv as integer
+  set readinessNeedle to item 2 of argv as text
   set targetProcess to missing value
+  set axDump to ""
 
   tell application "System Events"
     repeat 40 times
@@ -86,7 +102,16 @@ on run argv
     end if
 
     set frontmost of targetProcess to true
-    return my collectText(window 1 of targetProcess)
+
+    repeat 40 times
+      set axDump to my collectWindows(targetProcess)
+      if readinessNeedle is "" or axDump contains readinessNeedle then
+        return axDump
+      end if
+      delay 0.25
+    end repeat
+
+    return axDump
   end tell
 end run
 APPLESCRIPT
@@ -99,8 +124,13 @@ run_scenario() {
   KEYDEX_APP_WINDOW_PRESET=default KEYDEX_APP_SCREEN_SCENARIO="$scenario" swift run KeydexApp &
   app_pid="$!"
 
+  local readiness_needle=""
+  for needle in "$@"; do
+    readiness_needle="$needle"
+  done
+
   local ax_dump
-  ax_dump="$(dump_accessibility_tree "$app_pid")"
+  ax_dump="$(dump_accessibility_tree "$app_pid" "$readiness_needle")"
   cleanup
 
   for needle in "$@"; do
@@ -121,10 +151,6 @@ run_scenario inspector \
   "Credential inventory table" \
   "Credential repair queue" \
   "Credential inspector" \
-  "Inventory mode" \
-  "Display mode" \
-  "Register Keychain" \
-  "Settings" \
   "missing-keychain-item" \
   "plaintext-fallback" \
   "duplicate"

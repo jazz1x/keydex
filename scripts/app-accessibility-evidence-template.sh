@@ -83,6 +83,7 @@ write_scenario_template settings
 write_scenario_template settings-appearance
 write_scenario_template settings-sources
 write_scenario_template settings-paths
+write_scenario_template settings-tags
 write_scenario_template settings-rules
 write_scenario_template compact-window
 

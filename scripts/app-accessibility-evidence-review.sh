@@ -57,6 +57,7 @@ review_scenario settings
 review_scenario settings-appearance
 review_scenario settings-sources
 review_scenario settings-paths
+review_scenario settings-tags
 review_scenario settings-rules
 review_scenario compact-window
 

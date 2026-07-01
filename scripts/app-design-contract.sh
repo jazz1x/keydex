@@ -64,6 +64,9 @@ for needle in \
   "CredentialInspectorPanel" \
   "InventoryBackdropView" \
   "InventoryDisplayMode" \
+  "CredentialTagRow" \
+  "CredentialTagStrip" \
+  "EditableTagListSection" \
   "isCardLibrarySurface" \
   "KeydexRailFooter" \
   "KeydexRailLaneBackground" \
@@ -77,8 +80,10 @@ for needle in \
   "footerLaneHeight: CGFloat = 90" \
   "footerTopPadding" \
   "footerBottomPadding" \
-  "footerSeparatorAlpha = 0.18" \
+  "footerSeparatorAlpha = 0.12" \
   ".fill(.ultraThinMaterial)" \
+  "railLaneWash" \
+  "railFloatingTint" \
   "sidebarMilkyWashLight = Color(red: 0.99" \
   "sidebarMilkyWashDark = Color.white.opacity(0.08)" \
   "searchTopPadding: CGFloat = 12" \
@@ -156,7 +161,8 @@ for needle in \
   "music-player-like repair rail" \
   "surface.footerRail" \
   "reserved 90 pt music-player-like footer lane" \
-  "90 pt reserved ultra-thin material footer lane" \
+  "90 pt reserved milky ultra-thin material footer lane" \
+  "user-owned tag metadata" \
   "reserved footer rail" \
   "neutral milk wash" \
   "native macOS sidebar visual effect" \
