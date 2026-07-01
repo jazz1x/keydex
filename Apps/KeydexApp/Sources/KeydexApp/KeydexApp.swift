@@ -275,7 +275,7 @@ struct CredentialInventoryShellView: View {
   }
 
   private var inventoryPane: some View {
-    ZStack(alignment: .bottom) {
+    VStack(spacing: 0) {
       InventoryContentView(
         rows: rows,
         title: selectedSidebar.title,
@@ -283,14 +283,14 @@ struct CredentialInventoryShellView: View {
         selectedCredentialID: $selectedCredentialID,
         isEmptyMode: isEmptyMode
       )
-      .frame(minHeight: 320)
+      .frame(minHeight: 320, maxHeight: .infinity)
 
-      DoctorPanel(
-        issues: doctorIssues,
-        isEmptyMode: isEmptyMode
-      )
-      .padding(.horizontal, KeydexRailLayout.horizontalMargin)
-      .padding(.bottom, KeydexRailLayout.bottomMargin)
+      KeydexRailFooter {
+        DoctorPanel(
+          issues: doctorIssues,
+          isEmptyMode: isEmptyMode
+        )
+      }
     }
   }
 
@@ -346,6 +346,19 @@ struct CredentialInventoryShellView: View {
     .lowercased()
 
     return trimmed.isEmpty || searchHaystack.contains(normalizedQuery)
+  }
+}
+
+private struct KeydexRailFooter<Content: View>: View {
+  @ViewBuilder var content: Content
+
+  var body: some View {
+    content
+      .padding(.horizontal, KeydexRailLayout.horizontalMargin)
+      .padding(.top, KeydexRailLayout.footerTopPadding)
+      .padding(.bottom, KeydexRailLayout.footerBottomPadding)
+      .frame(maxWidth: .infinity)
+      .accessibilityElement(children: .contain)
   }
 }
 
@@ -777,11 +790,6 @@ private struct CredentialInventoryTable: View {
     .accessibilityIdentifier("keydex.inventory.table")
     .accessibilityLabel("Credential inventory table")
     .font(.body)
-    .safeAreaInset(edge: .bottom, spacing: 0) {
-      Color.clear
-        .frame(height: KeydexRailLayout.scrollContentBottomPadding)
-        .accessibilityHidden(true)
-    }
   }
 }
 
@@ -825,7 +833,7 @@ private struct CredentialCardGrid: View {
         }
         .padding(.horizontal, 24)
         .padding(.top, 26)
-        .padding(.bottom, KeydexRailLayout.scrollContentBottomPadding)
+        .padding(.bottom, KeydexCardGridLayout.contentBottomPadding)
       }
     }
     .accessibilityIdentifier("keydex.inventory.cards")
@@ -2238,11 +2246,11 @@ private enum KeydexGlassTone {
 
 private enum KeydexRailLayout {
   static let horizontalMargin: CGFloat = 20
-  static let bottomMargin: CGFloat = 18
+  static let footerTopPadding: CGFloat = 8
+  static let footerBottomPadding: CGFloat = 12
   static let railHeight: CGFloat = 58
   static let maxWidth: CGFloat = 760
   static let cornerRadius: CGFloat = 29
-  static let scrollContentBottomPadding: CGFloat = railHeight + bottomMargin + 62
 }
 
 private enum KeydexCardArtworkLayout {
@@ -2255,6 +2263,7 @@ private enum KeydexCardGridLayout {
   static let maximumColumnWidth: CGFloat = 304
   static let columnSpacing: CGFloat = 18
   static let rowSpacing: CGFloat = 18
+  static let contentBottomPadding: CGFloat = 24
 }
 
 private enum KeydexSidebarLayout {

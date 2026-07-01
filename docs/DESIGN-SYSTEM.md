@@ -26,7 +26,7 @@ and honest about risk.
 | `glass.content.tint` | white 0.07 alpha | card and inspector glass shell tint |
 | `glass.control.tint` | white 0.12 alpha | toolbar mode cluster tint |
 | `glass.poster.tint` | semantic state color 0.22 alpha | card poster glass tint |
-| `glass.floating.tint` | white 0.20 alpha | bottom repair rail tint |
+| `glass.floating.tint` | white 0.20 alpha | reserved bottom repair rail tint |
 | `artwork.state.tint` | semantic state color 0.22 alpha | card poster color field |
 | `artwork.poster.symbol` | 50 pt size + 0.50 alpha | subdued credential glyph inside poster |
 | `artwork.poster.wash` | semantic state color 0.04 alpha + white 0.08 highlight | Apple Music-like poster media wash |
@@ -50,7 +50,7 @@ and honest about risk.
 | Inventory Table | Primary working view | grouped list rows, selected pill, sortable columns, state chips, source count, last observed |
 | Inventory Cards | Secondary scan view | poster-style credential artwork, metadata below, state chips, Keychain badge, source previews |
 | Inspector | Relationship detail | credential, sources, graph edges, expiry, notes, actions |
-| Doctor Panel | Repair queue | music-player-like floating capsule with severity, cause, action, and count controls |
+| Doctor Panel | Repair queue | reserved music-player-like footer rail with severity, cause, action, and count controls |
 | Settings | Permissions, appearance, and rules | Keychain access, system appearance mode, scan paths, ignored sources |
 
 ## Component Contracts
@@ -67,7 +67,7 @@ and honest about risk.
 ## Liquid Glass Rules
 
 - Use Liquid Glass for the functional layer: sidebar slab, toolbar controls, popovers,
-  floating repair rail, and command surfaces.
+  reserved footer repair rail, and command surfaces.
 - Apple Music for Mac is the local reference for layered glass: translucent sidebar,
   floating command clusters, grouped library rows, selected-pill states, and bottom glass rails.
 - Sidebar glass uses the native macOS sidebar visual effect, then extends behind the
@@ -104,9 +104,9 @@ and honest about risk.
   graph lines, constellations, glow-only hierarchy, or fake analytics imagery.
 - Poster glyphs stay subdued so the credential card reads like Music library artwork,
   not a dashboard status tile.
-- The repair queue uses a centered music-player-like repair rail instead of a
-  hard split panel. Scrollable content may pass behind the rail so the glass has
-  real pixels underneath.
+- The repair queue uses a centered music-player-like repair rail inside a
+  reserved footer rail instead of a hard split panel or overlay. Scrollable
+  content must end above the rail so rows and playlist-style cards are never occluded.
 - Do not use heavy Liquid Glass for repeated table cells or dense detail sections.
   Repeated credential posters may use low-tint native glass; the card shell stays unframed.
 - Repeated state and metadata chips use flat semantic fills and strokes, not material

@@ -57,9 +57,12 @@ for needle in \
   "InventoryBackdropView" \
   "InventoryDisplayMode" \
   "isCardLibrarySurface" \
+  "KeydexRailFooter" \
   "KeydexCardGridLayout" \
   "KeydexRailLayout" \
   "KeydexCardArtworkLayout" \
+  "footerTopPadding" \
+  "footerBottomPadding" \
   "sidebarMilkyWashLight = Color(red: 0.98" \
   "sidebarMilkyWashDark = Color.white.opacity(0.08)" \
   ".scrollContentBackground(.hidden)" \
@@ -80,8 +83,6 @@ for needle in \
   ".keydexControlGlassPanel(" \
   ".keydexContentPanel(" \
   ".keydexFloatingGlassPanel(" \
-  "scrollContentBottomPadding" \
-  ".safeAreaInset(edge: .bottom" \
   ".buttonStyle(.glass" \
   ".buttonStyle(.glassProminent" \
   ".glassEffect(.regular" \
@@ -121,6 +122,7 @@ for needle in \
   "no second outer card shell" \
   "single poster frame only" \
   "music-player-like repair rail" \
+  "reserved footer rail" \
   "warm milky wash" \
   "native macOS sidebar visual effect" \
   "Sidebar scroll content hides its own background" \
