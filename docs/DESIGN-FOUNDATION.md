@@ -33,6 +33,8 @@ Liquid Glass is hierarchy, not decoration.
 - Use it for sidebar, toolbar, popovers, command surfaces, and credential card shells.
 - Do not use it for every row or dense detail section.
 - Credential cards use low-tint native glass shells plus stronger poster-style state art.
+- Card backdrops stay plain like Apple Music library content; no graph, constellation,
+  path-line, or analytics substrate is allowed behind cards.
 - Credential tables prioritize legibility over visual effect.
 - Warning colors are reserved for real risk states.
 

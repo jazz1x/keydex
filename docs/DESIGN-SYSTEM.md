@@ -83,6 +83,8 @@ and honest about risk.
   Scrollable content may pass behind the rail so the glass has real pixels underneath.
 - Do not use heavy Liquid Glass for repeated table cells or dense detail sections.
   Repeated credential cards may use low-tint native glass shells.
+- Repeated state and metadata chips use flat semantic fills and strokes, not material
+  capsules, so table/card density stays closer to Music library rows.
 - Avoid stacked or nested glass. Group related controls into one glass surface instead.
 - Do not hide text contrast behind material effects.
 - Keep risk colors outside decorative materials when legibility would suffer.
