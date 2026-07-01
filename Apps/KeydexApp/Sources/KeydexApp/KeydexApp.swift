@@ -497,15 +497,15 @@ private struct MusicSearchField: View {
   @Binding var searchText: String
 
   var body: some View {
-    HStack(spacing: 9) {
+    HStack(spacing: 7) {
       Image(systemName: "magnifyingglass")
-        .font(.title3)
+        .font(.body)
         .foregroundStyle(.secondary)
         .accessibilityHidden(true)
 
       TextField("Search", text: $searchText)
         .textFieldStyle(.plain)
-        .font(.title3)
+        .font(.body)
         .accessibilityLabel("Search credentials")
     }
     .keydexSidebarSearchRow()
@@ -882,19 +882,26 @@ private struct CredentialInventoryCard: View {
 
   var body: some View {
     Button(action: selectAction) {
-      VStack(alignment: .leading, spacing: 8) {
+      VStack(alignment: .leading, spacing: KeydexCardGridLayout.posterToTextSpacing) {
         CredentialArtworkPanel(
           row: row,
           height: KeydexCardGridLayout.posterHeight,
           selected: isSelected
         )
 
-        Text(row.cardMetadataLine)
-          .font(.caption)
-          .foregroundStyle(.secondary)
-          .lineLimit(1)
-          .frame(maxWidth: .infinity, alignment: .leading)
-          .padding(.horizontal, 2)
+        VStack(alignment: .leading, spacing: KeydexCardGridLayout.textDeckSpacing) {
+          Text(row.service)
+            .font(.callout.weight(.semibold))
+            .foregroundStyle(.primary)
+            .lineLimit(1)
+
+          Text(row.cardCaptionLine)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .lineLimit(1)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, KeydexCardGridLayout.textHorizontalInset)
       }
       .frame(
         maxWidth: .infinity,
@@ -936,31 +943,20 @@ private struct CredentialArtworkPanel: View {
             .padding(10)
         }
         .overlay(alignment: .bottomLeading) {
-          VStack(alignment: .leading, spacing: 4) {
-            Text(row.keychainStatusTitle.uppercased())
-              .font(.caption.weight(.bold))
-              .foregroundStyle(accentColor)
-              .lineLimit(1)
-
-            if isPoster {
-              Text(row.service)
-                .font(.title3.weight(.semibold))
-                .foregroundStyle(.primary)
+          if !isPoster {
+            VStack(alignment: .leading, spacing: 4) {
+              Text(row.keychainStatusTitle.uppercased())
+                .font(.caption.weight(.bold))
+                .foregroundStyle(accentColor)
                 .lineLimit(1)
 
-              Text(row.account)
-                .font(.callout)
-                .fontDesign(.monospaced)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-            } else {
               Text("\(row.locations.count) source locations")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
             }
+            .padding(12)
           }
-          .padding(12)
         }
 
       Image(systemName: row.keychainStatusSystemImage)
@@ -990,7 +986,7 @@ private struct CredentialArtworkPanel: View {
       return Color.accentColor.opacity(0.74)
     }
 
-    return accentColor.opacity(isPoster ? 0.20 : 0.12)
+    return accentColor.opacity(isPoster ? 0.18 : 0.12)
   }
 
   private var panelRadius: CGFloat {
@@ -1298,8 +1294,8 @@ private struct CredentialRow: Identifiable {
     return "key"
   }
 
-  var cardMetadataLine: String {
-    "\(canonicalStateLabel(states)) · \(keychainStatusTitle) · \(primaryLocationTitle)"
+  var cardCaptionLine: String {
+    "\(account) · \(canonicalStateLabel(states)) · \(keychainStatusTitle)"
   }
 
   var cardAccessibilityLabel: String {
@@ -2235,11 +2231,11 @@ private struct SettingsDivider: View {
 }
 
 private enum KeydexGlassTone {
-  static let sidebarMilkyWashLight = Color(red: 0.98, green: 0.98, blue: 0.95).opacity(0.84)
+  static let sidebarMilkyWashLight = Color(red: 0.99, green: 0.99, blue: 0.97).opacity(0.86)
   static let sidebarMilkyWashDark = Color.white.opacity(0.08)
   static let sidebarSelectionFill = Color.primary.opacity(0.045)
   static let contentPanelFill = Color.primary.opacity(0.020)
-  static let contentGlassTint = Color.white.opacity(0.07)
+  static let contentGlassTint = Color.white.opacity(0.06)
   static let controlGlassTint = Color.white.opacity(0.10)
   static let floatingTint = Color.white.opacity(0.20)
   static let railControlFill = Color.primary.opacity(0.045)
@@ -2250,10 +2246,10 @@ private enum KeydexGlassTone {
   static let metadataChipStrokeAlpha = 0.22
   static let posterBadgeFill = Color.primary.opacity(0.045)
   static let posterBadgeStroke = Color(nsColor: .separatorColor).opacity(0.22)
-  static let artworkColorAlpha = 0.22
+  static let artworkColorAlpha = 0.18
   static let posterSymbolAlpha = 0.50
-  static let posterWashHighAlpha = 0.04
-  static let posterHighlightAlpha = 0.08
+  static let posterWashHighAlpha = 0.03
+  static let posterHighlightAlpha = 0.06
 }
 
 private enum KeydexRailLayout {
@@ -2272,29 +2268,32 @@ private enum KeydexCardArtworkLayout {
 
 private enum KeydexCardGridLayout {
   static let contentHorizontalPadding: CGFloat = 24
-  static let contentTopPadding: CGFloat = 20
+  static let contentTopPadding: CGFloat = 18
   static let minimumColumnWidth: CGFloat = 212
   static let maximumColumnWidth: CGFloat = 304
-  static let posterHeight: CGFloat = 240
-  static let pageToSectionSpacing: CGFloat = 20
-  static let sectionToGridSpacing: CGFloat = 14
+  static let posterHeight: CGFloat = 248
+  static let pageToSectionSpacing: CGFloat = 16
+  static let sectionToGridSpacing: CGFloat = 10
   static let columnSpacing: CGFloat = 18
-  static let rowSpacing: CGFloat = 18
-  static let cardMinimumHeight: CGFloat = 266
+  static let rowSpacing: CGFloat = 14
+  static let posterToTextSpacing: CGFloat = 8
+  static let textDeckSpacing: CGFloat = 2
+  static let textHorizontalInset: CGFloat = 2
+  static let cardMinimumHeight: CGFloat = 286
   static let contentBottomPadding: CGFloat = 24
 }
 
 private enum KeydexSidebarLayout {
   static let contentHorizontalPadding: CGFloat = 12
   static let contentBottomPadding: CGFloat = 18
-  static let searchTopPadding: CGFloat = 20
-  static let sectionSpacing: CGFloat = 18
+  static let searchTopPadding: CGFloat = 12
+  static let sectionSpacing: CGFloat = 14
   static let titleSpacing: CGFloat = 6
   static let rowSpacing: CGFloat = 2
   static let rowHeight: CGFloat = 34
   static let rowHorizontalPadding: CGFloat = 10
-  static let searchRowHeight: CGFloat = 40
-  static let searchHorizontalPadding: CGFloat = 10
+  static let searchRowHeight: CGFloat = 36
+  static let searchHorizontalPadding: CGFloat = 12
 }
 
 private enum KeydexSidebarScrollAnchor {
