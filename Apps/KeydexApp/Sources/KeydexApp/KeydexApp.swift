@@ -215,14 +215,13 @@ struct CredentialInventoryShellView: View {
           isEmptyMode: isEmptyMode
         )
         .frame(minHeight: 320)
-        .padding(.bottom, 116)
 
         DoctorPanel(
           issues: doctorIssues,
           isEmptyMode: isEmptyMode
         )
-        .padding(.horizontal, 12)
-        .padding(.bottom, 12)
+        .padding(.horizontal, KeydexRailLayout.horizontalMargin)
+        .padding(.bottom, KeydexRailLayout.bottomMargin)
       }
       .navigationSplitViewColumnWidth(min: 480, ideal: 540, max: 640)
     } detail: {
@@ -788,7 +787,7 @@ private struct CredentialCardGrid: View {
         }
         .padding(.horizontal, 24)
         .padding(.top, 26)
-        .padding(.bottom, 20)
+        .padding(.bottom, KeydexRailLayout.scrollContentBottomPadding)
       }
     }
     .accessibilityIdentifier("keydex.inventory.cards")
@@ -1323,9 +1322,9 @@ private struct DoctorPanel: View {
         }
       }
     }
-    .padding(.horizontal, 18)
-    .padding(.vertical, 12)
-    .frame(maxWidth: .infinity, minHeight: 68, alignment: .center)
+    .padding(.horizontal, 20)
+    .padding(.vertical, 10)
+    .frame(maxWidth: .infinity, minHeight: KeydexRailLayout.railHeight, alignment: .center)
     .keydexFloatingGlassPanel(
       tint: KeydexGlassTone.floatingTint,
       stroke: KeydexGlassTone.panelStroke
@@ -2125,9 +2124,16 @@ private enum KeydexGlassTone {
   static let contentPanelFill = Color.primary.opacity(0.035)
   static let contentGlassTint = Color.white.opacity(0.10)
   static let controlGlassTint = Color.white.opacity(0.12)
-  static let floatingTint = Color.white.opacity(0.18)
-  static let panelStroke = Color(nsColor: .separatorColor).opacity(0.36)
+  static let floatingTint = Color.white.opacity(0.15)
+  static let panelStroke = Color(nsColor: .separatorColor).opacity(0.30)
   static let artworkColorAlpha = 0.30
+}
+
+private enum KeydexRailLayout {
+  static let horizontalMargin: CGFloat = 12
+  static let bottomMargin: CGFloat = 12
+  static let railHeight: CGFloat = 64
+  static let scrollContentBottomPadding: CGFloat = railHeight + bottomMargin + 56
 }
 
 private struct KeydexGlassButtonModifier: ViewModifier {
