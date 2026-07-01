@@ -167,6 +167,9 @@ expect_file_contains Makefile "cli-smoke"
 expect_file_contains scripts/quality.sh "scripts/cli-smoke.sh"
 expect_file_contains scripts/cli-smoke.sh "Tests/Fixtures/metadata.json"
 expect_file_contains Makefile "swift build --product KeydexApp"
+expect_file_contains Package.swift "resources: [.process(\"Resources\")]"
+expect_file Apps/KeydexApp/Sources/KeydexApp/Resources/KeydexAppIcon.png
+expect_file Apps/KeydexApp/Sources/KeydexApp/Resources/KeydexTrayTemplate.png
 expect_file_contains Makefile "app-window-smoke"
 expect_file_contains Makefile "app-accessibility-contract"
 expect_file_contains Makefile "app-accessibility-smoke"
@@ -202,6 +205,7 @@ expect_file_contains scripts/app-screen-evidence.sh "--list"
 for scenario in \
   default-window \
   card-view \
+  card-detail \
   empty-inventory \
   search-filter \
   inspector \

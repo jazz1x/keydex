@@ -37,7 +37,7 @@ review_scenario() {
   expect_file_contains "$manifest_path" "captured_at="
 
   case "$scenario" in
-    settings | settings-appearance | settings-sources | settings-paths | settings-rules)
+    card-detail | settings | settings-appearance | settings-sources | settings-paths | settings-rules)
       expect_file_contains "$manifest_path" "width=720 height=520"
       ;;
   esac
@@ -50,6 +50,7 @@ head_sha="$(git rev-parse --short HEAD)"
 
 review_scenario default-window sample default
 review_scenario card-view sample default
+review_scenario card-detail sample default
 review_scenario empty-inventory empty default
 review_scenario search-filter sample default
 review_scenario inspector sample default

@@ -29,6 +29,9 @@ struct KeydexApp: App {
     WindowGroup("Keydex") {
       CredentialInventoryShellView()
         .background(WindowPresetApplier(size: Self.windowPresetSize))
+        .onAppear {
+          KeydexAppIcon.installApplicationIcon()
+        }
         .accessibilityIdentifier("keydex.shell")
         .accessibilityLabel("Keydex credential inventory")
     }
@@ -37,6 +40,51 @@ struct KeydexApp: App {
       height: Self.defaultWindowSize.height
     )
     .windowStyle(.hiddenTitleBar)
+
+    MenuBarExtra {
+      Button {
+        NSApplication.shared.activate(ignoringOtherApps: true)
+      } label: {
+        Label("Open Keydex", systemImage: "macwindow")
+      }
+
+      Divider()
+
+      Button {
+        NSApplication.shared.terminate(nil)
+      } label: {
+        Label("Quit Keydex", systemImage: "power")
+      }
+    } label: {
+      Image(nsImage: KeydexAppIcon.trayTemplateImage())
+        .accessibilityLabel("Keydex")
+    }
+    .menuBarExtraStyle(.menu)
+  }
+}
+
+private enum KeydexAppIcon {
+  @MainActor
+  static func installApplicationIcon() {
+    NSApplication.shared.applicationIconImage = requiredImage(named: "KeydexAppIcon")
+  }
+
+  @MainActor
+  static func trayTemplateImage() -> NSImage {
+    let image = requiredImage(named: "KeydexTrayTemplate")
+    image.isTemplate = true
+    image.size = NSSize(width: 18, height: 18)
+    return image
+  }
+
+  private static func requiredImage(named name: String) -> NSImage {
+    guard let url = Bundle.module.url(forResource: name, withExtension: "png"),
+      let image = NSImage(contentsOf: url)
+    else {
+      preconditionFailure("Missing bundled Keydex image resource: \(name).png")
+    }
+
+    return image
   }
 }
 
@@ -260,10 +308,34 @@ struct CredentialInventoryShellView: View {
       )
       .frame(width: 720, height: 520)
     }
+    .sheet(isPresented: cardDetailSheetBinding) {
+      if let projection = selectedProjection {
+        CredentialMusicDetailSheet(
+          projection: projection
+        ) {
+          selectedSettingsSection = .permissions
+          isShowingSettings = true
+        }
+        .frame(width: 720, height: 520)
+      }
+    }
   }
 
   private var isCardLibrarySurface: Bool {
     settingsConfig.displayMode == .cards
+  }
+
+  private var cardDetailSheetBinding: Binding<Bool> {
+    Binding(
+      get: {
+        isCardLibrarySurface && selectedProjection != nil
+      },
+      set: { isPresented in
+        if !isPresented, isCardLibrarySurface {
+          selectedCredentialID = nil
+        }
+      }
+    )
   }
 
   private var sidebarPane: some View {
@@ -279,6 +351,7 @@ struct CredentialInventoryShellView: View {
       InventoryContentView(
         rows: rows,
         title: selectedSidebar.title,
+        searchText: searchText,
         displayMode: settingsConfig.displayMode,
         selectedCredentialID: $selectedCredentialID,
         isEmptyMode: isEmptyMode
@@ -524,6 +597,20 @@ private struct MusicSearchField: View {
         .textFieldStyle(.plain)
         .font(.body)
         .accessibilityLabel("Search credentials")
+
+      if !searchText.isEmpty {
+        Button {
+          searchText = ""
+        } label: {
+          Image(systemName: "xmark.circle.fill")
+            .font(.body)
+            .symbolRenderingMode(.hierarchical)
+            .foregroundStyle(.secondary)
+        }
+        .buttonStyle(.plain)
+        .help("Clear search")
+        .accessibilityLabel("Clear search")
+      }
     }
     .keydexSidebarSearchRow()
     .accessibilityIdentifier("keydex.sidebar.search")
@@ -632,6 +719,7 @@ private enum InventoryDisplayMode: String, CaseIterable, Identifiable, Hashable 
 private enum AppScreenScenario: String, CaseIterable {
   case defaultWindow = "default-window"
   case cardView = "card-view"
+  case cardDetail = "card-detail"
   case emptyInventory = "empty-inventory"
   case searchFilter = "search-filter"
   case inspector
@@ -650,7 +738,7 @@ private enum AppScreenScenario: String, CaseIterable {
     switch self {
     case .emptyInventory:
       .empty
-    case .defaultWindow, .cardView, .searchFilter, .inspector, .settings,
+    case .defaultWindow, .cardView, .cardDetail, .searchFilter, .inspector, .settings,
       .settingsAppearance, .settingsSources, .settingsPaths, .settingsRules, .compactWindow:
       .sample
     }
@@ -658,7 +746,7 @@ private enum AppScreenScenario: String, CaseIterable {
 
   var displayMode: InventoryDisplayMode {
     switch self {
-    case .cardView:
+    case .cardView, .cardDetail:
       .cards
     case .defaultWindow, .emptyInventory, .searchFilter, .inspector, .settings,
       .settingsAppearance, .settingsSources, .settingsPaths, .settingsRules, .compactWindow:
@@ -670,7 +758,7 @@ private enum AppScreenScenario: String, CaseIterable {
     switch self {
     case .searchFilter:
       .state(.plaintextFallback)
-    case .defaultWindow, .cardView, .emptyInventory, .inspector, .settings,
+    case .defaultWindow, .cardView, .cardDetail, .emptyInventory, .inspector, .settings,
       .settingsAppearance, .settingsSources, .settingsPaths, .settingsRules, .compactWindow:
       .all
     }
@@ -678,6 +766,8 @@ private enum AppScreenScenario: String, CaseIterable {
 
   var selectedCredentialID: CredentialRow.ID? {
     switch self {
+    case .cardDetail:
+      "aws|ci"
     case .inspector:
       "hashicorp-vault|infra"
     case .defaultWindow, .cardView, .emptyInventory, .searchFilter, .settings,
@@ -690,7 +780,7 @@ private enum AppScreenScenario: String, CaseIterable {
     switch self {
     case .searchFilter:
       "github"
-    case .defaultWindow, .cardView, .emptyInventory, .inspector, .settings,
+    case .defaultWindow, .cardView, .cardDetail, .emptyInventory, .inspector, .settings,
       .settingsAppearance, .settingsSources, .settingsPaths, .settingsRules, .compactWindow:
       ""
     }
@@ -700,7 +790,8 @@ private enum AppScreenScenario: String, CaseIterable {
     switch self {
     case .settings, .settingsAppearance, .settingsSources, .settingsPaths, .settingsRules:
       true
-    case .defaultWindow, .cardView, .emptyInventory, .searchFilter, .inspector, .compactWindow:
+    case .defaultWindow, .cardView, .cardDetail, .emptyInventory, .searchFilter, .inspector,
+      .compactWindow:
       false
     }
   }
@@ -717,7 +808,8 @@ private enum AppScreenScenario: String, CaseIterable {
       .paths
     case .settingsRules:
       .rules
-    case .defaultWindow, .cardView, .emptyInventory, .searchFilter, .inspector, .compactWindow:
+    case .defaultWindow, .cardView, .cardDetail, .emptyInventory, .searchFilter, .inspector,
+      .compactWindow:
       .permissions
     }
   }
@@ -752,6 +844,7 @@ private struct EmptyStatePanel: View {
 private struct InventoryContentView: View {
   let rows: [CredentialRow]
   let title: String
+  let searchText: String
   let displayMode: InventoryDisplayMode
   @Binding var selectedCredentialID: CredentialRow.ID?
   let isEmptyMode: Bool
@@ -760,11 +853,18 @@ private struct InventoryContentView: View {
     ZStack {
       switch displayMode {
       case .list:
-        CredentialInventoryTable(rows: rows, selectedCredentialID: $selectedCredentialID)
+        VStack(spacing: 0) {
+          if let activeSearchQuery {
+            MusicSearchResultHeader(query: activeSearchQuery, resultCount: rows.count)
+          }
+
+          CredentialInventoryTable(rows: rows, selectedCredentialID: $selectedCredentialID)
+        }
       case .cards:
         CredentialCardGrid(
           rows: rows,
           title: title,
+          searchText: searchText,
           selectedCredentialID: $selectedCredentialID
         )
       }
@@ -782,6 +882,39 @@ private struct InventoryContentView: View {
         )
       }
     }
+  }
+
+  private var activeSearchQuery: String? {
+    let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+    return trimmed.isEmpty ? nil : trimmed
+  }
+}
+
+private struct MusicSearchResultHeader: View {
+  let query: String
+  let resultCount: Int
+
+  var body: some View {
+    HStack(alignment: .firstTextBaseline, spacing: 10) {
+      Text("Search")
+        .font(.title2.weight(.bold))
+
+      Text(query)
+        .font(.title3.weight(.semibold))
+        .foregroundStyle(.secondary)
+        .lineLimit(1)
+
+      Spacer(minLength: 12)
+
+      Text("\(resultCount) results")
+        .font(.caption.weight(.medium))
+        .foregroundStyle(.secondary)
+    }
+    .padding(.horizontal, 18)
+    .padding(.top, 14)
+    .padding(.bottom, 8)
+    .accessibilityIdentifier("keydex.inventory.search-results-header")
+    .accessibilityLabel("Search results for \(query), \(resultCount) results")
   }
 }
 
@@ -823,6 +956,7 @@ private struct CredentialInventoryTable: View {
 private struct CredentialCardGrid: View {
   let rows: [CredentialRow]
   let title: String
+  let searchText: String
   @Binding var selectedCredentialID: CredentialRow.ID?
 
   private let columns = [
@@ -847,7 +981,7 @@ private struct CredentialCardGrid: View {
             .lineLimit(1)
 
           VStack(alignment: .leading, spacing: KeydexCardGridLayout.sectionToGridSpacing) {
-            MusicContentSectionHeader(title: "Credential Library")
+            MusicContentSectionHeader(title: sectionTitle)
 
             LazyVGrid(
               columns: columns,
@@ -872,6 +1006,15 @@ private struct CredentialCardGrid: View {
     }
     .accessibilityIdentifier("keydex.inventory.cards")
     .accessibilityLabel("Credential inventory cards")
+  }
+
+  private var sectionTitle: String {
+    activeSearchQuery == nil ? "Credential Library" : "Top Results"
+  }
+
+  private var activeSearchQuery: String? {
+    let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+    return trimmed.isEmpty ? nil : trimmed
   }
 }
 
@@ -1176,6 +1319,131 @@ private struct CredentialInspectorPanel: View {
       }
       .padding(18)
     }
+  }
+}
+
+private struct CredentialMusicDetailSheet: View {
+  let projection: CredentialProjection
+  let manageKeychainAction: () -> Void
+
+  private var row: CredentialRow {
+    CredentialRow(projection: projection)
+  }
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 0) {
+      HStack(alignment: .bottom, spacing: 22) {
+        CredentialArtworkPanel(
+          row: row,
+          height: KeydexCardDetailLayout.artworkSize,
+          selected: true
+        )
+        .frame(width: KeydexCardDetailLayout.artworkSize)
+
+        VStack(alignment: .leading, spacing: 10) {
+          Text("Credential")
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.secondary)
+
+          Text(row.service)
+            .font(.system(size: 34, weight: .bold))
+            .lineLimit(1)
+            .minimumScaleFactor(0.72)
+
+          Text(row.account)
+            .font(.title3)
+            .fontDesign(.monospaced)
+            .foregroundStyle(.secondary)
+            .lineLimit(1)
+
+          CredentialStateSummaryView(states: row.states)
+
+          HStack(spacing: 10) {
+            Button(action: manageKeychainAction) {
+              Label("Manage Keychain", systemImage: "key.fill")
+            }
+            .keydexGlassButton(prominent: true)
+
+            KeychainStatusBadge(row: row)
+          }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+      }
+      .padding(24)
+
+      Divider()
+
+      VStack(alignment: .leading, spacing: 12) {
+        HStack(alignment: .firstTextBaseline) {
+          Text("Sources")
+            .font(.title3.weight(.bold))
+
+          Spacer()
+
+          Text("\(row.locations.count)")
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.secondary)
+        }
+
+        VStack(spacing: 0) {
+          ForEach(Array(row.locations.enumerated()), id: \.offset) { index, location in
+            MusicSourceTrackRow(index: index + 1, location: location)
+
+            if index + 1 < row.locations.count {
+              Divider()
+                .padding(.leading, 44)
+            }
+          }
+        }
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay {
+          RoundedRectangle(cornerRadius: 8, style: .continuous)
+            .stroke(.separator.opacity(0.28), lineWidth: 1)
+        }
+      }
+      .padding(.horizontal, 24)
+      .padding(.top, 18)
+      .padding(.bottom, 24)
+
+      Spacer(minLength: 0)
+    }
+    .background(Color(nsColor: .windowBackgroundColor))
+    .accessibilityIdentifier("keydex.card-detail.sheet")
+    .accessibilityLabel("Credential card detail")
+  }
+}
+
+private struct MusicSourceTrackRow: View {
+  let index: Int
+  let location: CredentialLocation
+
+  var body: some View {
+    HStack(spacing: 12) {
+      Text("\(index)")
+        .font(.callout.monospacedDigit())
+        .foregroundStyle(.secondary)
+        .frame(width: 20, alignment: .trailing)
+
+      Image(systemName: locationSystemImage(location))
+        .font(.body.weight(.semibold))
+        .foregroundStyle(.secondary)
+        .frame(width: 20)
+
+      VStack(alignment: .leading, spacing: 2) {
+        Text(locationKindTitle(location))
+          .font(.callout.weight(.medium))
+
+        Text(locationDetail(location))
+          .font(.caption)
+          .foregroundStyle(.secondary)
+          .lineLimit(1)
+          .textSelection(.enabled)
+      }
+
+      Spacer(minLength: 12)
+    }
+    .padding(.horizontal, 12)
+    .padding(.vertical, 10)
   }
 }
 
@@ -1590,6 +1858,45 @@ private func locationLabel(_ location: CredentialLocation) -> String {
     "shell profile: \(path.value)"
   case .configFile(let path):
     "config file: \(path.value)"
+  }
+}
+
+private func locationKindTitle(_ location: CredentialLocation) -> String {
+  switch location {
+  case .keychain:
+    "Keychain"
+  case .environment:
+    "Environment"
+  case .shellProfile:
+    "Shell profile"
+  case .configFile:
+    "Config file"
+  }
+}
+
+private func locationDetail(_ location: CredentialLocation) -> String {
+  switch location {
+  case .keychain(let service, let account):
+    "\(service.value)/\(account.value)"
+  case .environment(let name):
+    name.value
+  case .shellProfile(let path):
+    path.value
+  case .configFile(let path):
+    path.value
+  }
+}
+
+private func locationSystemImage(_ location: CredentialLocation) -> String {
+  switch location {
+  case .keychain:
+    "key.fill"
+  case .environment:
+    "terminal"
+  case .shellProfile:
+    "chevron.left.forwardslash.chevron.right"
+  case .configFile:
+    "doc.text"
   }
 }
 
@@ -2283,6 +2590,10 @@ private enum KeydexRailLayout {
 private enum KeydexCardArtworkLayout {
   static let posterSymbolSize: CGFloat = 50
   static let compactSymbolSize: CGFloat = 34
+}
+
+private enum KeydexCardDetailLayout {
+  static let artworkSize: CGFloat = 196
 }
 
 private enum KeydexCardGridLayout {

@@ -75,6 +75,7 @@ mkdir -p "$evidence_dir"
 
 write_scenario_template default-window
 write_scenario_template card-view
+write_scenario_template card-detail
 write_scenario_template empty-inventory
 write_scenario_template search-filter
 write_scenario_template inspector

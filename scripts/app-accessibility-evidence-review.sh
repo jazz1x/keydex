@@ -49,6 +49,7 @@ head_sha="$(git rev-parse --short HEAD)"
 
 review_scenario default-window
 review_scenario card-view
+review_scenario card-detail
 review_scenario empty-inventory
 review_scenario search-filter
 review_scenario inspector

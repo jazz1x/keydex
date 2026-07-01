@@ -43,6 +43,10 @@ reject_file_contains() {
 echo "1) native Mac utility structure..."
 for needle in \
   "NavigationSplitView" \
+  "MenuBarExtra" \
+  "KeydexAppIcon" \
+  "applicationIconImage" \
+  "KeydexTrayTemplate" \
   "MusicSidebarView" \
   "MusicSearchField" \
   "MusicSidebarSection" \
@@ -54,15 +58,20 @@ for needle in \
   "KeydexSidebarMaterialView" \
   "Table(rows" \
   "CredentialCardGrid" \
+  "CredentialMusicDetailSheet" \
+  "MusicSourceTrackRow" \
+  "MusicSearchResultHeader" \
   "CredentialInspectorPanel" \
   "InventoryBackdropView" \
   "InventoryDisplayMode" \
   "isCardLibrarySurface" \
+  "cardDetailSheetBinding" \
   "KeydexRailFooter" \
   "KeydexRailLaneBackground" \
   "KeydexCardGridLayout" \
   "KeydexRailLayout" \
   "KeydexCardArtworkLayout" \
+  "KeydexCardDetailLayout" \
   "cardCaptionLine" \
   "posterToTextSpacing" \
   "textDeckSpacing" \
@@ -85,6 +94,7 @@ for needle in \
   "stateChipFillAlpha" \
   "posterSymbolAlpha" \
   "TextField(\"Search\"" \
+  "Clear search" \
   "ToolbarItem" \
   "ContentUnavailableView" \
   "ScrollView {" \
@@ -135,12 +145,15 @@ for needle in \
   "layout.sidebar.search" \
   "layout.card.textDeck" \
   "two-line title/caption deck" \
+  "Music-like credential detail sheet" \
   "poster-only credential artwork" \
   "Card mode uses a two-column Music-like library surface" \
   "adaptive bounded columns" \
   "no second outer card shell" \
   "single poster frame only" \
   "no repeated capsule badge strip" \
+  "inline clear affordance" \
+  "Search results show a lightweight Music-like result header" \
   "music-player-like repair rail" \
   "surface.footerRail" \
   "reserved 90 pt music-player-like footer lane" \
@@ -158,6 +171,7 @@ for needle in \
   "Source metadata uses list/document symbols" \
   "does not expose graph-derived implementation language" \
   "Inventory Cards" \
+  "App Icons" \
   "No dashboard theater" \
   "no graph, constellation" \
   "No decorative cards inside cards"; do
