@@ -81,7 +81,8 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Apple Music reference | Native sidebar material, poster cards, and the music-player-like footer rail are checked against Music for Mac's content/glass layering. |
 | Toolbar cluster | Sample and display mode controls are grouped into one glass cluster. |
 | Sidebar glass | Sidebar is the native glass slab with no color wash overlay; scroll content background is hidden and search opens as a plain 12/36/12 pt row on that material, not nested glass. |
-| Rail layering | The bottom Doctor rail is composited in a native material footer lane with a top separator and 90 pt content reserve, not as an opaque painted panel. |
+| Rail layering | The bottom Doctor rail is composited in a transparent footer lane with a top separator, 90 pt content reserve, and centered clear Liquid Glass rail, not as an opaque painted panel. |
+| Rail feedback | Doctor rail state changes use native symbol, numeric, macOS hover scale, and sensory feedback. |
 | Table rail inset | List/table mode keeps the 90 pt footer reserve so final rows remain reachable under the material rail. |
 | Table legibility | Repeated rows do not use heavy material effects. |
 | Card legibility | Inventory cards keep 8 pt radius, stable 248 pt poster height, title/caption text below the poster, and source previews. |
