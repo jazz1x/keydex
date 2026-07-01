@@ -59,14 +59,18 @@ for needle in \
   "InventoryDisplayMode" \
   "isCardLibrarySurface" \
   "KeydexRailFooter" \
+  "KeydexRailLaneBackground" \
   "KeydexCardGridLayout" \
   "KeydexRailLayout" \
   "KeydexCardArtworkLayout" \
   "cardCaptionLine" \
   "posterToTextSpacing" \
   "textDeckSpacing" \
+  "footerLaneHeight: CGFloat = 90" \
   "footerTopPadding" \
   "footerBottomPadding" \
+  "footerSeparatorAlpha = 0.18" \
+  ".fill(.ultraThinMaterial)" \
   "sidebarMilkyWashLight = Color(red: 0.99" \
   "sidebarMilkyWashDark = Color.white.opacity(0.08)" \
   "searchTopPadding: CGFloat = 12" \
@@ -138,6 +142,9 @@ for needle in \
   "single poster frame only" \
   "no repeated capsule badge strip" \
   "music-player-like repair rail" \
+  "surface.footerRail" \
+  "reserved 90 pt music-player-like footer lane" \
+  "90 pt reserved ultra-thin material footer lane" \
   "reserved footer rail" \
   "neutral milk wash" \
   "native macOS sidebar visual effect" \

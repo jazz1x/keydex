@@ -26,7 +26,8 @@ and honest about risk.
 | `glass.content.tint` | white 0.06 alpha | card and inspector glass shell tint |
 | `glass.control.tint` | white 0.10 alpha | toolbar mode cluster tint |
 | `glass.poster.tint` | semantic state color 0.18 alpha | card poster glass tint |
-| `glass.floating.tint` | white 0.20 alpha | reserved bottom repair rail tint |
+| `glass.floating.tint` | white 0.20 alpha | centered Doctor rail tint |
+| `surface.footerRail` | 90 pt reserved ultra-thin material lane + top separator 0.18 alpha | Apple Music-like reserved footer rail and bottom player lane |
 | `artwork.state.tint` | semantic state color 0.18 alpha | card poster color field |
 | `artwork.poster.symbol` | 50 pt size + 0.50 alpha | subdued credential glyph inside poster |
 | `artwork.poster.wash` | semantic state color 0.03 alpha + white 0.06 highlight | Apple Music-like poster media wash |
@@ -54,7 +55,7 @@ and honest about risk.
 | Inventory Table | Primary working view | grouped list rows, selected pill, sortable columns, state chips, source count, last observed |
 | Inventory Cards | Secondary scan view | poster-only credential artwork, two-line title/caption deck below, source count affordance |
 | Inspector | Relationship detail | credential, sources, graph edges, expiry, notes, actions |
-| Doctor Panel | Repair queue | reserved music-player-like footer rail with severity, cause, action, and count controls |
+| Doctor Panel | Repair queue | reserved 90 pt music-player-like footer lane with centered rail, severity, cause, action, and count controls |
 | Settings | Permissions, appearance, and rules | Keychain access, system appearance mode, scan paths, ignored sources |
 
 ## Component Contracts
@@ -114,8 +115,9 @@ and honest about risk.
 - Poster glyphs stay subdued so the credential card reads like Music library artwork,
   not a dashboard status tile.
 - The repair queue uses a centered music-player-like repair rail inside a
-  reserved footer rail instead of a hard split panel or overlay. Scrollable
-  content must end above the rail so rows and playlist-style cards are never occluded.
+  90 pt reserved ultra-thin material footer lane instead of a hard split panel
+  or overlay. The lane has a 0.18 alpha top separator, and scrollable content
+  must end above it so rows and playlist-style cards are never occluded.
 - Do not use heavy Liquid Glass for repeated table cells or dense detail sections.
   Repeated credential posters may use low-tint native glass; the card shell stays unframed.
 - Repeated state and metadata chips use flat semantic fills and strokes, not material
