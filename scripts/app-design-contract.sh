@@ -115,6 +115,7 @@ for needle in \
   "semantic state-color media wash" \
   "flat semantic fills and strokes" \
   "Source metadata uses list/document symbols" \
+  "does not expose graph-derived implementation language" \
   "Inventory Cards" \
   "No dashboard theater" \
   "no graph, constellation" \
@@ -134,6 +135,7 @@ for forbidden in \
   "GraphBackdropView" \
   "point.3.connected" \
   "trianglepath" \
+  "graph-derived metadata" \
   "shadow(" \
   "Copy secret"; do
   reject_file_contains "$app_source" "$forbidden"
