@@ -90,6 +90,11 @@ and honest about risk.
   uses native `glassEffect`; older macOS versions fall back to material and low-alpha fills.
 - Card mode follows Music's Library and Playlist tile hierarchy: poster/artwork first,
   title and metadata underneath, no extra nested glass controls inside repeated cards.
+- Card mode uses a two-column Music-like library surface: sidebar plus flowing card
+  content. The persistent inspector stays in list mode, where dense operational
+  review is the primary task.
+- Card grids use adaptive bounded columns so wider card-mode content forms a Music
+  shelf of artwork tiles instead of stretching into dashboard banners.
 - Repeated inventory cards have no second outer card shell. Selection belongs on
   the poster outline so the artwork remains the only framed tile.
 - Repeated inventory cards follow a single poster frame only contract. Badge,

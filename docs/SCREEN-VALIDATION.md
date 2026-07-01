@@ -85,7 +85,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Table rail inset | List/table mode reserves scroll room below the floating Doctor rail. |
 | Table legibility | Repeated rows do not use heavy material effects. |
 | Card legibility | Inventory cards keep 8 pt radius, stable poster height, and source previews. |
-| Card hierarchy | Card mode follows Music Library/Playlist tiles: one framed poster first, metadata below, no second outer card shell, and no nested material badges inside the poster. |
+| Card hierarchy | Card mode follows Music Library/Playlist tiles: sidebar plus flowing adaptive card shelf, bounded tile widths, one framed poster first, metadata below, no persistent inspector pane, no second outer card shell, and no nested material badges inside the poster. |
 | Poster media wash | Credential posters use subdued semantic color wash and glyphs without graph-line or constellation decoration. |
 | Source icons and copy | Source metadata uses list/document symbols and user-facing inventory language, not connected-dot graph glyphs or graph-derived implementation copy. |
 | System appearance | Both Light and Dark modes are verified; no custom color palette is shipped. |

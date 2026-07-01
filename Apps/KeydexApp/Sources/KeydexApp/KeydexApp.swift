@@ -199,57 +199,23 @@ struct CredentialInventoryShellView: View {
   }
 
   var body: some View {
-    NavigationSplitView {
-      MusicSidebarView(
-        items: sidebarSelectionItems,
-        selectedSidebar: $selectedSidebar,
-        searchText: $searchText
-      )
-    } content: {
-      ZStack(alignment: .bottom) {
-        InventoryContentView(
-          rows: rows,
-          title: selectedSidebar.title,
-          displayMode: settingsConfig.displayMode,
-          selectedCredentialID: $selectedCredentialID,
-          isEmptyMode: isEmptyMode
-        )
-        .frame(minHeight: 320)
-
-        DoctorPanel(
-          issues: doctorIssues,
-          isEmptyMode: isEmptyMode
-        )
-        .padding(.horizontal, KeydexRailLayout.horizontalMargin)
-        .padding(.bottom, KeydexRailLayout.bottomMargin)
-      }
-      .navigationSplitViewColumnWidth(min: 480, ideal: 540, max: 640)
-    } detail: {
-      VStack(alignment: .leading, spacing: 14) {
-        if let projection = selectedProjection {
-          CredentialInspectorPanel(
-            projection: projection
-          ) {
-            selectedSettingsSection = .permissions
-            isShowingSettings = true
-          }
-        } else {
-          ContentUnavailableView(
-            "Select a credential",
-            systemImage: "key.viewfinder",
-            description: Text(
-              isEmptyMode
-                ? "Scan sources or add metadata to create new credentials."
-                : "Choose an item from the \(settingsConfig.displayMode.inspectorSurfaceName) "
-                  + "to review its Keychain links, states, and sources."
-            )
-          )
+    Group {
+      if isCardLibrarySurface {
+        NavigationSplitView {
+          sidebarPane
+        } detail: {
+          inventoryPane
+        }
+      } else {
+        NavigationSplitView {
+          sidebarPane
+        } content: {
+          inventoryPane
+            .navigationSplitViewColumnWidth(min: 480, ideal: 540, max: 640)
+        } detail: {
+          inspectorPane
         }
       }
-      .padding(16)
-      .frame(minWidth: 260)
-      .accessibilityIdentifier("keydex.inspector")
-      .accessibilityLabel("Credential inspector")
     }
     .toolbar {
       ToolbarItem(placement: .status) {
@@ -294,6 +260,66 @@ struct CredentialInventoryShellView: View {
       )
       .frame(width: 720, height: 520)
     }
+  }
+
+  private var isCardLibrarySurface: Bool {
+    settingsConfig.displayMode == .cards
+  }
+
+  private var sidebarPane: some View {
+    MusicSidebarView(
+      items: sidebarSelectionItems,
+      selectedSidebar: $selectedSidebar,
+      searchText: $searchText
+    )
+  }
+
+  private var inventoryPane: some View {
+    ZStack(alignment: .bottom) {
+      InventoryContentView(
+        rows: rows,
+        title: selectedSidebar.title,
+        displayMode: settingsConfig.displayMode,
+        selectedCredentialID: $selectedCredentialID,
+        isEmptyMode: isEmptyMode
+      )
+      .frame(minHeight: 320)
+
+      DoctorPanel(
+        issues: doctorIssues,
+        isEmptyMode: isEmptyMode
+      )
+      .padding(.horizontal, KeydexRailLayout.horizontalMargin)
+      .padding(.bottom, KeydexRailLayout.bottomMargin)
+    }
+  }
+
+  private var inspectorPane: some View {
+    VStack(alignment: .leading, spacing: 14) {
+      if let projection = selectedProjection {
+        CredentialInspectorPanel(
+          projection: projection
+        ) {
+          selectedSettingsSection = .permissions
+          isShowingSettings = true
+        }
+      } else {
+        ContentUnavailableView(
+          "Select a credential",
+          systemImage: "key.viewfinder",
+          description: Text(
+            isEmptyMode
+              ? "Scan sources or add metadata to create new credentials."
+              : "Choose an item from the \(settingsConfig.displayMode.inspectorSurfaceName) "
+                + "to review its Keychain links, states, and sources."
+          )
+        )
+      }
+    }
+    .padding(16)
+    .frame(minWidth: 260)
+    .accessibilityIdentifier("keydex.inspector")
+    .accessibilityLabel("Credential inspector")
   }
 
   private func projectedCredentials(for selection: SidebarSelection) -> [CredentialProjection] {
@@ -614,9 +640,7 @@ private enum AppScreenScenario: String, CaseIterable {
     switch self {
     case .inspector:
       "hashicorp-vault|infra"
-    case .cardView:
-      "aws|ci"
-    case .defaultWindow, .emptyInventory, .searchFilter, .settings,
+    case .defaultWindow, .cardView, .emptyInventory, .searchFilter, .settings,
       .settingsAppearance, .settingsSources, .settingsPaths, .settingsRules, .compactWindow:
       nil
     }
@@ -767,8 +791,14 @@ private struct CredentialCardGrid: View {
   @Binding var selectedCredentialID: CredentialRow.ID?
 
   private let columns = [
-    GridItem(.flexible(minimum: 212), spacing: 18, alignment: .top),
-    GridItem(.flexible(minimum: 212), spacing: 18, alignment: .top),
+    GridItem(
+      .adaptive(
+        minimum: KeydexCardGridLayout.minimumColumnWidth,
+        maximum: KeydexCardGridLayout.maximumColumnWidth
+      ),
+      spacing: KeydexCardGridLayout.columnSpacing,
+      alignment: .top
+    )
   ]
 
   var body: some View {
@@ -781,7 +811,8 @@ private struct CredentialCardGrid: View {
             .font(.largeTitle.weight(.semibold))
             .lineLimit(1)
 
-          LazyVGrid(columns: columns, alignment: .leading, spacing: 18) {
+          LazyVGrid(columns: columns, alignment: .leading, spacing: KeydexCardGridLayout.rowSpacing)
+          {
             ForEach(rows) { row in
               CredentialInventoryCard(
                 row: row,
@@ -2217,6 +2248,13 @@ private enum KeydexRailLayout {
 private enum KeydexCardArtworkLayout {
   static let posterSymbolSize: CGFloat = 50
   static let compactSymbolSize: CGFloat = 34
+}
+
+private enum KeydexCardGridLayout {
+  static let minimumColumnWidth: CGFloat = 212
+  static let maximumColumnWidth: CGFloat = 304
+  static let columnSpacing: CGFloat = 18
+  static let rowSpacing: CGFloat = 18
 }
 
 private enum KeydexSidebarLayout {
