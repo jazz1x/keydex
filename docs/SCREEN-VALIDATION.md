@@ -76,11 +76,11 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | --- | --- |
 | Native Mac utility feel | Uses system controls, sidebar, toolbar, table, inspector. |
 | No dashboard theater | No decorative hero cards, orbs, bokeh, or marketing layout. |
-| Liquid Glass hierarchy | Material is used for sidebar, toolbar, inspector, popovers. |
+| Liquid Glass hierarchy | Native `glassEffect` is used for card shells, inspector sections, toolbar controls, popovers, and the Doctor rail on macOS 26+. |
 | Real glass controls | Command buttons use `.glass` or `.glassProminent` where available. |
-| Apple Music reference | Card, inspector, and repair rail are checked against Music for Mac's layered glass structure. |
+| Apple Music reference | Poster cards and the full-width repair rail are checked against Music for Mac's content/glass layering. |
 | Table legibility | Repeated rows do not use heavy material effects. |
-| Card legibility | Inventory cards keep 8 pt radius, stable height, and source previews. |
+| Card legibility | Inventory cards keep 8 pt radius, stable poster height, and source previews. |
 | System appearance | Both Light and Dark modes are verified; no custom color palette is shipped. |
 | State consistency | State chips use canonical labels. |
 | Risk semantics | Warning/error color is reserved for real risk states. |

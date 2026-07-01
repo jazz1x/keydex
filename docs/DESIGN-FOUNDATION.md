@@ -30,8 +30,9 @@ The graph-driven product workflow lives in [GRAPH-WORKFLOW.md](GRAPH-WORKFLOW.md
 
 Liquid Glass is hierarchy, not decoration.
 
-- Use it for sidebar, toolbar, inspector, popovers, and command surfaces.
-- Do not use it for every row or repeated table cell.
+- Use it for sidebar, toolbar, popovers, command surfaces, and credential card shells.
+- Do not use it for every row or dense detail section.
+- Credential cards use low-tint native glass shells plus stronger poster-style state art.
 - Credential tables prioritize legibility over visual effect.
 - Warning colors are reserved for real risk states.
 
