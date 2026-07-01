@@ -236,11 +236,12 @@ struct CredentialInventoryShellView: View {
         } else {
           ContentUnavailableView(
             "Select a credential",
-            systemImage: "list.bullet.indent",
+            systemImage: "key.viewfinder",
             description: Text(
               isEmptyMode
                 ? "Scan sources or add metadata to create new credentials."
-                : "Choose an item from the \(settingsConfig.displayMode.inspectorSurfaceName) to inspect its graph-derived metadata."
+                : "Choose an item from the \(settingsConfig.displayMode.inspectorSurfaceName) "
+                  + "to review its Keychain links, states, and sources."
             )
           )
         }

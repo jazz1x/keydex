@@ -87,7 +87,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Card legibility | Inventory cards keep 8 pt radius, stable poster height, and source previews. |
 | Card hierarchy | Card mode follows Music Library/Playlist tiles: one framed poster first, metadata below, no second outer card shell, and no nested material badges inside the poster. |
 | Poster media wash | Credential posters use semantic color wash without graph-line or constellation decoration. |
-| Source icons | Source metadata uses list/document symbols, not connected-dot graph glyphs. |
+| Source icons and copy | Source metadata uses list/document symbols and user-facing inventory language, not connected-dot graph glyphs or graph-derived implementation copy. |
 | System appearance | Both Light and Dark modes are verified; no custom color palette is shipped. |
 | State consistency | State chips use canonical labels. |
 | Risk semantics | Warning/error color is reserved for real risk states. |
