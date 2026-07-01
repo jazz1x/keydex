@@ -76,7 +76,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | --- | --- |
 | Native Mac utility feel | Uses system controls, sidebar, toolbar, table, inspector. |
 | No dashboard theater | No decorative hero cards, orbs, bokeh, or marketing layout. |
-| Liquid Glass hierarchy | Native `glassEffect` is used for card shells, inspector sections, toolbar controls, popovers, and the Doctor rail on macOS 26+. |
+| Liquid Glass hierarchy | Native `glassEffect` is used for card posters, inspector sections, toolbar controls, popovers, and the Doctor rail on macOS 26+. |
 | Real glass controls | Command buttons use `.glass` or `.glassProminent` where available. |
 | Apple Music reference | Native sidebar material, poster cards, and the full-width repair rail are checked against Music for Mac's content/glass layering. |
 | Toolbar cluster | Sample and display mode controls are grouped into one glass cluster. |
@@ -85,7 +85,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Table rail inset | List/table mode reserves scroll room below the floating Doctor rail. |
 | Table legibility | Repeated rows do not use heavy material effects. |
 | Card legibility | Inventory cards keep 8 pt radius, stable poster height, and source previews. |
-| Card hierarchy | Card mode follows Music Library/Playlist tiles: poster first, metadata below. |
+| Card hierarchy | Card mode follows Music Library/Playlist tiles: one framed poster first, metadata below, no second outer card shell. |
 | Poster media wash | Credential posters use semantic color wash without graph-line or constellation decoration. |
 | Source icons | Source metadata uses list/document symbols, not connected-dot graph glyphs. |
 | System appearance | Both Light and Dark modes are verified; no custom color palette is shipped. |
