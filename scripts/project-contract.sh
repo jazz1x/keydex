@@ -217,6 +217,7 @@ for scenario in \
   settings-appearance \
   settings-sources \
   settings-paths \
+  settings-tags \
   settings-rules \
   compact-window; do
   expect_file_contains scripts/app-screen-evidence.sh "$scenario"

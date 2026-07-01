@@ -203,6 +203,9 @@ struct CredentialInventoryShellView: View {
 
   private var sidebarSelectionItems: [SidebarSelection] {
     let services = Set(graph.credentialProjections.map { $0.ref.service.value }).sorted()
+    let tags = settingsConfig.tags
+      .map { SidebarSelection.tag($0.name) }
+      .sorted { $0.title < $1.title }
     return [
       .all,
       .state(.registered),
@@ -212,7 +215,7 @@ struct CredentialInventoryShellView: View {
       .state(.orphan),
       .state(.expired),
       .state(.duplicate),
-    ] + services.map { .service($0) }
+    ] + services.map { .service($0) } + tags
   }
 
   private var projectedCredentials: [CredentialProjection] {
@@ -220,9 +223,12 @@ struct CredentialInventoryShellView: View {
   }
 
   private var rows: [CredentialRow] {
-    projectedCredentials(for: selectedSidebar)
+    projectedCredentials
+      .map { projection in
+        CredentialRow(projection: projection, tags: tags(for: projection))
+      }
+      .filter { rowMatchesSidebar($0, selectedSidebar) }
       .filter { rowMatchesSearch($0) }
-      .map(CredentialRow.init)
       .sorted { lhs, rhs in
         if lhs.service == rhs.service {
           return lhs.account < rhs.account
@@ -231,9 +237,8 @@ struct CredentialInventoryShellView: View {
       }
   }
 
-  private var selectedProjection: CredentialProjection? {
+  private var selectedRow: CredentialRow? {
     rows.first { $0.id == selectedCredentialID }
-      .map(\.projection)
   }
 
   private var doctorIssues: [DoctorIssue] {
@@ -334,6 +339,9 @@ struct CredentialInventoryShellView: View {
       ) {
         selectedSettingsSection = .permissions
         isShowingSettings = true
+      } manageTagsAction: {
+        selectedSettingsSection = .tags
+        isShowingSettings = true
       }
       .frame(minHeight: 320, maxHeight: .infinity)
 
@@ -348,11 +356,14 @@ struct CredentialInventoryShellView: View {
 
   private var inspectorPane: some View {
     VStack(alignment: .leading, spacing: 14) {
-      if let projection = selectedProjection {
+      if let row = selectedRow {
         CredentialInspectorPanel(
-          projection: projection
+          row: row
         ) {
           selectedSettingsSection = .permissions
+          isShowingSettings = true
+        } manageTagsAction: {
+          selectedSettingsSection = .tags
           isShowingSettings = true
         }
       } else {
@@ -374,30 +385,40 @@ struct CredentialInventoryShellView: View {
     .accessibilityLabel("Credential inspector")
   }
 
-  private func projectedCredentials(for selection: SidebarSelection) -> [CredentialProjection] {
+  private func rowMatchesSidebar(_ row: CredentialRow, _ selection: SidebarSelection) -> Bool {
     switch selection {
     case .all:
-      projectedCredentials
+      true
     case .state(let state):
-      projectedCredentials.filter { $0.states.contains(state) }
+      row.states.contains(state)
     case .service(let service):
-      projectedCredentials.filter { $0.ref.service.value == service }
+      row.service == service
+    case .tag(let tagName):
+      row.tags.contains { $0.name.caseInsensitiveCompare(tagName) == .orderedSame }
     }
   }
 
-  private func rowMatchesSearch(_ projection: CredentialProjection) -> Bool {
+  private func rowMatchesSearch(_ row: CredentialRow) -> Bool {
     let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
     let normalizedQuery = trimmed.lowercased()
     let searchHaystack = [
-      projection.ref.service.value,
-      projection.ref.account.value,
-      projection.states.map { $0.rawValue }.joined(separator: " "),
-      projection.locations.map(locationLabel).joined(separator: " "),
+      row.service,
+      row.account,
+      row.states.map { $0.rawValue }.joined(separator: " "),
+      row.tags.map(\.name).joined(separator: " "),
+      row.locations.map(locationLabel).joined(separator: " "),
     ]
     .joined(separator: " ")
     .lowercased()
 
     return trimmed.isEmpty || searchHaystack.contains(normalizedQuery)
+  }
+
+  private func tags(for projection: CredentialProjection) -> [CredentialTagRow] {
+    let credentialID = CredentialRow.identifier(for: projection)
+    return settingsConfig.tags.filter { tag in
+      tag.matchesCredentialID(credentialID)
+    }
   }
 }
 
@@ -421,13 +442,21 @@ private struct KeydexRailFooter<Content: View>: View {
 
 private struct KeydexRailLaneBackground: View {
   var body: some View {
-    Rectangle()
-      .fill(.ultraThinMaterial)
-      .overlay(alignment: .top) {
-        Rectangle()
-          .fill(.separator.opacity(KeydexRailLayout.footerSeparatorAlpha))
-          .frame(height: 1)
-      }
+    ZStack {
+      Rectangle()
+        .fill(.ultraThinMaterial)
+
+      Rectangle()
+        .fill(KeydexGlassTone.railLaneWash)
+
+      Rectangle()
+        .fill(KeydexGlassTone.railLaneMilkyHighlight)
+    }
+    .overlay(alignment: .top) {
+      Rectangle()
+        .fill(.separator.opacity(KeydexRailLayout.footerSeparatorAlpha))
+        .frame(height: 1)
+    }
   }
 }
 
@@ -499,6 +528,16 @@ private struct MusicSidebarView: View {
     }
   }
 
+  private var tagItems: [SidebarSelection] {
+    items.compactMap { item in
+      if case .tag = item {
+        return item
+      }
+
+      return nil
+    }
+  }
+
   var body: some View {
     ScrollViewReader { scrollProxy in
       ScrollView {
@@ -530,6 +569,19 @@ private struct MusicSidebarView: View {
                 selected: selectedSidebar == item
               ) {
                 selectedSidebar = item
+              }
+            }
+          }
+
+          if !tagItems.isEmpty {
+            MusicSidebarSection(title: "Tags") {
+              ForEach(tagItems, id: \.self) { item in
+                MusicSidebarRow(
+                  item: item,
+                  selected: selectedSidebar == item
+                ) {
+                  selectedSidebar = item
+                }
               }
             }
           }
@@ -706,6 +758,7 @@ private enum AppScreenScenario: String, CaseIterable {
   case settingsAppearance = "settings-appearance"
   case settingsSources = "settings-sources"
   case settingsPaths = "settings-paths"
+  case settingsTags = "settings-tags"
   case settingsRules = "settings-rules"
   case compactWindow = "compact-window"
 
@@ -718,7 +771,8 @@ private enum AppScreenScenario: String, CaseIterable {
     case .emptyInventory:
       .empty
     case .defaultWindow, .cardView, .cardDetail, .searchFilter, .inspector, .settings,
-      .settingsAppearance, .settingsSources, .settingsPaths, .settingsRules, .compactWindow:
+      .settingsAppearance, .settingsSources, .settingsPaths, .settingsTags, .settingsRules,
+      .compactWindow:
       .sample
     }
   }
@@ -728,7 +782,8 @@ private enum AppScreenScenario: String, CaseIterable {
     case .cardView, .cardDetail:
       .cards
     case .defaultWindow, .emptyInventory, .searchFilter, .inspector, .settings,
-      .settingsAppearance, .settingsSources, .settingsPaths, .settingsRules, .compactWindow:
+      .settingsAppearance, .settingsSources, .settingsPaths, .settingsTags, .settingsRules,
+      .compactWindow:
       .list
     }
   }
@@ -738,7 +793,8 @@ private enum AppScreenScenario: String, CaseIterable {
     case .searchFilter:
       .state(.plaintextFallback)
     case .defaultWindow, .cardView, .cardDetail, .emptyInventory, .inspector, .settings,
-      .settingsAppearance, .settingsSources, .settingsPaths, .settingsRules, .compactWindow:
+      .settingsAppearance, .settingsSources, .settingsPaths, .settingsTags, .settingsRules,
+      .compactWindow:
       .all
     }
   }
@@ -750,7 +806,8 @@ private enum AppScreenScenario: String, CaseIterable {
     case .inspector:
       "hashicorp-vault|infra"
     case .defaultWindow, .cardView, .emptyInventory, .searchFilter, .settings,
-      .settingsAppearance, .settingsSources, .settingsPaths, .settingsRules, .compactWindow:
+      .settingsAppearance, .settingsSources, .settingsPaths, .settingsTags, .settingsRules,
+      .compactWindow:
       nil
     }
   }
@@ -760,14 +817,16 @@ private enum AppScreenScenario: String, CaseIterable {
     case .searchFilter:
       "github"
     case .defaultWindow, .cardView, .cardDetail, .emptyInventory, .inspector, .settings,
-      .settingsAppearance, .settingsSources, .settingsPaths, .settingsRules, .compactWindow:
+      .settingsAppearance, .settingsSources, .settingsPaths, .settingsTags, .settingsRules,
+      .compactWindow:
       ""
     }
   }
 
   var showsSettings: Bool {
     switch self {
-    case .settings, .settingsAppearance, .settingsSources, .settingsPaths, .settingsRules:
+    case .settings, .settingsAppearance, .settingsSources, .settingsPaths, .settingsTags,
+      .settingsRules:
       true
     case .defaultWindow, .cardView, .cardDetail, .emptyInventory, .searchFilter, .inspector,
       .compactWindow:
@@ -785,6 +844,8 @@ private enum AppScreenScenario: String, CaseIterable {
       .sources
     case .settingsPaths:
       .paths
+    case .settingsTags:
+      .tags
     case .settingsRules:
       .rules
     case .defaultWindow, .cardView, .cardDetail, .emptyInventory, .searchFilter, .inspector,
@@ -828,6 +889,7 @@ private struct InventoryContentView: View {
   @Binding var selectedCredentialID: CredentialRow.ID?
   let isEmptyMode: Bool
   let manageKeychainAction: () -> Void
+  let manageTagsAction: () -> Void
 
   var body: some View {
     ZStack {
@@ -844,7 +906,8 @@ private struct InventoryContentView: View {
         if let selectedCardRow {
           CredentialMusicDetailView(
             row: selectedCardRow,
-            manageKeychainAction: manageKeychainAction
+            manageKeychainAction: manageKeychainAction,
+            manageTagsAction: manageTagsAction
           ) {
             selectedCredentialID = nil
           }
@@ -938,9 +1001,15 @@ private struct CredentialInventoryTable: View {
           .foregroundStyle(keychainTint(for: row))
       }
 
+      TableColumn("Tags") { row in
+        CredentialTagStrip(tags: row.tags, limit: 2, compact: true)
+      }
+      .width(min: 128, ideal: 152)
+
       TableColumn("Sources") { row in
         Text("\(row.locations.count)")
       }
+      .width(min: 64, ideal: 74, max: 86)
     }
     .accessibilityIdentifier("keydex.inventory.table")
     .accessibilityLabel("Credential inventory table")
@@ -1242,13 +1311,80 @@ private struct KeychainStatusBadge: View {
   }
 }
 
-private struct CredentialInspectorPanel: View {
-  let projection: CredentialProjection
-  let manageKeychainAction: () -> Void
+private struct CredentialTagStrip: View {
+  let tags: [CredentialTagRow]
+  var limit = 4
+  var compact = false
 
-  private var row: CredentialRow {
-    CredentialRow(projection: projection)
+  private var visibleTags: [CredentialTagRow] {
+    Array(tags.prefix(limit))
   }
+
+  private var hiddenCount: Int {
+    max(tags.count - visibleTags.count, 0)
+  }
+
+  var body: some View {
+    HStack(spacing: compact ? 4 : 6) {
+      if visibleTags.isEmpty {
+        Text("No tags")
+          .font(compact ? .caption2 : .caption)
+          .foregroundStyle(.secondary)
+      } else {
+        ForEach(visibleTags) { tag in
+          CredentialTagChip(tag: tag, compact: compact)
+        }
+
+        if hiddenCount > 0 {
+          Text("+\(hiddenCount)")
+            .font(.caption2.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 3)
+            .background(KeydexGlassTone.metadataChipFill, in: Capsule())
+        }
+      }
+    }
+    .accessibilityElement(children: .combine)
+    .accessibilityLabel(tagAccessibilityLabel)
+  }
+
+  private var tagAccessibilityLabel: String {
+    if tags.isEmpty {
+      return "No tags"
+    }
+
+    return "Tags \(tags.map(\.name).joined(separator: ", "))"
+  }
+}
+
+private struct CredentialTagChip: View {
+  let tag: CredentialTagRow
+  var compact = false
+
+  var body: some View {
+    Label(tag.name, systemImage: "tag.fill")
+      .font(compact ? .caption2.weight(.medium) : .caption.weight(.medium))
+      .labelStyle(.titleAndIcon)
+      .foregroundStyle(tag.color.tint)
+      .lineLimit(1)
+      .padding(.horizontal, compact ? 6 : 8)
+      .padding(.vertical, compact ? 3 : 4)
+      .background(tag.color.tint.opacity(KeydexGlassTone.metadataChipFillAlpha), in: Capsule())
+      .overlay {
+        Capsule()
+          .stroke(
+            tag.color.tint.opacity(KeydexGlassTone.metadataChipStrokeAlpha),
+            lineWidth: 1
+          )
+      }
+  }
+}
+
+private struct CredentialInspectorPanel: View {
+  let row: CredentialRow
+  let manageKeychainAction: () -> Void
+  let manageTagsAction: () -> Void
 
   var body: some View {
     ScrollView {
@@ -1284,18 +1420,35 @@ private struct CredentialInspectorPanel: View {
           title: "States",
           systemImage: "checklist"
         ) {
-          CredentialStateSummaryView(states: projection.states)
+          CredentialStateSummaryView(states: row.states)
+        }
+
+        InspectorGlassSection(
+          title: "Tags",
+          systemImage: "tag"
+        ) {
+          VStack(alignment: .leading, spacing: 10) {
+            CredentialTagStrip(tags: row.tags, limit: 4)
+
+            Button(action: manageTagsAction) {
+              Label("Manage Tags", systemImage: "tag.fill")
+            }
+            .keydexGlassButton()
+            .help("Open tag management")
+            .accessibilityIdentifier("keydex.inspector.manage-tags")
+            .accessibilityLabel("Manage credential tags")
+          }
         }
 
         InspectorGlassSection(
           title: "Keychain",
-          systemImage: keychainCount(for: projection) > 0 ? "key.fill" : "key.slash"
+          systemImage: keychainCount(for: row.projection) > 0 ? "key.fill" : "key.slash"
         ) {
           Label(
-            keychainSummary(for: projection),
-            systemImage: keychainCount(for: projection) > 0 ? "key.fill" : "key.slash"
+            keychainSummary(for: row.projection),
+            systemImage: keychainCount(for: row.projection) > 0 ? "key.fill" : "key.slash"
           )
-          .foregroundStyle(keychainTint(for: projection))
+          .foregroundStyle(keychainTint(for: row.projection))
           .font(.callout)
         }
 
@@ -1304,7 +1457,7 @@ private struct CredentialInspectorPanel: View {
           systemImage: "list.bullet.rectangle"
         ) {
           VStack(alignment: .leading, spacing: 8) {
-            ForEach(projection.locations, id: \.self) { location in
+            ForEach(row.projection.locations, id: \.self) { location in
               Text(locationLabel(location))
                 .font(.callout)
                 .textSelection(.enabled)
@@ -1320,6 +1473,7 @@ private struct CredentialInspectorPanel: View {
 private struct CredentialMusicDetailView: View {
   let row: CredentialRow
   let manageKeychainAction: () -> Void
+  let manageTagsAction: () -> Void
   let closeAction: () -> Void
 
   var body: some View {
@@ -1363,11 +1517,21 @@ private struct CredentialMusicDetailView: View {
 
               CredentialStateSummaryView(states: row.states)
 
+              CredentialTagStrip(tags: row.tags, limit: 3)
+
               HStack(spacing: 10) {
                 Button(action: manageKeychainAction) {
                   Label("Manage Keychain", systemImage: "key.fill")
                 }
                 .keydexGlassButton(prominent: true)
+
+                Button(action: manageTagsAction) {
+                  Label("Manage Tags", systemImage: "tag.fill")
+                }
+                .keydexGlassButton()
+                .help("Open tag management")
+                .accessibilityIdentifier("keydex.card-detail.manage-tags")
+                .accessibilityLabel("Manage credential tags")
 
                 KeychainStatusBadge(row: row)
               }
@@ -1472,6 +1636,7 @@ private enum SidebarSelection: Hashable {
   case all
   case state(CredentialState)
   case service(String)
+  case tag(String)
 
   var title: String {
     switch self {
@@ -1493,6 +1658,8 @@ private enum SidebarSelection: Hashable {
       "Duplicate"
     case .service(let service):
       service
+    case .tag(let tagName):
+      tagName
     }
   }
 
@@ -1514,15 +1681,27 @@ private enum SidebarSelection: Hashable {
       "circle.dashed"
     case .service:
       "server.rack"
+    case .tag:
+      "tag"
     }
   }
 }
 
 private struct CredentialRow: Identifiable {
   let projection: CredentialProjection
+  let tags: [CredentialTagRow]
+
+  init(projection: CredentialProjection, tags: [CredentialTagRow] = []) {
+    self.projection = projection
+    self.tags = tags
+  }
+
+  static func identifier(for projection: CredentialProjection) -> String {
+    "\(projection.ref.service.value)|\(projection.ref.account.value)"
+  }
 
   var id: String {
-    "\(projection.ref.service.value)|\(projection.ref.account.value)"
+    Self.identifier(for: projection)
   }
 
   var service: String { projection.ref.service.value }
@@ -1581,11 +1760,25 @@ private struct CredentialRow: Identifiable {
   }
 
   var cardCaptionLine: String {
-    "\(account) · \(canonicalStateLabel(states)) · \(keychainStatusTitle)"
+    if let primaryTag = tags.first {
+      let taggedState = "#\(primaryTag.name) · \(canonicalStateLabel(states))"
+      return "\(account) · \(taggedState) · \(keychainStatusTitle)"
+    }
+
+    return "\(account) · \(canonicalStateLabel(states)) · \(keychainStatusTitle)"
   }
 
   var cardAccessibilityLabel: String {
-    "\(service) \(account), states \(canonicalStateLabel(states)), Keychain \(keychainStatusTitle), \(locations.count) sources."
+    let tagSummary: String
+    if tags.isEmpty {
+      tagSummary = "no tags"
+    } else {
+      tagSummary = "tags \(tags.map(\.name).joined(separator: ", "))"
+    }
+
+    let stateSummary = canonicalStateLabel(states)
+    return "\(service) \(account), states \(stateSummary), \(tagSummary), "
+      + "Keychain \(keychainStatusTitle), \(locations.count) sources."
   }
 }
 
@@ -1723,8 +1916,8 @@ private struct DoctorPanel: View {
       alignment: .center
     )
     .keydexFloatingGlassPanel(
-      tint: KeydexGlassTone.floatingTint,
-      stroke: KeydexGlassTone.panelStroke
+      tint: KeydexGlassTone.railFloatingTint,
+      stroke: KeydexGlassTone.railFloatingStroke
     )
     .accessibilityIdentifier("keydex.doctor.panel")
     .accessibilityLabel("Credential repair queue")
@@ -2013,6 +2206,83 @@ private struct EditableSettingsRow: Identifiable {
   }
 }
 
+private struct CredentialTagRow: Identifiable, Hashable {
+  let id: UUID
+  var name: String
+  var assignments: String
+  var color: CredentialTagColor
+
+  init(
+    id: UUID = UUID(),
+    name: String,
+    assignments: String,
+    color: CredentialTagColor
+  ) {
+    self.id = id
+    self.name = name
+    self.assignments = assignments
+    self.color = color
+  }
+
+  var credentialIDs: [String] {
+    assignments
+      .components(separatedBy: CharacterSet(charactersIn: ",\n"))
+      .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+      .filter { !$0.isEmpty }
+  }
+
+  func matchesCredentialID(_ credentialID: String) -> Bool {
+    credentialIDs.contains { assignedID in
+      assignedID.caseInsensitiveCompare(credentialID) == .orderedSame
+    }
+  }
+}
+
+private enum CredentialTagColor: String, CaseIterable, Identifiable, Hashable {
+  case accent
+  case red
+  case orange
+  case green
+  case blue
+  case gray
+
+  var id: String { rawValue }
+
+  var title: String {
+    switch self {
+    case .accent:
+      "Accent"
+    case .red:
+      "Red"
+    case .orange:
+      "Orange"
+    case .green:
+      "Green"
+    case .blue:
+      "Blue"
+    case .gray:
+      "Gray"
+    }
+  }
+
+  var tint: Color {
+    switch self {
+    case .accent:
+      .accentColor
+    case .red:
+      .red
+    case .orange:
+      .orange
+    case .green:
+      .green
+    case .blue:
+      .blue
+    case .gray:
+      .secondary
+    }
+  }
+}
+
 private struct ShellSettingsConfig {
   var keychainAccess: Bool
   var requestPrompt: Bool
@@ -2020,6 +2290,7 @@ private struct ShellSettingsConfig {
   var keychainReferences: [EditableSettingsRow]
   var scanSources: [ScanSourceRow]
   var scanPaths: [EditableSettingsRow]
+  var tags: [CredentialTagRow]
   var ignoredSources: [EditableSettingsRow]
   var unmanagedSources: [EditableSettingsRow]
 }
@@ -2029,6 +2300,7 @@ private enum SettingsSection: String, CaseIterable, Identifiable {
   case appearance
   case sources
   case paths
+  case tags
   case rules
 
   var id: String { rawValue }
@@ -2043,6 +2315,8 @@ private enum SettingsSection: String, CaseIterable, Identifiable {
       "Sources"
     case .paths:
       "Paths"
+    case .tags:
+      "Tags"
     case .rules:
       "Rules"
     }
@@ -2085,6 +2359,23 @@ private func sampleSettingsData(displayMode: InventoryDisplayMode = .list) -> Sh
       EditableSettingsRow("/Users/example/.config/gh/config"),
       EditableSettingsRow("/Users/example/.aws/credentials"),
     ],
+    tags: [
+      CredentialTagRow(
+        name: "CI",
+        assignments: "aws|ci, github|work",
+        color: .blue
+      ),
+      CredentialTagRow(
+        name: "Rotates Soon",
+        assignments: "expiring-service|preview, hashicorp-vault|infra",
+        color: .orange
+      ),
+      CredentialTagRow(
+        name: "Personal",
+        assignments: "openai|default",
+        color: .accent
+      ),
+    ],
     ignoredSources: [
       EditableSettingsRow("~/Downloads/keys/legacy.env"),
       EditableSettingsRow("~/tmp/oneoff/.env.disabled"),
@@ -2126,9 +2417,9 @@ private struct SettingsPanel: View {
               systemImage: "checklist"
             )
             SettingsStatusPill(
-              title: "View",
-              value: settings.displayMode.title,
-              systemImage: settings.displayMode.systemImage
+              title: "Tags",
+              value: "\(settings.tags.count)",
+              systemImage: "tag"
             )
           }
         }
@@ -2244,6 +2535,9 @@ private struct SettingsPanel: View {
               removeButtonIdentifier: "keydex.settings.remove-scan-path"
             )
 
+          case .tags:
+            EditableTagListSection(tags: $settings.tags)
+
           case .rules:
             EditableSettingsListSection(
               title: "Ignored Sources",
@@ -2290,7 +2584,7 @@ private struct SettingsPanel: View {
   }
 
   private var settingsSummary: String {
-    "\(settings.displayMode.title) · System appearance · \(settings.scanPaths.count) paths · \(settings.ignoredSources.count) ignored"
+    "\(settings.displayMode.title) · \(settings.tags.count) tags · \(settings.scanPaths.count) paths · \(settings.ignoredSources.count) ignored"
   }
 
   private var keychainPermissionStatus: String {
@@ -2375,6 +2669,162 @@ private struct EditableSettingsListSection: View {
   private func addDraftValue() {
     rows.append(EditableSettingsRow(trimmedDraftValue))
     draftValue = ""
+  }
+}
+
+private struct EditableTagListSection: View {
+  @Binding var tags: [CredentialTagRow]
+  @State private var draftName = ""
+  @State private var draftAssignments = ""
+  @State private var draftColor = CredentialTagColor.accent
+
+  var body: some View {
+    SettingsGlassSection(
+      title: "Credential Tags",
+      subtitle: "\(tags.count) user-managed tags",
+      systemImage: "tag.fill"
+    ) {
+      ForEach($tags) { $tag in
+        SettingsTagEditableRow(tag: $tag) {
+          tags.removeAll { $0.id == tag.id }
+        }
+
+        if tag.id != tags.last?.id {
+          SettingsDivider()
+        }
+      }
+
+      if !tags.isEmpty {
+        SettingsDivider()
+      }
+
+      VStack(alignment: .leading, spacing: 6) {
+        HStack(alignment: .center, spacing: 10) {
+          Image(systemName: "plus.circle.fill")
+            .font(.body.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .frame(width: 24)
+
+          TextField("Tag name", text: $draftName)
+            .textFieldStyle(.plain)
+            .font(.body)
+            .accessibilityIdentifier("keydex.settings.tag.draft-name")
+            .accessibilityLabel("New tag name")
+
+          Picker("Tag color", selection: $draftColor) {
+            ForEach(CredentialTagColor.allCases) { color in
+              Text(color.title).tag(color)
+            }
+          }
+          .labelsHidden()
+          .frame(width: 118)
+          .accessibilityIdentifier("keydex.settings.tag.draft-color")
+          .accessibilityLabel("New tag color")
+
+          Button {
+            addDraftTag()
+          } label: {
+            Label("Add tag", systemImage: "plus")
+          }
+          .keydexGlassButton()
+          .labelStyle(.iconOnly)
+          .help("Add tag")
+          .accessibilityLabel("Add tag")
+          .accessibilityIdentifier("keydex.settings.add-tag")
+          .disabled(trimmedDraftName.isEmpty)
+        }
+
+        HStack(spacing: 10) {
+          Color.clear
+            .frame(width: 24)
+            .accessibilityHidden(true)
+
+          TextField("service|account, service|account", text: $draftAssignments)
+            .textFieldStyle(.plain)
+            .font(.system(.body, design: .monospaced))
+            .accessibilityIdentifier("keydex.settings.tag.draft-assignments")
+            .accessibilityLabel("New tag credential assignments")
+        }
+      }
+      .padding(.vertical, 8)
+    }
+  }
+
+  private var trimmedDraftName: String {
+    draftName.trimmingCharacters(in: .whitespacesAndNewlines)
+  }
+
+  private var trimmedDraftAssignments: String {
+    draftAssignments.trimmingCharacters(in: .whitespacesAndNewlines)
+  }
+
+  private func addDraftTag() {
+    tags.append(
+      CredentialTagRow(
+        name: trimmedDraftName,
+        assignments: trimmedDraftAssignments,
+        color: draftColor
+      )
+    )
+    draftName = ""
+    draftAssignments = ""
+    draftColor = .accent
+  }
+}
+
+private struct SettingsTagEditableRow: View {
+  @Binding var tag: CredentialTagRow
+  let removeAction: () -> Void
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 6) {
+      HStack(alignment: .center, spacing: 10) {
+        Image(systemName: "tag.fill")
+          .font(.body.weight(.medium))
+          .foregroundStyle(tag.color.tint)
+          .frame(width: 24)
+
+        TextField("Tag name", text: $tag.name)
+          .textFieldStyle(.plain)
+          .font(.body)
+          .accessibilityIdentifier("keydex.settings.tag.name")
+          .accessibilityLabel("Tag name")
+
+        Picker("Tag color", selection: $tag.color) {
+          ForEach(CredentialTagColor.allCases) { color in
+            Text(color.title).tag(color)
+          }
+        }
+        .labelsHidden()
+        .frame(width: 118)
+        .accessibilityIdentifier("keydex.settings.tag.color")
+        .accessibilityLabel("Tag color")
+
+        Button {
+          removeAction()
+        } label: {
+          Label("Remove tag", systemImage: "minus")
+        }
+        .buttonStyle(.borderless)
+        .labelStyle(.iconOnly)
+        .help("Remove tag")
+        .accessibilityLabel("Remove tag")
+        .accessibilityIdentifier("keydex.settings.remove-tag")
+      }
+
+      HStack(spacing: 10) {
+        Color.clear
+          .frame(width: 24)
+          .accessibilityHidden(true)
+
+        TextField("service|account assignments", text: $tag.assignments)
+          .textFieldStyle(.plain)
+          .font(.system(.body, design: .monospaced))
+          .accessibilityIdentifier("keydex.settings.tag.assignments")
+          .accessibilityLabel("Tag credential assignments")
+      }
+    }
+    .padding(.vertical, 8)
   }
 }
 
@@ -2563,12 +3013,17 @@ private enum KeydexGlassTone {
   static let contentGlassTint = Color.white.opacity(0.06)
   static let controlGlassTint = Color.white.opacity(0.10)
   static let floatingTint = Color.white.opacity(0.20)
+  static let railLaneWash = Color(nsColor: .windowBackgroundColor).opacity(0.62)
+  static let railLaneMilkyHighlight = Color.white.opacity(0.16)
+  static let railFloatingTint = Color(nsColor: .windowBackgroundColor).opacity(0.46)
+  static let railFloatingStroke = Color(nsColor: .separatorColor).opacity(0.22)
   static let railControlFill = Color.primary.opacity(0.045)
   static let panelStroke = Color(nsColor: .separatorColor).opacity(0.30)
   static let stateChipFillAlpha = 0.08
   static let stateChipStrokeAlpha = 0.24
   static let metadataChipFillAlpha = 0.07
   static let metadataChipStrokeAlpha = 0.22
+  static let metadataChipFill = Color.primary.opacity(0.045)
   static let posterBadgeFill = Color.primary.opacity(0.045)
   static let posterBadgeStroke = Color(nsColor: .separatorColor).opacity(0.22)
   static let artworkColorAlpha = 0.18
@@ -2582,7 +3037,7 @@ private enum KeydexRailLayout {
   static let footerLaneHeight: CGFloat = 90
   static let footerTopPadding: CGFloat = 12
   static let footerBottomPadding: CGFloat = 16
-  static let footerSeparatorAlpha = 0.18
+  static let footerSeparatorAlpha = 0.12
   static let railHeight: CGFloat = 58
   static let maxWidth: CGFloat = 760
   static let cornerRadius: CGFloat = 29

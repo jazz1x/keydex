@@ -26,8 +26,8 @@ and honest about risk.
 | `glass.content.tint` | white 0.06 alpha | card and inspector glass shell tint |
 | `glass.control.tint` | white 0.10 alpha | toolbar mode cluster tint |
 | `glass.poster.tint` | semantic state color 0.18 alpha | card poster glass tint |
-| `glass.floating.tint` | white 0.20 alpha | centered Doctor rail tint |
-| `surface.footerRail` | 90 pt reserved ultra-thin material lane + top separator 0.18 alpha | Apple Music-like reserved footer rail and bottom player lane |
+| `glass.floating.tint` | window background 0.46 alpha | centered Doctor rail tint |
+| `surface.footerRail` | 90 pt reserved milky ultra-thin material lane + top separator 0.12 alpha | Apple Music-like reserved footer rail and bottom player lane |
 | `artwork.state.tint` | semantic state color 0.18 alpha | card poster color field |
 | `artwork.poster.symbol` | 50 pt size + 0.50 alpha | subdued credential glyph inside poster |
 | `artwork.poster.wash` | semantic state color 0.03 alpha + white 0.06 highlight | Apple Music-like poster media wash |
@@ -53,11 +53,11 @@ and honest about risk.
 | Sidebar | Scope navigation | All, Expiring, Plaintext, Orphans, Duplicates, Services, Tags |
 | Toolbar | Global actions | glass mode cluster, register, settings |
 | App Icons | App and menu bar identity | bundled Keydex app icon, monochrome template menu bar icon |
-| Inventory Table | Primary working view | grouped list rows, selected pill, sortable columns, state chips, source count, last observed |
+| Inventory Table | Primary working view | grouped list rows, selected pill, sortable columns, state chips, user-owned tag metadata, source count, last observed |
 | Inventory Cards | Secondary scan view | poster-only credential artwork, two-line title/caption deck below, source count affordance, Music-like detail page on click |
 | Inspector | Relationship detail | credential, sources, graph edges, expiry, notes, actions |
 | Doctor Panel | Repair queue | reserved 90 pt music-player-like footer lane with centered rail, severity, cause, action, and count controls |
-| Settings | Permissions, appearance, and rules | Keychain access, system appearance mode, scan paths, ignored sources |
+| Settings | Permissions, appearance, tags, and rules | Keychain access, system appearance mode, scan paths, user-owned tags, ignored sources |
 
 ## Component Contracts
 
@@ -65,6 +65,7 @@ and honest about risk.
 | --- | --- |
 | State chip | Uses the canonical state label and risk color. |
 | Source badge | Names the source kind without exposing secret values. |
+| Tag chip | Shows user-owned tag metadata without changing graph-derived credential truth. |
 | Graph edge row | Shows relationship, origin, and confidence. |
 | Doctor issue row | Shows severity, state, cause, and action. |
 | Search field | Plain sidebar search row; 12 pt top inset, 36 pt row height, 12 pt horizontal inset, body-sized icon/text, inline clear affordance when populated. |
@@ -91,7 +92,7 @@ and honest about risk.
   material, matching Music's Library and Playlist navigation.
 - Toolbar mode controls stay in one glass cluster instead of separate floating islands.
 - Settings uses a material header plus grouped list sections; repeated rows stay plain
-  and editable.
+  and editable. Tags are user-owned metadata managed beside sources, not graph truth.
 - Native glass buttons use `.glass` or `.glassProminent` when available, with system
   button styles on older macOS versions.
 - Inventory cards are content-layer tiles. On macOS 26+, only the credential poster
@@ -121,8 +122,8 @@ and honest about risk.
 - Poster glyphs stay subdued so the credential card reads like Music library artwork,
   not a dashboard status tile.
 - The repair queue uses a centered music-player-like repair rail inside a
-  90 pt reserved ultra-thin material footer lane instead of a hard split panel
-  or overlay. The lane has a 0.18 alpha top separator, and scrollable content
+  90 pt reserved milky ultra-thin material footer lane instead of a hard split panel
+  or overlay. The lane has a 0.12 alpha top separator, and scrollable content
   must end above it so rows and playlist-style cards are never occluded.
 - Do not use heavy Liquid Glass for repeated table cells or dense detail sections.
   Repeated credential posters may use low-tint native glass; the card shell stays unframed.

@@ -32,6 +32,8 @@ for identifier in \
   keydex.toolbar.settings \
   keydex.inspector \
   keydex.inspector.manage-keychain \
+  keydex.inspector.manage-tags \
+  keydex.card-detail.manage-tags \
   keydex.settings.section-picker \
   keydex.settings.panel; do
   expect_file_contains "$app_source" ".accessibilityIdentifier(\"$identifier\")"
@@ -44,6 +46,14 @@ for identifier in \
   keydex.settings.add-keychain-reference \
   keydex.settings.display-mode \
   keydex.settings.add-scan-path \
+  keydex.settings.tag.name \
+  keydex.settings.tag.assignments \
+  keydex.settings.tag.color \
+  keydex.settings.tag.draft-name \
+  keydex.settings.tag.draft-assignments \
+  keydex.settings.tag.draft-color \
+  keydex.settings.add-tag \
+  keydex.settings.remove-tag \
   keydex.settings.add-ignored-source \
   keydex.settings.add-unmanaged-source; do
   expect_file_contains "$app_source" "$identifier"
@@ -69,6 +79,8 @@ for label in \
   "Add keychain reference" \
   "Remove keychain reference" \
   "Remove scan path" \
+  "Add tag" \
+  "Remove tag" \
   "Add ignored source" \
   "Remove ignored source" \
   "Add unmanaged source" \

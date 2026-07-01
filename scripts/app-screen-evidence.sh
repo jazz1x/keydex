@@ -79,6 +79,7 @@ list_scenarios() {
     settings-appearance \
     settings-sources \
     settings-paths \
+    settings-tags \
     settings-rules \
     compact-window
 }
@@ -109,7 +110,7 @@ case "$scenario" in
   search-filter | inspector)
     inventory_mode="sample"
     ;;
-  settings | settings-appearance | settings-sources | settings-paths | settings-rules)
+  settings | settings-appearance | settings-sources | settings-paths | settings-tags | settings-rules)
     inventory_mode="sample"
     window_selector="settings"
     ;;
@@ -118,7 +119,7 @@ case "$scenario" in
     window_preset="compact"
     ;;
   *)
-    fail "unknown screen evidence scenario: $scenario. Supported scenarios: default-window, card-view, card-detail, empty-inventory, search-filter, inspector, settings, settings-appearance, settings-sources, settings-paths, settings-rules, compact-window"
+    fail "unknown screen evidence scenario: $scenario. Supported scenarios: default-window, card-view, card-detail, empty-inventory, search-filter, inspector, settings, settings-appearance, settings-sources, settings-paths, settings-tags, settings-rules, compact-window"
     ;;
 esac
 

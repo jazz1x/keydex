@@ -116,7 +116,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | UI5 | Duplicate credential | `default-window` | Screenshot with duplicate state and relationship evidence. |
 | UI6 | Inspector sources | `inspector` | Screenshot showing stored/observed source relationships. |
 | UI7 | Doctor queue | `default-window` | Screenshot with grouped cause/action findings. |
-| UI8 | Settings permissions, appearance, and rules | `settings`, `settings-appearance`, `settings-sources`, `settings-paths`, `settings-rules` | Screenshots of Keychain access, appearance mode controls, scan sources, scan paths, ignored sources, and unmanaged sources. |
+| UI8 | Settings permissions, appearance, tags, and rules | `settings`, `settings-appearance`, `settings-sources`, `settings-paths`, `settings-tags`, `settings-rules` | Screenshots of Keychain access, appearance mode controls, scan sources, scan paths, user-owned tag metadata, ignored sources, and unmanaged sources. |
 | UI9 | Search/filter | `search-filter` | Screenshot after graph projection filtering; compare with `default-window`. |
 | UI10 | Compact viewport | `compact-window` | Screenshot proving no overlap. |
 
