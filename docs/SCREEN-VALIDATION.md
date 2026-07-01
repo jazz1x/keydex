@@ -80,13 +80,13 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Real glass controls | Command buttons use `.glass` or `.glassProminent` where available. |
 | Apple Music reference | Native sidebar material, poster cards, and the music-player-like repair rail are checked against Music for Mac's content/glass layering. |
 | Toolbar cluster | Sample and display mode controls are grouped into one glass cluster. |
-| Sidebar glass | Sidebar is the glass slab with a subtle milky wash; search is a plain row on that material, not nested glass. |
+| Sidebar glass | Sidebar is the glass slab with a subtle warm milky wash; scroll content background is hidden and search is a plain row on that material, not nested glass. |
 | Rail layering | Scrollable content continues behind the bottom Doctor rail. |
 | Table rail inset | List/table mode reserves scroll room below the floating Doctor rail. |
 | Table legibility | Repeated rows do not use heavy material effects. |
 | Card legibility | Inventory cards keep 8 pt radius, stable poster height, and source previews. |
 | Card hierarchy | Card mode follows Music Library/Playlist tiles: one framed poster first, metadata below, no second outer card shell, and no nested material badges inside the poster. |
-| Poster media wash | Credential posters use semantic color wash without graph-line or constellation decoration. |
+| Poster media wash | Credential posters use subdued semantic color wash and glyphs without graph-line or constellation decoration. |
 | Source icons and copy | Source metadata uses list/document symbols and user-facing inventory language, not connected-dot graph glyphs or graph-derived implementation copy. |
 | System appearance | Both Light and Dark modes are verified; no custom color palette is shipped. |
 | State consistency | State chips use canonical labels. |

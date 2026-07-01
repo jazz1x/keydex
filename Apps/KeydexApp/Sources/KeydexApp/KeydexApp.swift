@@ -433,7 +433,10 @@ private struct MusicSidebarView: View {
       }
       .padding(.horizontal, KeydexSidebarLayout.contentHorizontalPadding)
       .padding(.bottom, KeydexSidebarLayout.contentBottomPadding)
+      .frame(maxWidth: .infinity, alignment: .topLeading)
+      .background(KeydexSidebarWashLayer())
     }
+    .scrollContentBackground(.hidden)
     .keydexSidebarGlass()
     .accessibilityIdentifier("keydex.sidebar.scopes")
     .accessibilityLabel("Credential scopes")
@@ -894,10 +897,17 @@ private struct CredentialArtworkPanel: View {
         }
 
       Image(systemName: row.keychainStatusSystemImage)
-        .font(.system(size: isPoster ? 70 : 34, weight: .semibold))
+        .font(
+          .system(
+            size: isPoster
+              ? KeydexCardArtworkLayout.posterSymbolSize
+              : KeydexCardArtworkLayout.compactSymbolSize,
+            weight: .semibold
+          )
+        )
         .foregroundStyle(accentColor)
         .symbolRenderingMode(.hierarchical)
-        .opacity(isPoster ? 0.76 : 1)
+        .opacity(isPoster ? KeydexGlassTone.posterSymbolAlpha : 1)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .accessibilityHidden(true)
     }
@@ -2172,8 +2182,8 @@ private struct SettingsDivider: View {
 }
 
 private enum KeydexGlassTone {
-  static let sidebarMilkyWashLight = Color.white.opacity(0.78)
-  static let sidebarMilkyWashDark = Color.white.opacity(0.06)
+  static let sidebarMilkyWashLight = Color(red: 0.98, green: 0.97, blue: 0.94).opacity(0.86)
+  static let sidebarMilkyWashDark = Color.white.opacity(0.08)
   static let sidebarSelectionFill = Color.primary.opacity(0.045)
   static let contentPanelFill = Color.primary.opacity(0.020)
   static let contentGlassTint = Color.white.opacity(0.07)
@@ -2189,8 +2199,9 @@ private enum KeydexGlassTone {
   static let metadataChipStroke = Color(nsColor: .separatorColor).opacity(0.28)
   static let posterBadgeFill = Color.primary.opacity(0.045)
   static let posterBadgeStroke = Color(nsColor: .separatorColor).opacity(0.22)
-  static let artworkColorAlpha = 0.30
-  static let posterWashHighAlpha = 0.05
+  static let artworkColorAlpha = 0.22
+  static let posterSymbolAlpha = 0.50
+  static let posterWashHighAlpha = 0.04
   static let posterHighlightAlpha = 0.08
 }
 
@@ -2201,6 +2212,11 @@ private enum KeydexRailLayout {
   static let maxWidth: CGFloat = 760
   static let cornerRadius: CGFloat = 29
   static let scrollContentBottomPadding: CGFloat = railHeight + bottomMargin + 62
+}
+
+private enum KeydexCardArtworkLayout {
+  static let posterSymbolSize: CGFloat = 50
+  static let compactSymbolSize: CGFloat = 34
 }
 
 private enum KeydexSidebarLayout {
@@ -2403,6 +2419,21 @@ private struct KeydexSidebarMaterialView: NSViewRepresentable {
   }
 }
 
+private struct KeydexSidebarWashLayer: View {
+  @Environment(\.colorScheme) private var colorScheme
+
+  var body: some View {
+    sidebarMilkyWash
+      .allowsHitTesting(false)
+  }
+
+  private var sidebarMilkyWash: Color {
+    colorScheme == .dark
+      ? KeydexGlassTone.sidebarMilkyWashDark
+      : KeydexGlassTone.sidebarMilkyWashLight
+  }
+}
+
 private struct KeydexSidebarGlassModifier: ViewModifier {
   @Environment(\.colorScheme) private var colorScheme
 
@@ -2410,15 +2441,17 @@ private struct KeydexSidebarGlassModifier: ViewModifier {
   func body(content: Content) -> some View {
     #if compiler(>=6.2)
       if #available(macOS 26.0, *) {
-        content
-          .background(sidebarMilkyWash)
-          .background {
-            KeydexSidebarMaterialView()
-          }
-          .backgroundExtensionEffect()
-          .overlay(alignment: .trailing) {
-            sidebarDivider
-          }
+        ZStack(alignment: .topLeading) {
+          sidebarMilkyWash
+          content
+        }
+        .background {
+          KeydexSidebarMaterialView()
+        }
+        .backgroundExtensionEffect()
+        .overlay(alignment: .trailing) {
+          sidebarDivider
+        }
       } else {
         fallback(content: content)
       }
@@ -2429,14 +2462,16 @@ private struct KeydexSidebarGlassModifier: ViewModifier {
 
   @ViewBuilder
   private func fallback(content: Content) -> some View {
-    content
-      .background(sidebarMilkyWash)
-      .background {
-        KeydexSidebarMaterialView()
-      }
-      .overlay(alignment: .trailing) {
-        sidebarDivider
-      }
+    ZStack(alignment: .topLeading) {
+      sidebarMilkyWash
+      content
+    }
+    .background {
+      KeydexSidebarMaterialView()
+    }
+    .overlay(alignment: .trailing) {
+      sidebarDivider
+    }
   }
 
   private var sidebarDivider: some View {
