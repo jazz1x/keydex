@@ -71,6 +71,7 @@ list_scenarios() {
   printf '%s\n' \
     default-window \
     card-view \
+    card-detail \
     empty-inventory \
     search-filter \
     inspector \
@@ -99,6 +100,10 @@ case "$scenario" in
   card-view)
     inventory_mode="sample"
     ;;
+  card-detail)
+    inventory_mode="sample"
+    window_selector="settings"
+    ;;
   empty-inventory)
     inventory_mode="empty"
     ;;
@@ -114,7 +119,7 @@ case "$scenario" in
     window_preset="compact"
     ;;
   *)
-    fail "unknown screen evidence scenario: $scenario. Supported scenarios: default-window, card-view, empty-inventory, search-filter, inspector, settings, settings-appearance, settings-sources, settings-paths, settings-rules, compact-window"
+    fail "unknown screen evidence scenario: $scenario. Supported scenarios: default-window, card-view, card-detail, empty-inventory, search-filter, inspector, settings, settings-appearance, settings-sources, settings-paths, settings-rules, compact-window"
     ;;
 esac
 

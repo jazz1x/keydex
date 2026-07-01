@@ -40,7 +40,8 @@ let package = Package(
     .executableTarget(
       name: "KeydexApp",
       dependencies: ["KeydexCore"],
-      path: "Apps/KeydexApp/Sources/KeydexApp"
+      path: "Apps/KeydexApp/Sources/KeydexApp",
+      resources: [.process("Resources")]
     ),
     .testTarget(name: "KeydexCoreTests", dependencies: ["KeydexCore"]),
     .testTarget(name: "KeydexKeychainTests", dependencies: ["KeydexKeychain"]),
