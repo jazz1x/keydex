@@ -857,7 +857,11 @@ private struct CredentialArtworkPanel: View {
             .foregroundStyle(.secondary)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .background(.ultraThinMaterial, in: Capsule())
+            .background(KeydexGlassTone.posterBadgeFill, in: Capsule())
+            .overlay {
+              Capsule()
+                .stroke(KeydexGlassTone.posterBadgeStroke, lineWidth: 1)
+            }
             .padding(10)
         }
         .overlay(alignment: .bottomLeading) {
@@ -1300,13 +1304,20 @@ private struct DoctorPanel: View {
   }
 
   var body: some View {
-    HStack(alignment: .center, spacing: 14) {
-      Label("Doctor", systemImage: issues.isEmpty ? "checkmark.seal" : "stethoscope")
-        .font(.headline)
-        .foregroundStyle(issues.isEmpty ? .green : .primary)
+    HStack(alignment: .center, spacing: 16) {
+      Label {
+        Text("Doctor")
+          .font(.headline)
+      } icon: {
+        Image(systemName: issues.isEmpty ? "checkmark.seal" : "stethoscope")
+          .font(.body.weight(.semibold))
+          .frame(width: 30, height: 30)
+          .background(KeydexGlassTone.railControlFill, in: Circle())
+      }
+      .foregroundStyle(issues.isEmpty ? .green : .primary)
 
       Divider()
-        .frame(height: 28)
+        .frame(height: 24)
 
       if let primaryIssue {
         VStack(alignment: .leading, spacing: 3) {
@@ -1331,7 +1342,7 @@ private struct DoctorPanel: View {
         VStack(alignment: .leading, spacing: 3) {
           Text(isEmptyMode ? "Ready for sources" : "No issues found")
             .font(.subheadline)
-          Text(isEmptyMode ? "Scan sources or add metadata." : "Inventory graph is healthy.")
+          Text(isEmptyMode ? "Scan sources or add metadata." : "Inventory is healthy.")
             .font(.caption)
             .foregroundStyle(.secondary)
         }
@@ -1354,13 +1365,17 @@ private struct DoctorPanel: View {
             .foregroundStyle(.secondary)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .background(.thinMaterial, in: Capsule())
+            .background(KeydexGlassTone.railControlFill, in: Capsule())
         }
       }
     }
-    .padding(.horizontal, 20)
-    .padding(.vertical, 10)
-    .frame(maxWidth: .infinity, minHeight: KeydexRailLayout.railHeight, alignment: .center)
+    .padding(.horizontal, 18)
+    .padding(.vertical, 8)
+    .frame(
+      maxWidth: KeydexRailLayout.maxWidth,
+      minHeight: KeydexRailLayout.railHeight,
+      alignment: .center
+    )
     .keydexFloatingGlassPanel(
       tint: KeydexGlassTone.floatingTint,
       stroke: KeydexGlassTone.panelStroke
@@ -2156,11 +2171,14 @@ private struct SettingsDivider: View {
 }
 
 private enum KeydexGlassTone {
-  static let sidebarSelectionFill = Color.primary.opacity(0.055)
+  static let sidebarMilkyWashLight = Color.white.opacity(0.78)
+  static let sidebarMilkyWashDark = Color.white.opacity(0.06)
+  static let sidebarSelectionFill = Color.primary.opacity(0.045)
   static let contentPanelFill = Color.primary.opacity(0.020)
   static let contentGlassTint = Color.white.opacity(0.07)
   static let controlGlassTint = Color.white.opacity(0.12)
-  static let floatingTint = Color.white.opacity(0.15)
+  static let floatingTint = Color.white.opacity(0.20)
+  static let railControlFill = Color.primary.opacity(0.045)
   static let panelStroke = Color(nsColor: .separatorColor).opacity(0.30)
   static let stateChipFillAlpha = 0.08
   static let stateChipStrokeAlpha = 0.24
@@ -2168,16 +2186,20 @@ private enum KeydexGlassTone {
   static let metadataChipStrokeAlpha = 0.22
   static let metadataChipFill = Color.primary.opacity(0.035)
   static let metadataChipStroke = Color(nsColor: .separatorColor).opacity(0.28)
-  static let artworkColorAlpha = 0.36
-  static let posterWashHighAlpha = 0.08
-  static let posterHighlightAlpha = 0.06
+  static let posterBadgeFill = Color.primary.opacity(0.045)
+  static let posterBadgeStroke = Color(nsColor: .separatorColor).opacity(0.22)
+  static let artworkColorAlpha = 0.30
+  static let posterWashHighAlpha = 0.05
+  static let posterHighlightAlpha = 0.08
 }
 
 private enum KeydexRailLayout {
-  static let horizontalMargin: CGFloat = 12
-  static let bottomMargin: CGFloat = 12
-  static let railHeight: CGFloat = 64
-  static let scrollContentBottomPadding: CGFloat = railHeight + bottomMargin + 56
+  static let horizontalMargin: CGFloat = 20
+  static let bottomMargin: CGFloat = 18
+  static let railHeight: CGFloat = 58
+  static let maxWidth: CGFloat = 760
+  static let cornerRadius: CGFloat = 29
+  static let scrollContentBottomPadding: CGFloat = railHeight + bottomMargin + 62
 }
 
 private enum KeydexSidebarLayout {
@@ -2334,7 +2356,7 @@ private struct KeydexFloatingGlassPanelModifier: ViewModifier {
 
   @ViewBuilder
   func body(content: Content) -> some View {
-    let shape = RoundedRectangle(cornerRadius: 22, style: .continuous)
+    let shape = RoundedRectangle(cornerRadius: KeydexRailLayout.cornerRadius, style: .continuous)
 
     #if compiler(>=6.2)
       if #available(macOS 26.0, *) {
@@ -2381,11 +2403,14 @@ private struct KeydexSidebarMaterialView: NSViewRepresentable {
 }
 
 private struct KeydexSidebarGlassModifier: ViewModifier {
+  @Environment(\.colorScheme) private var colorScheme
+
   @ViewBuilder
   func body(content: Content) -> some View {
     #if compiler(>=6.2)
       if #available(macOS 26.0, *) {
         content
+          .background(sidebarMilkyWash)
           .background {
             KeydexSidebarMaterialView()
           }
@@ -2404,6 +2429,7 @@ private struct KeydexSidebarGlassModifier: ViewModifier {
   @ViewBuilder
   private func fallback(content: Content) -> some View {
     content
+      .background(sidebarMilkyWash)
       .background {
         KeydexSidebarMaterialView()
       }
@@ -2416,6 +2442,12 @@ private struct KeydexSidebarGlassModifier: ViewModifier {
     Rectangle()
       .fill(.separator.opacity(0.22))
       .frame(width: 1)
+  }
+
+  private var sidebarMilkyWash: Color {
+    colorScheme == .dark
+      ? KeydexGlassTone.sidebarMilkyWashDark
+      : KeydexGlassTone.sidebarMilkyWashLight
   }
 }
 
