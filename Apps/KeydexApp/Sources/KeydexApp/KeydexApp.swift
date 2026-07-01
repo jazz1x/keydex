@@ -353,12 +353,29 @@ private struct KeydexRailFooter<Content: View>: View {
   @ViewBuilder var content: Content
 
   var body: some View {
-    content
-      .padding(.horizontal, KeydexRailLayout.horizontalMargin)
-      .padding(.top, KeydexRailLayout.footerTopPadding)
-      .padding(.bottom, KeydexRailLayout.footerBottomPadding)
-      .frame(maxWidth: .infinity)
-      .accessibilityElement(children: .contain)
+    ZStack(alignment: .center) {
+      KeydexRailLaneBackground()
+
+      content
+        .padding(.horizontal, KeydexRailLayout.horizontalMargin)
+        .padding(.top, KeydexRailLayout.footerTopPadding)
+        .padding(.bottom, KeydexRailLayout.footerBottomPadding)
+        .frame(maxWidth: .infinity)
+    }
+    .frame(height: KeydexRailLayout.footerLaneHeight)
+    .accessibilityElement(children: .contain)
+  }
+}
+
+private struct KeydexRailLaneBackground: View {
+  var body: some View {
+    Rectangle()
+      .fill(.ultraThinMaterial)
+      .overlay(alignment: .top) {
+        Rectangle()
+          .fill(.separator.opacity(KeydexRailLayout.footerSeparatorAlpha))
+          .frame(height: 1)
+      }
   }
 }
 
@@ -2253,9 +2270,11 @@ private enum KeydexGlassTone {
 }
 
 private enum KeydexRailLayout {
-  static let horizontalMargin: CGFloat = 20
-  static let footerTopPadding: CGFloat = 8
-  static let footerBottomPadding: CGFloat = 12
+  static let horizontalMargin: CGFloat = 24
+  static let footerLaneHeight: CGFloat = 90
+  static let footerTopPadding: CGFloat = 12
+  static let footerBottomPadding: CGFloat = 16
+  static let footerSeparatorAlpha = 0.18
   static let railHeight: CGFloat = 58
   static let maxWidth: CGFloat = 760
   static let cornerRadius: CGFloat = 29
