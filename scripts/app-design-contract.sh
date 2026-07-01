@@ -62,10 +62,18 @@ for needle in \
   "KeydexCardGridLayout" \
   "KeydexRailLayout" \
   "KeydexCardArtworkLayout" \
+  "cardCaptionLine" \
+  "posterToTextSpacing" \
+  "textDeckSpacing" \
   "footerTopPadding" \
   "footerBottomPadding" \
-  "sidebarMilkyWashLight = Color(red: 0.98" \
+  "sidebarMilkyWashLight = Color(red: 0.99" \
   "sidebarMilkyWashDark = Color.white.opacity(0.08)" \
+  "searchTopPadding: CGFloat = 12" \
+  "searchRowHeight: CGFloat = 36" \
+  "searchHorizontalPadding: CGFloat = 12" \
+  "posterHeight: CGFloat = 248" \
+  "artworkColorAlpha = 0.18" \
   ".scrollContentBackground(.hidden)" \
   "ScrollViewReader" \
   "KeydexSidebarScrollAnchor" \
@@ -120,6 +128,10 @@ for needle in \
   "Liquid Glass Rules" \
   "Sidebar search is not a nested glass card" \
   "Music's Library and Playlist tile hierarchy" \
+  "layout.sidebar.search" \
+  "layout.card.textDeck" \
+  "two-line title/caption deck" \
+  "poster-only credential artwork" \
   "Card mode uses a two-column Music-like library surface" \
   "adaptive bounded columns" \
   "no second outer card shell" \
@@ -127,7 +139,7 @@ for needle in \
   "no repeated capsule badge strip" \
   "music-player-like repair rail" \
   "reserved footer rail" \
-  "warm milky wash" \
+  "neutral milk wash" \
   "native macOS sidebar visual effect" \
   "Sidebar scroll content hides its own background" \
   "Sidebar wash is layered above the native material" \
@@ -188,6 +200,15 @@ if awk '
   END { exit found ? 0 : 1 }
 ' "$app_source"; then
   fail "CredentialArtworkPanel must keep badges flat inside the single poster frame"
+fi
+
+if awk '
+  /private struct CredentialArtworkPanel/ { in_artwork = 1 }
+  /private struct CredentialPosterWash/ { in_artwork = 0 }
+  in_artwork && /Text\(row\.(service|account)\)/ { found = 1 }
+  END { exit found ? 0 : 1 }
+' "$app_source"; then
+  fail "CredentialArtworkPanel must keep service/account text below the poster"
 fi
 
 if awk '
