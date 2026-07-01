@@ -86,6 +86,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Table legibility | Repeated rows do not use heavy material effects. |
 | Card legibility | Inventory cards keep 8 pt radius, stable poster height, and source previews. |
 | Card hierarchy | Card mode follows Music Library/Playlist tiles: poster first, metadata below. |
+| Source icons | Source metadata uses list/document symbols, not connected-dot graph glyphs. |
 | System appearance | Both Light and Dark modes are verified; no custom color palette is shipped. |
 | State consistency | State chips use canonical labels. |
 | Risk semantics | Warning/error color is reserved for real risk states. |

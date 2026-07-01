@@ -878,7 +878,7 @@ private struct CredentialArtworkPanel: View {
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
             } else {
-              Text("\(row.locations.count) graph sources")
+              Text("\(row.locations.count) source locations")
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .lineLimit(1)
@@ -989,7 +989,7 @@ private struct SourceCountBadge: View {
   let count: Int
 
   var body: some View {
-    Label("\(count)", systemImage: "point.3.connected.trianglepath.dotted")
+    Label("\(count)", systemImage: "list.bullet.rectangle")
       .font(.caption.weight(.medium))
       .foregroundStyle(.secondary)
       .padding(.horizontal, 8)
@@ -1062,7 +1062,7 @@ private struct CredentialInspectorPanel: View {
 
         InspectorGlassSection(
           title: "Sources",
-          systemImage: "point.3.connected.trianglepath.dotted"
+          systemImage: "list.bullet.rectangle"
         ) {
           VStack(alignment: .leading, spacing: 8) {
             ForEach(projection.locations, id: \.self) { location in
