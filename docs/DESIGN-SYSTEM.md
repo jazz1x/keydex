@@ -23,8 +23,9 @@ and honest about risk.
 | `surface.card` | native Liquid Glass, 8 px radius | inventory cards and grouped settings only |
 | `glass.sidebar.selection` | primary 0.055 alpha | selected sidebar rows |
 | `glass.content.tint` | white 0.10 alpha | card and inspector glass shell tint |
+| `glass.control.tint` | white 0.12 alpha | search field and toolbar mode cluster tint |
 | `glass.poster.tint` | semantic state color 0.30 alpha | card poster glass tint |
-| `glass.floating.tint` | white 0.14 alpha | bottom repair rail tint |
+| `glass.floating.tint` | white 0.18 alpha | bottom repair rail tint |
 | `artwork.state.tint` | semantic state color 0.30 alpha | card poster color field |
 | `text.primary` | label | credential names and actions |
 | `text.secondary` | secondary label | metadata and source paths |
@@ -42,7 +43,7 @@ and honest about risk.
 | Surface | Role | Required Controls |
 | --- | --- | --- |
 | Sidebar | Scope navigation | All, Expiring, Plaintext, Orphans, Duplicates, Services, Tags |
-| Toolbar | Global actions | search, scan, register, display mode, doctor, settings |
+| Toolbar | Global actions | glass mode cluster, register, settings |
 | Inventory Table | Primary working view | grouped list rows, selected pill, sortable columns, state chips, source count, last observed |
 | Inventory Cards | Secondary scan view | poster-style credential surface, state chips, Keychain badge, source previews |
 | Inspector | Relationship detail | credential, sources, graph edges, expiry, notes, actions |
@@ -62,10 +63,11 @@ and honest about risk.
 
 ## Liquid Glass Rules
 
-- Use Liquid Glass for the functional layer: sidebar, toolbar controls, popovers,
+- Use Liquid Glass for the functional layer: sidebar search, toolbar controls, popovers,
   floating repair rail, and command surfaces.
 - Apple Music for Mac is the local reference for layered glass: translucent sidebar,
   floating command clusters, grouped library rows, selected-pill states, and bottom glass rails.
+- Toolbar mode controls stay in one glass cluster instead of separate floating islands.
 - Settings uses a material header plus grouped list sections; repeated rows stay plain
   and editable.
 - Native glass buttons use `.glass` or `.glassProminent` when available, with system

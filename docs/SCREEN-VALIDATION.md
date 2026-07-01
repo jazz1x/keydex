@@ -79,6 +79,8 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Liquid Glass hierarchy | Native `glassEffect` is used for card shells, inspector sections, toolbar controls, popovers, and the Doctor rail on macOS 26+. |
 | Real glass controls | Command buttons use `.glass` or `.glassProminent` where available. |
 | Apple Music reference | Poster cards and the full-width repair rail are checked against Music for Mac's content/glass layering. |
+| Toolbar cluster | Sample and display mode controls are grouped into one glass cluster. |
+| Sidebar search | Search is a compact glass control inside the sidebar material. |
 | Table legibility | Repeated rows do not use heavy material effects. |
 | Card legibility | Inventory cards keep 8 pt radius, stable poster height, and source previews. |
 | System appearance | Both Light and Dark modes are verified; no custom color palette is shipped. |

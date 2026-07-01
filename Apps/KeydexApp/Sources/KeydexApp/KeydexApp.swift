@@ -253,29 +253,10 @@ struct CredentialInventoryShellView: View {
     }
     .toolbar {
       ToolbarItem(placement: .status) {
-        Picker("Sample mode", selection: $inventoryMode) {
-          ForEach(InventoryMode.allCases) { mode in
-            Text(mode.title).tag(mode)
-          }
-        }
-        .pickerStyle(.segmented)
-        .frame(width: 160)
-        .help("Switch sample credential dataset")
-        .accessibilityIdentifier("keydex.toolbar.inventory-mode")
-        .accessibilityLabel("Inventory mode")
-      }
-
-      ToolbarItem(placement: .status) {
-        Picker("Display mode", selection: $settingsConfig.displayMode) {
-          ForEach(InventoryDisplayMode.allCases) { mode in
-            Label(mode.title, systemImage: mode.systemImage).tag(mode)
-          }
-        }
-        .pickerStyle(.segmented)
-        .frame(width: 176)
-        .help("Switch between list and card inventory views")
-        .accessibilityIdentifier("keydex.toolbar.display-mode")
-        .accessibilityLabel("Display mode")
+        MusicToolbarCluster(
+          inventoryMode: $inventoryMode,
+          displayMode: $settingsConfig.displayMode
+        )
       }
 
       ToolbarItem(placement: .primaryAction) {
@@ -342,6 +323,45 @@ struct CredentialInventoryShellView: View {
   }
 }
 
+private struct MusicToolbarCluster: View {
+  @Binding var inventoryMode: InventoryMode
+  @Binding var displayMode: InventoryDisplayMode
+
+  var body: some View {
+    HStack(spacing: 10) {
+      Picker("Sample mode", selection: $inventoryMode) {
+        ForEach(InventoryMode.allCases) { mode in
+          Text(mode.title).tag(mode)
+        }
+      }
+      .pickerStyle(.segmented)
+      .frame(width: 154)
+      .help("Switch sample credential dataset")
+      .accessibilityIdentifier("keydex.toolbar.inventory-mode")
+      .accessibilityLabel("Inventory mode")
+
+      Divider()
+        .frame(height: 22)
+
+      Picker("Display mode", selection: $displayMode) {
+        ForEach(InventoryDisplayMode.allCases) { mode in
+          Label(mode.title, systemImage: mode.systemImage).tag(mode)
+        }
+      }
+      .pickerStyle(.segmented)
+      .frame(width: 164)
+      .help("Switch between list and card inventory views")
+      .accessibilityIdentifier("keydex.toolbar.display-mode")
+      .accessibilityLabel("Display mode")
+    }
+    .padding(.horizontal, 7)
+    .padding(.vertical, 5)
+    .keydexControlGlassPanel(cornerRadius: 20)
+    .accessibilityIdentifier("keydex.toolbar.mode-cluster")
+    .accessibilityLabel("Inventory and display controls")
+  }
+}
+
 private struct MusicSidebarView: View {
   let items: [SidebarSelection]
   @Binding var selectedSidebar: SidebarSelection
@@ -374,17 +394,9 @@ private struct MusicSidebarView: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 18) {
-        HStack(spacing: 10) {
-          Image(systemName: "magnifyingglass")
-            .font(.title3)
-            .foregroundStyle(.secondary)
-
-          TextField("Search", text: $searchText)
-            .textFieldStyle(.plain)
-            .accessibilityLabel("Search credentials")
-        }
-        .padding(.horizontal, 16)
-        .padding(.top, 20)
+        MusicSearchField(searchText: $searchText)
+          .padding(.horizontal, 4)
+          .padding(.top, 20)
 
         MusicSidebarSection(title: nil) {
           ForEach(inventoryItems, id: \.self) { item in
@@ -426,6 +438,28 @@ private struct MusicSidebarView: View {
     .accessibilityIdentifier("keydex.sidebar.scopes")
     .accessibilityLabel("Credential scopes")
     .navigationSplitViewColumnWidth(min: 220, ideal: 240, max: 280)
+  }
+}
+
+private struct MusicSearchField: View {
+  @Binding var searchText: String
+
+  var body: some View {
+    HStack(spacing: 9) {
+      Image(systemName: "magnifyingglass")
+        .font(.title3)
+        .foregroundStyle(.secondary)
+        .accessibilityHidden(true)
+
+      TextField("Search", text: $searchText)
+        .textFieldStyle(.plain)
+        .font(.title3)
+        .accessibilityLabel("Search credentials")
+    }
+    .padding(.horizontal, 12)
+    .frame(height: 40)
+    .keydexControlGlassPanel(cornerRadius: 12)
+    .accessibilityIdentifier("keydex.sidebar.search")
   }
 }
 
@@ -2090,7 +2124,8 @@ private enum KeydexGlassTone {
   static let sidebarSelectionFill = Color.primary.opacity(0.055)
   static let contentPanelFill = Color.primary.opacity(0.035)
   static let contentGlassTint = Color.white.opacity(0.10)
-  static let floatingTint = Color.white.opacity(0.14)
+  static let controlGlassTint = Color.white.opacity(0.12)
+  static let floatingTint = Color.white.opacity(0.18)
   static let panelStroke = Color(nsColor: .separatorColor).opacity(0.36)
   static let artworkColorAlpha = 0.30
 }
@@ -2199,6 +2234,38 @@ private struct KeydexArtworkGlassModifier: ViewModifier {
   }
 }
 
+private struct KeydexControlGlassPanelModifier: ViewModifier {
+  let cornerRadius: CGFloat
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+
+    #if compiler(>=6.2)
+      if #available(macOS 26.0, *) {
+        content
+          .glassEffect(.regular.tint(KeydexGlassTone.controlGlassTint).interactive(), in: shape)
+          .overlay {
+            shape.stroke(KeydexGlassTone.panelStroke, lineWidth: 1)
+          }
+      } else {
+        fallback(content: content, in: shape)
+      }
+    #else
+      fallback(content: content, in: shape)
+    #endif
+  }
+
+  @ViewBuilder
+  private func fallback(content: Content, in shape: RoundedRectangle) -> some View {
+    content
+      .background(.ultraThinMaterial, in: shape)
+      .overlay {
+        shape.stroke(KeydexGlassTone.panelStroke, lineWidth: 1)
+      }
+  }
+}
+
 private struct KeydexFloatingGlassPanelModifier: ViewModifier {
   let tint: Color
   let stroke: Color
@@ -2248,6 +2315,10 @@ extension View {
 
   fileprivate func keydexArtworkGlass(tint: Color, stroke: Color) -> some View {
     modifier(KeydexArtworkGlassModifier(tint: tint, stroke: stroke))
+  }
+
+  fileprivate func keydexControlGlassPanel(cornerRadius: CGFloat) -> some View {
+    modifier(KeydexControlGlassPanelModifier(cornerRadius: cornerRadius))
   }
 
   fileprivate func keydexFloatingGlassPanel(tint: Color, stroke: Color) -> some View {

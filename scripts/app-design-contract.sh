@@ -44,8 +44,10 @@ echo "1) native Mac utility structure..."
 for needle in \
   "NavigationSplitView" \
   "MusicSidebarView" \
+  "MusicSearchField" \
   "MusicSidebarSection" \
   "MusicSidebarRow" \
+  "MusicToolbarCluster" \
   "Table(rows" \
   "CredentialCardGrid" \
   "CredentialInspectorPanel" \
@@ -60,6 +62,7 @@ for needle in \
   "SettingsDisplayModeRow" \
   ".pickerStyle(.segmented)" \
   ".keydexGlassButton(" \
+  ".keydexControlGlassPanel(" \
   ".keydexContentPanel(" \
   ".keydexFloatingGlassPanel(" \
   ".buttonStyle(.glass" \
