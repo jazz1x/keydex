@@ -18,15 +18,16 @@ and honest about risk.
 | Token | Value | Use |
 | --- | --- | --- |
 | `surface.primary` | system background | main content |
-| `surface.sidebar` | Liquid Glass material | sidebar slab, navigation, and scope filters |
+| `surface.sidebar` | native sidebar visual effect + background extension | sidebar slab, navigation, and scope filters |
 | `surface.inspector` | native Liquid Glass, 8 px radius | selected item detail |
 | `surface.card` | native Liquid Glass, 8 px radius | inventory cards and grouped settings only |
 | `glass.sidebar.selection` | primary 0.055 alpha | selected sidebar rows |
-| `glass.content.tint` | white 0.10 alpha | card and inspector glass shell tint |
+| `glass.content.tint` | white 0.07 alpha | card and inspector glass shell tint |
 | `glass.control.tint` | white 0.12 alpha | toolbar mode cluster tint |
-| `glass.poster.tint` | semantic state color 0.30 alpha | card poster glass tint |
+| `glass.poster.tint` | semantic state color 0.36 alpha | card poster glass tint |
 | `glass.floating.tint` | white 0.15 alpha | bottom repair rail tint |
-| `artwork.state.tint` | semantic state color 0.30 alpha | card poster color field |
+| `artwork.state.tint` | semantic state color 0.36 alpha | card poster color field |
+| `artwork.poster.wash` | semantic state color 0.08 alpha + white 0.06 highlight | Apple Music-like poster media wash |
 | `text.primary` | label | credential names and actions |
 | `text.secondary` | secondary label | metadata and source paths |
 | `risk.info` | blue | neutral findings |
@@ -67,6 +68,8 @@ and honest about risk.
   floating repair rail, and command surfaces.
 - Apple Music for Mac is the local reference for layered glass: translucent sidebar,
   floating command clusters, grouped library rows, selected-pill states, and bottom glass rails.
+- Sidebar glass uses the native macOS sidebar visual effect, then extends behind the
+  hidden titlebar so the slab reads like Music's full-height navigation rail.
 - Sidebar search is not a nested glass card. It is a plain search row on the sidebar
   material, matching Music's Library and Playlist navigation.
 - Toolbar mode controls stay in one glass cluster instead of separate floating islands.
@@ -79,6 +82,8 @@ and honest about risk.
   low-alpha fills.
 - Card mode follows Music's Library and Playlist tile hierarchy: poster/artwork first,
   title and metadata underneath, no extra nested glass controls inside repeated cards.
+- Poster surfaces may use semantic state-color media wash. They must not use decorative
+  graph lines, constellations, glow-only hierarchy, or fake analytics imagery.
 - The repair queue uses a full-width floating glass rail instead of a hard split panel.
   Scrollable content may pass behind the rail so the glass has real pixels underneath.
 - Do not use heavy Liquid Glass for repeated table cells or dense detail sections.
