@@ -308,34 +308,10 @@ struct CredentialInventoryShellView: View {
       )
       .frame(width: 720, height: 520)
     }
-    .sheet(isPresented: cardDetailSheetBinding) {
-      if let projection = selectedProjection {
-        CredentialMusicDetailSheet(
-          projection: projection
-        ) {
-          selectedSettingsSection = .permissions
-          isShowingSettings = true
-        }
-        .frame(width: 720, height: 520)
-      }
-    }
   }
 
   private var isCardLibrarySurface: Bool {
     settingsConfig.displayMode == .cards
-  }
-
-  private var cardDetailSheetBinding: Binding<Bool> {
-    Binding(
-      get: {
-        isCardLibrarySurface && selectedProjection != nil
-      },
-      set: { isPresented in
-        if !isPresented, isCardLibrarySurface {
-          selectedCredentialID = nil
-        }
-      }
-    )
   }
 
   private var sidebarPane: some View {
@@ -355,7 +331,10 @@ struct CredentialInventoryShellView: View {
         displayMode: settingsConfig.displayMode,
         selectedCredentialID: $selectedCredentialID,
         isEmptyMode: isEmptyMode
-      )
+      ) {
+        selectedSettingsSection = .permissions
+        isShowingSettings = true
+      }
       .frame(minHeight: 320, maxHeight: .infinity)
 
       KeydexRailFooter {
@@ -848,6 +827,7 @@ private struct InventoryContentView: View {
   let displayMode: InventoryDisplayMode
   @Binding var selectedCredentialID: CredentialRow.ID?
   let isEmptyMode: Bool
+  let manageKeychainAction: () -> Void
 
   var body: some View {
     ZStack {
@@ -861,12 +841,21 @@ private struct InventoryContentView: View {
           CredentialInventoryTable(rows: rows, selectedCredentialID: $selectedCredentialID)
         }
       case .cards:
-        CredentialCardGrid(
-          rows: rows,
-          title: title,
-          searchText: searchText,
-          selectedCredentialID: $selectedCredentialID
-        )
+        if let selectedCardRow {
+          CredentialMusicDetailView(
+            row: selectedCardRow,
+            manageKeychainAction: manageKeychainAction
+          ) {
+            selectedCredentialID = nil
+          }
+        } else {
+          CredentialCardGrid(
+            rows: rows,
+            title: title,
+            searchText: searchText,
+            selectedCredentialID: $selectedCredentialID
+          )
+        }
       }
 
       if rows.isEmpty {
@@ -887,6 +876,12 @@ private struct InventoryContentView: View {
   private var activeSearchQuery: String? {
     let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
     return trimmed.isEmpty ? nil : trimmed
+  }
+
+  private var selectedCardRow: CredentialRow? {
+    selectedCredentialID.flatMap { selectedID in
+      rows.first { $0.id == selectedID }
+    }
   }
 }
 
@@ -1322,93 +1317,99 @@ private struct CredentialInspectorPanel: View {
   }
 }
 
-private struct CredentialMusicDetailSheet: View {
-  let projection: CredentialProjection
+private struct CredentialMusicDetailView: View {
+  let row: CredentialRow
   let manageKeychainAction: () -> Void
-
-  private var row: CredentialRow {
-    CredentialRow(projection: projection)
-  }
+  let closeAction: () -> Void
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 0) {
-      HStack(alignment: .bottom, spacing: 22) {
-        CredentialArtworkPanel(
-          row: row,
-          height: KeydexCardDetailLayout.artworkSize,
-          selected: true
-        )
-        .frame(width: KeydexCardDetailLayout.artworkSize)
+    ZStack {
+      InventoryBackdropView()
 
-        VStack(alignment: .leading, spacing: 10) {
-          Text("Credential")
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(.secondary)
-
-          Text(row.service)
-            .font(.system(size: 34, weight: .bold))
-            .lineLimit(1)
-            .minimumScaleFactor(0.72)
-
-          Text(row.account)
-            .font(.title3)
-            .fontDesign(.monospaced)
-            .foregroundStyle(.secondary)
-            .lineLimit(1)
-
-          CredentialStateSummaryView(states: row.states)
-
-          HStack(spacing: 10) {
-            Button(action: manageKeychainAction) {
-              Label("Manage Keychain", systemImage: "key.fill")
-            }
-            .keydexGlassButton(prominent: true)
-
-            KeychainStatusBadge(row: row)
+      ScrollView {
+        VStack(alignment: .leading, spacing: KeydexCardDetailLayout.sectionSpacing) {
+          Button(action: closeAction) {
+            Label("Credential Library", systemImage: "chevron.left")
           }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-      }
-      .padding(24)
+          .font(.callout.weight(.semibold))
+          .foregroundStyle(.secondary)
+          .buttonStyle(.plain)
+          .help("Return to credential library")
+          .accessibilityIdentifier("keydex.card-detail.back")
 
-      Divider()
+          HStack(alignment: .bottom, spacing: KeydexCardDetailLayout.headerSpacing) {
+            CredentialArtworkPanel(
+              row: row,
+              height: KeydexCardDetailLayout.artworkSize,
+              selected: true
+            )
+            .frame(width: KeydexCardDetailLayout.artworkSize)
 
-      VStack(alignment: .leading, spacing: 12) {
-        HStack(alignment: .firstTextBaseline) {
-          Text("Sources")
-            .font(.title3.weight(.bold))
+            VStack(alignment: .leading, spacing: KeydexCardDetailLayout.titleStackSpacing) {
+              Text("Credential")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
 
-          Spacer()
+              Text(row.service)
+                .font(.system(size: 38, weight: .bold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.72)
 
-          Text("\(row.locations.count)")
-            .font(.caption.weight(.semibold))
-            .foregroundStyle(.secondary)
-        }
+              Text(row.account)
+                .font(.title3)
+                .fontDesign(.monospaced)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
 
-        VStack(spacing: 0) {
-          ForEach(Array(row.locations.enumerated()), id: \.offset) { index, location in
-            MusicSourceTrackRow(index: index + 1, location: location)
+              CredentialStateSummaryView(states: row.states)
 
-            if index + 1 < row.locations.count {
+              HStack(spacing: 10) {
+                Button(action: manageKeychainAction) {
+                  Label("Manage Keychain", systemImage: "key.fill")
+                }
+                .keydexGlassButton(prominent: true)
+
+                KeychainStatusBadge(row: row)
+              }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+          }
+
+          VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .firstTextBaseline) {
+              Text("Sources")
+                .font(.title2.weight(.bold))
+
+              Spacer()
+
+              Text("\(row.locations.count)")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+            }
+
+            VStack(spacing: 0) {
               Divider()
-                .padding(.leading, 44)
+
+              ForEach(Array(row.locations.enumerated()), id: \.offset) { index, location in
+                MusicSourceTrackRow(index: index + 1, location: location)
+
+                if index + 1 < row.locations.count {
+                  Divider()
+                    .padding(.leading, 44)
+                }
+              }
+
+              Divider()
             }
           }
+          .padding(.top, 4)
         }
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-        .overlay {
-          RoundedRectangle(cornerRadius: 8, style: .continuous)
-            .stroke(.separator.opacity(0.28), lineWidth: 1)
-        }
+        .padding(.horizontal, KeydexCardDetailLayout.contentHorizontalPadding)
+        .padding(.top, KeydexCardDetailLayout.contentTopPadding)
+        .padding(.bottom, KeydexCardDetailLayout.contentBottomPadding)
       }
-      .padding(.horizontal, 24)
-      .padding(.top, 18)
-      .padding(.bottom, 24)
-
-      Spacer(minLength: 0)
     }
-    .background(Color(nsColor: .windowBackgroundColor))
-    .accessibilityIdentifier("keydex.card-detail.sheet")
+    .accessibilityIdentifier("keydex.card-detail.page")
     .accessibilityLabel("Credential card detail")
   }
 }
@@ -2593,7 +2594,13 @@ private enum KeydexCardArtworkLayout {
 }
 
 private enum KeydexCardDetailLayout {
-  static let artworkSize: CGFloat = 196
+  static let artworkSize: CGFloat = 224
+  static let contentHorizontalPadding: CGFloat = 24
+  static let contentTopPadding: CGFloat = 18
+  static let contentBottomPadding: CGFloat = 24
+  static let sectionSpacing: CGFloat = 18
+  static let headerSpacing: CGFloat = 24
+  static let titleStackSpacing: CGFloat = 10
 }
 
 private enum KeydexCardGridLayout {

@@ -102,7 +102,6 @@ case "$scenario" in
     ;;
   card-detail)
     inventory_mode="sample"
-    window_selector="settings"
     ;;
   empty-inventory)
     inventory_mode="empty"
