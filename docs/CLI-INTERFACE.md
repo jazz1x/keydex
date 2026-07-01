@@ -1,8 +1,8 @@
 # CLI Interface
 
-Keydex CLI output follows the oh-my-borory operating-tool contract: short status
-symbols first, scoped detail rails second, and color only when stdout is an interactive
-terminal.
+Keydex CLI output follows the oh-my-borory operating-tool contract from
+`marketboro/ai-dev/oh-my-borory`: short status symbols first, scoped detail rails
+second, and color only when stdout is an interactive terminal.
 
 ## Symbols
 
@@ -12,6 +12,7 @@ terminal.
 | `✓` | clean or registered state | green |
 | `⚠` | warning state that needs attention | yellow |
 | `■` | error, expired, or missing state | red |
+| `●` | neutral list item when a command needs an item bullet | green |
 | `│` | scoped detail rail | dim grey |
 
 ## Scope Labels
@@ -30,6 +31,7 @@ terminal.
 - `NO_COLOR` disables ANSI color.
 - `TERM=dumb` disables ANSI color.
 - Scripts and CI should still see the same symbols, but no ANSI escape sequences.
+- `◇` must use cyan, matching `oh-my-borory/src/ui.rs` `step`/`info`.
 
 ## Output Shapes
 

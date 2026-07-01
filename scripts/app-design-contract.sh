@@ -52,9 +52,10 @@ for needle in \
   "Table(rows" \
   "CredentialCardGrid" \
   "CredentialInspectorPanel" \
-  "GraphBackdropView" \
+  "InventoryBackdropView" \
   "InventoryDisplayMode" \
   "KeydexRailLayout" \
+  "stateChipFillAlpha" \
   "TextField(\"Search\"" \
   "ToolbarItem" \
   "ContentUnavailableView" \
@@ -70,6 +71,7 @@ for needle in \
   ".keydexContentPanel(" \
   ".keydexFloatingGlassPanel(" \
   "scrollContentBottomPadding" \
+  ".safeAreaInset(edge: .bottom" \
   ".buttonStyle(.glass" \
   ".buttonStyle(.glassProminent" \
   ".glassEffect(.regular" \
@@ -102,8 +104,10 @@ for needle in \
   "Liquid Glass Rules" \
   "Sidebar search is not a nested glass card" \
   "Music's Library and Playlist tile hierarchy" \
+  "flat semantic fills and strokes" \
   "Inventory Cards" \
   "No dashboard theater" \
+  "no graph, constellation" \
   "No decorative cards inside cards"; do
   expect_any_file_contains "$needle" docs/DESIGN-SYSTEM.md docs/DESIGN-FOUNDATION.md
 done
@@ -115,6 +119,9 @@ for forbidden in \
   "AngularGradient" \
   "MeshGradient" \
   "Canvas(" \
+  "Path(" \
+  "addLine(" \
+  "GraphBackdropView" \
   "shadow(" \
   "Copy secret"; do
   reject_file_contains "$app_source" "$forbidden"

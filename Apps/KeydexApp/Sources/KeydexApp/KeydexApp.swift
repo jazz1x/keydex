@@ -749,6 +749,11 @@ private struct CredentialInventoryTable: View {
     .accessibilityIdentifier("keydex.inventory.table")
     .accessibilityLabel("Credential inventory table")
     .font(.body)
+    .safeAreaInset(edge: .bottom, spacing: 0) {
+      Color.clear
+        .frame(height: KeydexRailLayout.scrollContentBottomPadding)
+        .accessibilityHidden(true)
+    }
   }
 }
 
@@ -764,7 +769,7 @@ private struct CredentialCardGrid: View {
 
   var body: some View {
     ZStack {
-      GraphBackdropView()
+      InventoryBackdropView()
 
       ScrollView {
         VStack(alignment: .leading, spacing: 18) {
@@ -914,7 +919,7 @@ private struct CredentialArtworkPanel: View {
   }
 }
 
-private struct GraphBackdropView: View {
+private struct InventoryBackdropView: View {
   var body: some View {
     baseFill
   }
@@ -946,10 +951,13 @@ private struct CredentialStateChip: View {
       .foregroundStyle(stateTint(for: state))
       .padding(.horizontal, 7)
       .padding(.vertical, 3)
-      .background(.thinMaterial, in: Capsule())
+      .background(
+        stateTint(for: state).opacity(KeydexGlassTone.stateChipFillAlpha),
+        in: Capsule()
+      )
       .overlay {
         Capsule()
-          .stroke(stateTint(for: state).opacity(0.35), lineWidth: 1)
+          .stroke(stateTint(for: state).opacity(KeydexGlassTone.stateChipStrokeAlpha), lineWidth: 1)
       }
   }
 }
@@ -963,10 +971,16 @@ private struct KeychainStatusBadge: View {
       .foregroundStyle(keychainTint(for: row))
       .padding(.horizontal, 8)
       .padding(.vertical, 4)
-      .background(.thinMaterial, in: Capsule())
+      .background(
+        keychainTint(for: row).opacity(KeydexGlassTone.metadataChipFillAlpha),
+        in: Capsule()
+      )
       .overlay {
         Capsule()
-          .stroke(Color.accentColor.opacity(0.25), lineWidth: 1)
+          .stroke(
+            keychainTint(for: row).opacity(KeydexGlassTone.metadataChipStrokeAlpha),
+            lineWidth: 1
+          )
       }
   }
 }
@@ -980,10 +994,10 @@ private struct SourceCountBadge: View {
       .foregroundStyle(.secondary)
       .padding(.horizontal, 8)
       .padding(.vertical, 4)
-      .background(.thinMaterial, in: Capsule())
+      .background(KeydexGlassTone.metadataChipFill, in: Capsule())
       .overlay {
         Capsule()
-          .stroke(Color(nsColor: .separatorColor).opacity(0.45), lineWidth: 1)
+          .stroke(KeydexGlassTone.metadataChipStroke, lineWidth: 1)
       }
       .help("\(count) source locations")
   }
@@ -2124,6 +2138,12 @@ private enum KeydexGlassTone {
   static let controlGlassTint = Color.white.opacity(0.12)
   static let floatingTint = Color.white.opacity(0.15)
   static let panelStroke = Color(nsColor: .separatorColor).opacity(0.30)
+  static let stateChipFillAlpha = 0.08
+  static let stateChipStrokeAlpha = 0.24
+  static let metadataChipFillAlpha = 0.07
+  static let metadataChipStrokeAlpha = 0.22
+  static let metadataChipFill = Color.primary.opacity(0.035)
+  static let metadataChipStroke = Color(nsColor: .separatorColor).opacity(0.28)
   static let artworkColorAlpha = 0.30
 }
 

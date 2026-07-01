@@ -408,7 +408,7 @@ private enum CLIStyle {
   }
 
   static func infoTone(_ text: String) -> String {
-    color(text, .yellow)
+    color(text, .cyan)
   }
 
   static func successTone(_ text: String) -> String {

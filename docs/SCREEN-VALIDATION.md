@@ -82,6 +82,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Toolbar cluster | Sample and display mode controls are grouped into one glass cluster. |
 | Sidebar glass | Sidebar is the glass slab; search is a plain row on that material, not nested glass. |
 | Rail layering | Scrollable content continues behind the bottom Doctor rail. |
+| Table rail inset | List/table mode reserves scroll room below the floating Doctor rail. |
 | Table legibility | Repeated rows do not use heavy material effects. |
 | Card legibility | Inventory cards keep 8 pt radius, stable poster height, and source previews. |
 | Card hierarchy | Card mode follows Music Library/Playlist tiles: poster first, metadata below. |
