@@ -23,6 +23,8 @@ scenario.
 The supported scenario list is owned by `scripts/app-evidence-scenarios.sh` and
 is consumed by screen and accessibility evidence scripts so local review coverage
 does not drift across capture, template, and review paths.
+`make app-evidence-scenarios-contract` keeps that shared list aligned with the
+SwiftUI app's `AppScreenScenario` raw values.
 
 After capturing all required scenarios, run `make app-screen-evidence-review`.
 It verifies that each required manifest and PNG exists, points at the current Git
