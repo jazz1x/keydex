@@ -226,7 +226,7 @@ Design rules live in docs and scripts rather than screenshots alone:
 | Gate | What it checks |
 | --- | --- |
 | `make guard` | Swift format, tests, app build, forbidden patterns. |
-| `make quality` | CLI inventory drift, state/docs drift, loop contract, project contract, CLI smoke, app design/accessibility/UX flow contracts. |
+| `make quality` | CLI inventory drift, state/docs drift, loop contract, project contract, CLI smoke, app accessibility/design/UX flow contracts, app evidence scenario SSOT, and menubar smoke script contract. |
 | `make loop-contract` | Clean Architecture import boundaries, package dependency boundaries, and loop documentation wiring. |
 | `make release-smoke` | Release payload, CLI smoke artifact, ad-hoc app signing, archive, checksum, and DMG verification. |
 | `make release-signing-readiness` | Developer ID / notarization readiness evidence. |

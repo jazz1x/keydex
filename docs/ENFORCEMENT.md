@@ -22,12 +22,15 @@ Keydex uses three enforcement layers.
 | Secret value stays outside metadata | review plus forbidden scan |
 | Project Contract docs stay present | `scripts/project-contract.sh` |
 | Evidence manifests match current SHA and dirty state | evidence review scripts |
+| Screen scenario SSOT stays aligned | `scripts/app-evidence-scenarios-contract.sh` |
+| App accessibility labels stay stable | `scripts/app-accessibility-contract.sh` |
+| App runtime accessibility smoke stays tied to supported scenarios | `scripts/app-evidence-scenarios-contract.sh` plus `scripts/app-accessibility-smoke.sh` |
 | Evidence status stays explicit | `make evidence-status` distinguishes `pass`, `pending`, `blocked`, and `needs-attention` without turning manual blockers into false passes. |
 | Planning pack stays present | `scripts/project-contract.sh` |
 | Graph workflow stays visible | `scripts/project-contract.sh` |
 | UI does not invent state | review |
 | UX flow remains usable | `scripts/app-ux-flow-contract.sh` |
-| Liquid Glass remains hierarchical | review |
+| Liquid Glass remains hierarchical | `scripts/app-design-contract.sh` plus review |
 
 ## Local Gate
 
