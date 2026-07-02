@@ -28,6 +28,23 @@ expect_file_contains() {
     fail "$path is missing expected text: $needle"
 }
 
+expect_manifest_value() {
+  local path="$1"
+  local key="$2"
+  local value="$3"
+
+  rg --fixed-strings --line-regexp --quiet -- "$key=$value" "$path" ||
+    fail "$path is missing expected manifest value: $key=$value"
+}
+
+expect_manifest_key() {
+  local path="$1"
+  local key="$2"
+
+  rg --quiet "^${key}=" "$path" ||
+    fail "$path is missing expected manifest key: $key"
+}
+
 evidence_dir="${KEYDEX_RELEASE_SIGNING_EVIDENCE_DIR:-tmp/release-signing-evidence}"
 head_sha="$(git rev-parse --short HEAD)"
 head_dirty="$(git_dirty_state)"
@@ -42,19 +59,19 @@ test -s "$notes_path" || fail "missing notes: $notes_path"
 test -d "$app_path" || fail "missing app bundle: $app_path"
 test -s "$dmg_path" || fail "missing DMG: $dmg_path"
 
-expect_file_contains "$manifest_path" "git_sha=$head_sha"
-expect_file_contains "$manifest_path" "git_dirty=$head_dirty"
-expect_file_contains "$manifest_path" "app_path=$app_path"
-expect_file_contains "$manifest_path" "dmg_path=$dmg_path"
-expect_file_contains "$manifest_path" "developer_id_identity=pass"
-expect_file_contains "$manifest_path" "app_codesign_verify=pass"
-expect_file_contains "$manifest_path" "notarization=pass"
-expect_file_contains "$manifest_path" "stapler_validate=pass"
-expect_file_contains "$manifest_path" "signed_dmg_checksum=pass"
-expect_file_contains "$manifest_path" "release_candidate_updated=pass"
-expect_file_contains "$manifest_path" "notes=$notes_path"
-expect_file_contains "$manifest_path" "reviewed_at="
-expect_file_contains "$manifest_path" "reviewer="
+expect_manifest_value "$manifest_path" git_sha "$head_sha"
+expect_manifest_value "$manifest_path" git_dirty "$head_dirty"
+expect_manifest_value "$manifest_path" app_path "$app_path"
+expect_manifest_value "$manifest_path" dmg_path "$dmg_path"
+expect_manifest_value "$manifest_path" developer_id_identity pass
+expect_manifest_value "$manifest_path" app_codesign_verify pass
+expect_manifest_value "$manifest_path" notarization pass
+expect_manifest_value "$manifest_path" stapler_validate pass
+expect_manifest_value "$manifest_path" signed_dmg_checksum pass
+expect_manifest_value "$manifest_path" release_candidate_updated pass
+expect_manifest_value "$manifest_path" notes "$notes_path"
+expect_manifest_key "$manifest_path" reviewed_at
+expect_manifest_key "$manifest_path" reviewer
 
 expect_file_contains "$notes_path" "# Release Signing Evidence"
 expect_file_contains "$notes_path" "Developer ID Identity"
