@@ -46,9 +46,12 @@ review_scenario() {
   expect_file_contains "$manifest_path" "screenshot=$screenshot_path"
   expect_file_contains "$manifest_path" "captured_at="
 
-  case "$scenario" in
-    settings | settings-appearance | settings-sources | settings-paths | settings-tags | settings-rules)
+  case "$window_preset" in
+    default)
       expect_file_contains "$manifest_path" "width=1080 height=680"
+      ;;
+    compact)
+      expect_file_contains "$manifest_path" "height=620"
       ;;
   esac
 

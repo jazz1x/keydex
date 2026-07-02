@@ -139,16 +139,10 @@ bin_dir="$(swift build --show-bin-path)"
 app_binary="$bin_dir/KeydexApp"
 test -x "$app_binary" || fail "missing built app binary: $app_binary"
 
-if [[ "$window_preset" == "compact" ]]; then
-  KEYDEX_APP_INVENTORY_MODE="$inventory_mode" \
-    KEYDEX_APP_SCREEN_SCENARIO="$scenario" \
-    KEYDEX_APP_WINDOW_PRESET="$window_preset" \
-    "$app_binary" &
-else
-  KEYDEX_APP_INVENTORY_MODE="$inventory_mode" \
-    KEYDEX_APP_SCREEN_SCENARIO="$scenario" \
-    "$app_binary" &
-fi
+KEYDEX_APP_INVENTORY_MODE="$inventory_mode" \
+  KEYDEX_APP_SCREEN_SCENARIO="$scenario" \
+  KEYDEX_APP_WINDOW_PRESET="$window_preset" \
+  "$app_binary" &
 app_pid="$!"
 
 cleanup() {
