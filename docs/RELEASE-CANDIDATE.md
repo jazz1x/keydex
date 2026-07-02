@@ -28,8 +28,9 @@ values.
 - CLI supports metadata-backed `list`, `where`, `doctor`, and `scan` flows.
 - Mac app shell renders graph-derived inventory, inspector, Doctor, settings, duplicate,
   empty, expiring, and expired states.
-- Local app screen evidence covers required default, empty, search, inspector,
-  settings-section, and compact scenarios with a review gate.
+- Local app screen evidence covers the required scenario set owned by
+  `scripts/app-evidence-scenarios.sh`, with `make app-screen-evidence-review` as the
+  review gate.
 - Release smoke builds release-mode CLI and app products, creates an app bundle, ad-hoc
   signs it, creates an unsigned DMG, writes checksums, and verifies artifact boundaries.
 

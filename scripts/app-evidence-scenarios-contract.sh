@@ -15,9 +15,11 @@ source "$script_dir/app-evidence-scenarios.sh"
 app_source="Apps/KeydexApp/Sources/KeydexApp/KeydexPresentationModel.swift"
 screen_doc="docs/SCREEN-VALIDATION.md"
 validation_doc="docs/VALIDATION-SCENARIOS.md"
+release_candidate_doc="docs/RELEASE-CANDIDATE.md"
 test -f "$app_source" || fail "missing app presentation model: $app_source"
 test -f "$screen_doc" || fail "missing screen validation doc: $screen_doc"
 test -f "$validation_doc" || fail "missing validation scenarios doc: $validation_doc"
+test -f "$release_candidate_doc" || fail "missing release candidate doc: $release_candidate_doc"
 
 expected_scenarios="$(keydex_list_evidence_scenarios)"
 listed_scenarios="$("$script_dir/app-screen-evidence.sh" --list)"
@@ -126,5 +128,21 @@ done
 if rg --fixed-strings --quiet -- "The first supported scenarios are" "$validation_doc"; then
   fail "$validation_doc must not name a partial first scenario set"
 fi
+
+for needle in \
+  "scripts/app-evidence-scenarios.sh" \
+  "make app-screen-evidence-review"; do
+  if ! rg --fixed-strings --quiet -- "$needle" "$release_candidate_doc"; then
+    fail "$release_candidate_doc is missing scenario SSOT text: $needle"
+  fi
+done
+
+for stale_phrase in \
+  "settings-section" \
+  "default, empty, search, inspector"; do
+  if rg --fixed-strings --quiet -- "$stale_phrase" "$release_candidate_doc"; then
+    fail "$release_candidate_doc must not describe stale partial scenario sets: $stale_phrase"
+  fi
+done
 
 echo "app evidence scenarios contract clean"
