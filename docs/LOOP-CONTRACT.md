@@ -51,6 +51,8 @@ before.
   navigation composition can evolve without making the shell a component bucket.
 - Settings panels and rows live outside the shell view file so preferences remain
   editable presentation state, not orchestration code.
+- App persistence helpers use their own boundary IDs. Stores must not depend on
+  presentation row types such as `CredentialRow`.
 - The shell view file keeps only app entry and inventory orchestration. Reusable
   bootstrap, design, presentation, inventory, doctor, sidebar, and settings surfaces
   stay in their owned files.
