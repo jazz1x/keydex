@@ -16,10 +16,11 @@ prove its own contract will drift into wishful UI.
 | App Accessibility Evidence Template | `scripts/app-accessibility-evidence-template.sh` | Pending local evidence files can be generated for each required scenario without falsely passing review. |
 | App Accessibility Evidence Review | `scripts/app-accessibility-evidence-review.sh` | Local VoiceOver, keyboard, state-label, and dynamic type evidence covers required screen scenarios for the current Git SHA and dirty state. |
 | App Design Contract | `scripts/app-design-contract.sh` | Native Mac utility structure, graph-derived repair surfaces, and anti-theater visual rules remain wired. |
+| App UX Flow Contract | `scripts/app-ux-flow-contract.sh` | Daily Mac utility flow remains intact: orient, narrow, inspect, act, and configure without hiding manual blockers. |
 | Forbidden Patterns | `scripts/forbidden-patterns.sh` | No silent `try?`, empty `catch`, or obvious secret-value metadata. |
 | Loop Contract | `scripts/loop-contract.sh` | Clean Architecture import boundaries, package dependency boundaries, and loop documentation wiring remain aligned. |
 | Project Contract | `scripts/project-contract.sh` | Goals, planning pack, design system, graph workflow, verification docs, and README links stay aligned. |
-| Quality | `make quality` | CLI docs, state taxonomy, workflow wiring, project contract, loop contract, CLI smoke, app accessibility/design contracts, and menubar smoke script contract. |
+| Quality | `make quality` | CLI docs, state taxonomy, workflow wiring, project contract, loop contract, CLI smoke, app accessibility/design/UX flow contracts, and menubar smoke script contract. |
 | CLI Smoke | `scripts/cli-smoke.sh` | Fixture-backed `list`, `where`, `doctor`, `reminders`, and `scan config` outputs, including status symbols and scope labels. |
 | Release Smoke | `scripts/release-smoke.sh` | Release-mode artifacts bundle locally, ad-hoc sign cleanly, create unsigned DMG smoke evidence, checksum cleanly, and omit fixture metadata. |
 | Release Signing Readiness | `scripts/release-signing-readiness.sh` | Local Developer ID Application identity and Apple notarization tools exist before public app signing. |

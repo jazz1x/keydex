@@ -26,6 +26,7 @@ Keydex uses three enforcement layers.
 | Planning pack stays present | `scripts/project-contract.sh` |
 | Graph workflow stays visible | `scripts/project-contract.sh` |
 | UI does not invent state | review |
+| UX flow remains usable | `scripts/app-ux-flow-contract.sh` |
 | Liquid Glass remains hierarchical | review |
 
 ## Local Gate

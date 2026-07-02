@@ -44,6 +44,7 @@ expect_file scripts/app-accessibility-smoke.sh
 expect_file scripts/app-accessibility-evidence-template.sh
 expect_file scripts/app-accessibility-evidence-review.sh
 expect_file scripts/app-design-contract.sh
+expect_file scripts/app-ux-flow-contract.sh
 expect_file scripts/release-signing-readiness.sh
 expect_file scripts/release-signing-evidence-template.sh
 expect_file scripts/release-signing-evidence-review.sh
@@ -155,8 +156,8 @@ expect_file_contains .github/workflows/guard.yml "name: release-smoke"
 expect_file_contains .github/branch-protection-main.json "\"release-smoke\""
 expect_file_contains docs/VERIFICATION.md "planning pack"
 expect_file_contains docs/VERIFICATION.md "Loop Contract"
-expect_file_contains docs/VERIFICATION.md "app accessibility/design contracts"
-expect_file_contains CONTRIBUTING.md "app accessibility/design contracts"
+expect_file_contains docs/VERIFICATION.md "app accessibility/design/UX flow contracts"
+expect_file_contains CONTRIBUTING.md "app accessibility/design/UX flow contracts"
 expect_file_contains docs/ENFORCEMENT.md "keydex-guard"
 expect_file_contains docs/VERIFICATION.md "AXUIElement"
 expect_file_contains docs/VERIFICATION.md "dirty state"
@@ -192,6 +193,7 @@ expect_file_contains Makefile "app-accessibility-smoke"
 expect_file_contains Makefile "app-accessibility-evidence-template"
 expect_file_contains Makefile "app-accessibility-evidence-review"
 expect_file_contains Makefile "app-design-contract"
+expect_file_contains Makefile "app-ux-flow-contract"
 expect_file_contains Makefile "app-screen-evidence"
 expect_file_contains Makefile "app-screen-evidence-review"
 expect_file_contains Makefile "release-smoke"
@@ -329,6 +331,7 @@ expect_file_contains scripts/evidence-status.sh "release_signing_evidence"
 expect_file_contains scripts/evidence-status.sh "needs-attention"
 expect_file_contains scripts/quality.sh "scripts/app-accessibility-contract.sh"
 expect_file_contains scripts/quality.sh "scripts/app-design-contract.sh"
+expect_file_contains scripts/quality.sh "scripts/app-ux-flow-contract.sh"
 expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift "CredentialDoctor().inspect(graph)"
 expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift "CredentialProjection"
 expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift "searchText"
@@ -350,5 +353,18 @@ expect_file_contains Sources/keydex/main.swift "CredentialDoctor().inspect(graph
 expect_file_contains docs/GRAPH-WORKFLOW.md "CredentialDoctor.inspect(InventoryGraph)"
 expect_file_contains docs/ENFORCEMENT.md "Project Contract"
 expect_file_contains README.md "VERIFICATION.md"
+expect_file docs/UX-FLOW.md
+expect_file_contains docs/UX-FLOW.md "Orient"
+expect_file_contains docs/UX-FLOW.md "Narrow"
+expect_file_contains docs/UX-FLOW.md "Inspect"
+expect_file_contains docs/UX-FLOW.md "Act"
+expect_file_contains docs/UX-FLOW.md "Configure"
+expect_file_contains docs/UX-FLOW.md "labels on the left and controls on the right"
+expect_file_contains docs/VERIFICATION.md "App UX Flow Contract"
+expect_file_contains docs/ENFORCEMENT.md "UX flow remains usable"
+expect_file_contains README.md "make app-ux-flow-contract"
+expect_file_contains scripts/app-ux-flow-contract.sh "SettingsToggleRow"
+expect_file_contains scripts/app-ux-flow-contract.sh "CredentialInventoryCard"
+expect_file_contains scripts/app-ux-flow-contract.sh "MusicSearchField"
 
 echo "project contract clean"

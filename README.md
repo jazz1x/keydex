@@ -216,6 +216,7 @@ Design rules live in docs and scripts rather than screenshots alone:
   inventory tables/cards, and no-theater rules
 - [SCREEN-VALIDATION.md](docs/SCREEN-VALIDATION.md) - screenshot and accessibility evidence
 - `make app-design-contract` - source-level design drift guard
+- `make app-ux-flow-contract` - daily inventory UX flow drift guard
 - `make app-accessibility-contract` - accessibility identifier/label guard
 
 ---
@@ -225,7 +226,7 @@ Design rules live in docs and scripts rather than screenshots alone:
 | Gate | What it checks |
 | --- | --- |
 | `make guard` | Swift format, tests, app build, forbidden patterns. |
-| `make quality` | CLI inventory drift, state/docs drift, loop contract, project contract, CLI smoke, app design/accessibility contracts. |
+| `make quality` | CLI inventory drift, state/docs drift, loop contract, project contract, CLI smoke, app design/accessibility/UX flow contracts. |
 | `make loop-contract` | Clean Architecture import boundaries, package dependency boundaries, and loop documentation wiring. |
 | `make release-smoke` | Release payload, CLI smoke artifact, ad-hoc app signing, archive, checksum, and DMG verification. |
 | `make release-signing-readiness` | Developer ID / notarization readiness evidence. |
@@ -317,7 +318,7 @@ keydex/
 │  ├─ KeydexKeychainTests/
 │  ├─ KeydexSourcesTests/
 │  └─ KeydexStoreTests/
-├─ docs/                     # goals, philosophy, design, validation, release docs
+├─ docs/                     # goals, philosophy, design, UX flow, validation, release docs
 ├─ scripts/                  # guard, quality, release, design/accessibility contracts
 ├─ Package.swift
 └─ Makefile
