@@ -17,6 +17,8 @@ uncertainty to the next concrete action without making them decode implementatio
 
 - Card mode is the first-read mode. It should feel like a Music library shelf: browse,
   select, open detail, and come back without losing place.
+- Credential cards use default artwork presets, like playlist artwork defaults, so the
+  poster frame reads as an item identity rather than a flat state tile.
 - List mode is the work mode. It should support repeated scanning, comparison, and quick
   inspection without decorative layout overhead.
 - Search is a narrowing tool, not a separate page. Clearing search must be one visible
@@ -24,13 +26,22 @@ uncertainty to the next concrete action without making them decode implementatio
 - Empty inventory is not a blank canvas. It must explain that no credentials are indexed
   and point to settings or registration as the next action.
 - Details must answer why before how. State and sources come before action buttons.
+- Detail artwork does not carry a fake selected/focus stroke. Keyboard focus belongs to
+  actual controls, not decorative identity artwork.
 - Actions must be explicit. Managing Keychain references, tags, ignored sources, and scan
   paths must be visible user actions rather than automatic repair.
+- Primary and secondary action buttons use the action-button contract so they do not read
+  as disabled glass decorations.
 - Settings rows keep labels on the left and controls on the right so scanning and toggling
   do not fight each other.
+- Tag and label color management uses swatches, not text-only color menus.
 - Escape and an icon close affordance must dismiss settings.
 - The Doctor rail is a repair queue, not a warning decoration. It must show severity,
-  count, cause, and action.
+  count, cause, action, and a Review next entry point into the first issue.
+- The global Register Keychain action stays in the toolbar. The Doctor rail must not
+  replace it because registration is a global command and Doctor is a contextual repair
+  queue.
+- Custom artwork import only ships with a persisted asset store and fallback contract.
 - Accessibility labels must preserve the same workflow vocabulary: inventory, search
   results, credential detail, manage Keychain reference, manage tags, settings, and repair.
 
@@ -39,12 +50,13 @@ uncertainty to the next concrete action without making them decode implementatio
 | Flow Anchor | Source Evidence |
 | --- | --- |
 | Card/list mode | `InventoryDisplayMode`, `CredentialCardGrid`, `CredentialInventoryTable`. |
+| Default artwork | `CredentialArtworkPreset`, `CredentialDefaultArtwork`, `CredentialArtworkPanel`. |
 | Search narrowing | `MusicSearchField`, `Clear search`, `MusicSearchResultHeader`. |
 | Empty state | `ContentUnavailableView`. |
 | Detail and return | `CredentialMusicDetailView`, `keydex.card-detail.back`. |
-| Explicit actions | `keydex.inspector.manage-keychain`, `keydex.inspector.manage-tags`, `keydex.card-detail.manage-keychain`, `keydex.card-detail.manage-tags`. |
-| Repair queue | `DoctorPanel`, `Cause:`, `Action:`. |
-| Settings workflow | `SettingsToggleRow`, `SettingsDisplayModeRow`, `EditableSettingsListSection`, `EditableTagListSection`, `Close settings`, Escape shortcut. |
+| Explicit actions | `keydexActionButton`, `keydex.inspector.manage-keychain`, `keydex.inspector.manage-tags`, `keydex.card-detail.manage-keychain`, `keydex.card-detail.manage-tags`. |
+| Repair queue | `DoctorPanel`, `keydex.doctor.review-next`, `reviewDoctorIssue`, `Cause:`, `Action:`. |
+| Settings workflow | `SettingsToggleRow`, `SettingsDisplayModeRow`, `CredentialTagColorSwatchPicker`, `EditableSettingsListSection`, `EditableTagListSection`, `Close settings`, Escape shortcut. |
 
 ## Review Questions
 

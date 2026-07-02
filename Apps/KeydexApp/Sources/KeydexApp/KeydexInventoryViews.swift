@@ -326,10 +326,8 @@ private struct CredentialArtworkPanel: View {
       panelShape
         .keydexArtworkGlass(tint: panelFill, stroke: panelStroke)
         .overlay {
-          if isPoster {
-            CredentialPosterWash(accentColor: accentColor)
-              .clipShape(panelShape)
-          }
+          CredentialDefaultArtwork(preset: preset, isPoster: isPoster)
+            .clipShape(panelShape)
         }
         .overlay(alignment: .topTrailing) {
           Text("\(row.locations.count)")
@@ -360,27 +358,12 @@ private struct CredentialArtworkPanel: View {
             .padding(12)
           }
         }
-
-      Image(systemName: row.keychainStatusSystemImage)
-        .font(
-          .system(
-            size: isPoster
-              ? KeydexCardArtworkLayout.posterSymbolSize
-              : KeydexCardArtworkLayout.compactSymbolSize,
-            weight: .semibold
-          )
-        )
-        .foregroundStyle(accentColor)
-        .symbolRenderingMode(.hierarchical)
-        .opacity(isPoster ? KeydexGlassTone.posterSymbolAlpha : 1)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-        .accessibilityHidden(true)
     }
     .frame(height: height)
   }
 
   private var panelFill: Color {
-    accentColor.opacity(KeydexGlassTone.artworkColorAlpha)
+    preset.primaryTint.opacity(KeydexGlassTone.artworkColorAlpha)
   }
 
   private var panelStroke: Color {
@@ -388,7 +371,7 @@ private struct CredentialArtworkPanel: View {
       return Color.accentColor.opacity(0.74)
     }
 
-    return accentColor.opacity(isPoster ? 0.18 : 0.12)
+    return preset.primaryTint.opacity(isPoster ? 0.18 : 0.12)
   }
 
   private var panelRadius: CGFloat {
@@ -399,8 +382,12 @@ private struct CredentialArtworkPanel: View {
     height > 120
   }
 
+  private var preset: CredentialArtworkPreset {
+    row.artworkPreset
+  }
+
   private var accentColor: Color {
-    credentialAccent(for: row.states)
+    preset.primaryTint
   }
 
   private var panelShape: RoundedRectangle {
@@ -409,17 +396,76 @@ private struct CredentialArtworkPanel: View {
 }
 
 private struct CredentialPosterWash: View {
-  let accentColor: Color
+  let preset: CredentialArtworkPreset
+  let isPoster: Bool
 
   var body: some View {
-    ZStack(alignment: .top) {
-      Rectangle()
-        .fill(accentColor.opacity(KeydexGlassTone.posterWashHighAlpha))
+    VStack(spacing: 0) {
+      HStack(spacing: 0) {
+        Rectangle()
+          .fill(preset.primaryTint.opacity(isPoster ? 0.26 : 0.18))
+        Rectangle()
+          .fill(preset.secondaryTint.opacity(isPoster ? 0.24 : 0.16))
+      }
 
+      HStack(spacing: 0) {
+        Rectangle()
+          .fill(preset.tertiaryTint.opacity(isPoster ? 0.22 : 0.15))
+        Rectangle()
+          .fill(preset.primaryTint.opacity(isPoster ? 0.16 : 0.11))
+      }
+    }
+    .overlay(alignment: .top) {
       Rectangle()
         .fill(Color.white.opacity(KeydexGlassTone.posterHighlightAlpha))
-        .frame(height: 42)
+        .frame(height: isPoster ? 48 : 24)
     }
+  }
+}
+
+private struct CredentialDefaultArtwork: View {
+  let preset: CredentialArtworkPreset
+  let isPoster: Bool
+
+  var body: some View {
+    ZStack {
+      CredentialPosterWash(preset: preset, isPoster: isPoster)
+
+      VStack(spacing: isPoster ? 12 : 6) {
+        ZStack {
+          Circle()
+            .fill(Color.white.opacity(isPoster ? 0.20 : 0.16))
+            .overlay {
+              Circle()
+                .stroke(Color.white.opacity(isPoster ? 0.34 : 0.24), lineWidth: 1)
+            }
+            .frame(width: isPoster ? 86 : 48, height: isPoster ? 86 : 48)
+
+          Image(systemName: preset.symbolName)
+            .font(
+              .system(
+                size: isPoster
+                  ? KeydexCardArtworkLayout.posterSymbolSize
+                  : KeydexCardArtworkLayout.compactSymbolSize,
+                weight: .semibold
+              )
+            )
+            .symbolRenderingMode(.hierarchical)
+            .foregroundStyle(Color.white.opacity(KeydexGlassTone.posterSymbolAlpha + 0.28))
+            .accessibilityHidden(true)
+        }
+
+        if isPoster {
+          Text(preset.monogram)
+            .font(.system(size: 22, weight: .bold, design: .rounded))
+            .foregroundStyle(Color.white.opacity(0.78))
+            .padding(.horizontal, 10)
+            .padding(.vertical, 4)
+            .background(Color.white.opacity(0.14), in: Capsule())
+        }
+      }
+    }
+    .accessibilityHidden(true)
   }
 }
 
@@ -586,7 +632,7 @@ struct CredentialInspectorPanel: View {
           Button(action: manageKeychainAction) {
             Label("Manage Keychain", systemImage: "key.fill")
           }
-          .keydexGlassButton(prominent: true)
+          .keydexActionButton(prominent: true)
           .help("Open Keychain reference management")
           .accessibilityIdentifier("keydex.inspector.manage-keychain")
           .accessibilityLabel("Manage Keychain reference")
@@ -611,7 +657,7 @@ struct CredentialInspectorPanel: View {
             Button(action: manageTagsAction) {
               Label("Manage Tags", systemImage: "tag.fill")
             }
-            .keydexGlassButton()
+            .keydexActionButton()
             .help("Open tag management")
             .accessibilityIdentifier("keydex.inspector.manage-tags")
             .accessibilityLabel("Manage credential tags")
@@ -673,8 +719,7 @@ private struct CredentialMusicDetailView: View {
           HStack(alignment: .bottom, spacing: KeydexCardDetailLayout.headerSpacing) {
             CredentialArtworkPanel(
               row: row,
-              height: KeydexCardDetailLayout.artworkSize,
-              selected: true
+              height: KeydexCardDetailLayout.artworkSize
             )
             .frame(width: KeydexCardDetailLayout.artworkSize)
 
@@ -702,7 +747,7 @@ private struct CredentialMusicDetailView: View {
                 Button(action: manageKeychainAction) {
                   Label("Manage Keychain", systemImage: "key.fill")
                 }
-                .keydexGlassButton(prominent: true)
+                .keydexActionButton(prominent: true)
                 .help("Open Keychain reference management")
                 .accessibilityIdentifier("keydex.card-detail.manage-keychain")
                 .accessibilityLabel("Manage Keychain reference")
@@ -710,7 +755,7 @@ private struct CredentialMusicDetailView: View {
                 Button(action: manageTagsAction) {
                   Label("Manage Tags", systemImage: "tag.fill")
                 }
-                .keydexGlassButton()
+                .keydexActionButton()
                 .help("Open tag management")
                 .accessibilityIdentifier("keydex.card-detail.manage-tags")
                 .accessibilityLabel("Manage credential tags")

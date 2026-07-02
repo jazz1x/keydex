@@ -308,7 +308,9 @@ struct CredentialInventoryShellView: View {
         DoctorPanel(
           issues: doctorIssues,
           isEmptyMode: isEmptyMode
-        )
+        ) { issue in
+          reviewDoctorIssue(issue)
+        }
       }
     }
   }
@@ -371,6 +373,16 @@ struct CredentialInventoryShellView: View {
     .lowercased()
 
     return trimmed.isEmpty || searchHaystack.contains(normalizedQuery)
+  }
+
+  private func reviewDoctorIssue(_ issue: DoctorIssueRow) {
+    searchText = ""
+    selectedSidebar = .all
+
+    withAnimation(KeydexMotion.contentTransition) {
+      settingsConfig.displayMode = .cards
+      selectedCredentialID = issue.credentialID
+    }
   }
 
   private func tags(for projection: CredentialProjection) -> [CredentialTagRow] {

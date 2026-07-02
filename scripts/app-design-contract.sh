@@ -76,6 +76,9 @@ for needle in \
   "KeydexSidebarMaterialView" \
   "Table(rows" \
   "CredentialCardGrid" \
+  "CredentialArtworkPreset" \
+  "CredentialDefaultArtwork" \
+  "CredentialPosterWash" \
   "CredentialMusicDetailView" \
   "MusicSourceTrackRow" \
   "MusicSearchResultHeader" \
@@ -83,6 +86,7 @@ for needle in \
   "InventoryBackdropView" \
   "InventoryDisplayMode" \
   "CredentialTagRow" \
+  "CredentialTagColorSwatchPicker" \
   "CredentialTagStrip" \
   "EditableTagListSection" \
   "isCardLibrarySurface" \

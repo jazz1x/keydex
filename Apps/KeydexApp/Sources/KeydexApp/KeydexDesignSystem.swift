@@ -145,6 +145,87 @@ private struct KeydexGlassButtonModifier: ViewModifier {
   }
 }
 
+private struct KeydexActionButtonModifier: ViewModifier {
+  let prominent: Bool
+  let compact: Bool
+
+  private var foreground: Color {
+    prominent ? Color.accentColor : Color.primary
+  }
+
+  private var glassTint: Color {
+    prominent ? Color.accentColor.opacity(0.18) : Color.primary.opacity(0.060)
+  }
+
+  private var fill: Color {
+    prominent ? Color.accentColor.opacity(0.10) : Color.primary.opacity(0.040)
+  }
+
+  private var stroke: Color {
+    prominent
+      ? Color.accentColor.opacity(0.40)
+      : Color(nsColor: .separatorColor).opacity(0.30)
+  }
+
+  private var actionFont: Font {
+    compact ? .caption.weight(.semibold) : .callout.weight(.semibold)
+  }
+
+  private var horizontalPadding: CGFloat {
+    compact ? 10 : 12
+  }
+
+  private var height: CGFloat {
+    compact ? 28 : 34
+  }
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    let shape = Capsule()
+
+    #if compiler(>=6.2)
+      if #available(macOS 26.0, *) {
+        actionContent(content)
+          .glassEffect(.regular.tint(glassTint).interactive(), in: shape)
+          .overlay {
+            shape.fill(fill)
+          }
+          .overlay {
+            shape.stroke(stroke, lineWidth: prominent ? 1.2 : 1)
+          }
+      } else {
+        fallback(content: content, in: shape)
+      }
+    #else
+      fallback(content: content, in: shape)
+    #endif
+  }
+
+  private func actionContent(_ content: Content) -> some View {
+    content
+      .buttonStyle(.plain)
+      .font(actionFont)
+      .labelStyle(.titleAndIcon)
+      .lineLimit(1)
+      .padding(.horizontal, horizontalPadding)
+      .frame(height: height)
+      .foregroundStyle(foreground)
+      .contentShape(Capsule())
+      .accessibilityAddTraits(.isButton)
+  }
+
+  private func fallback(content: Content, in shape: Capsule) -> some View {
+    actionContent(content)
+      .background(.thinMaterial, in: shape)
+      .overlay {
+        shape.fill(fill)
+      }
+      .overlay {
+        shape.stroke(stroke, lineWidth: prominent ? 1.2 : 1)
+      }
+  }
+}
+
 private struct KeydexContentPanelModifier: ViewModifier {
   let stroke: Color
   let selected: Bool
@@ -464,6 +545,10 @@ private struct KeydexSidebarSearchRowModifier: ViewModifier {
 extension View {
   func keydexGlassButton(prominent: Bool = false) -> some View {
     modifier(KeydexGlassButtonModifier(prominent: prominent))
+  }
+
+  func keydexActionButton(prominent: Bool = false, compact: Bool = false) -> some View {
+    modifier(KeydexActionButtonModifier(prominent: prominent, compact: compact))
   }
 
   func keydexContentPanel(stroke: Color, selected: Bool) -> some View {

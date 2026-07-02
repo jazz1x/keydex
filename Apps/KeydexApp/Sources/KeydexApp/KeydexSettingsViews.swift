@@ -351,15 +351,11 @@ private struct EditableTagListSection: View {
             .accessibilityIdentifier("keydex.settings.tag.draft-name")
             .accessibilityLabel("New tag name")
 
-          Picker("Tag color", selection: $draftColor) {
-            ForEach(CredentialTagColor.allCases) { color in
-              Text(color.title).tag(color)
-            }
-          }
-          .labelsHidden()
-          .frame(width: 118)
-          .accessibilityIdentifier("keydex.settings.tag.draft-color")
-          .accessibilityLabel("New tag color")
+          CredentialTagColorSwatchPicker(
+            selection: $draftColor,
+            accessibilityIdentifier: "keydex.settings.tag.draft-color",
+            accessibilityLabel: "New tag color"
+          )
 
           Button {
             addDraftTag()
@@ -412,6 +408,53 @@ private struct EditableTagListSection: View {
   }
 }
 
+private struct CredentialTagColorSwatchPicker: View {
+  @Binding var selection: CredentialTagColor
+  let accessibilityIdentifier: String
+  let accessibilityLabel: String
+
+  var body: some View {
+    HStack(spacing: 5) {
+      ForEach(CredentialTagColor.allCases) { color in
+        Button {
+          selection = color
+        } label: {
+          ZStack {
+            Circle()
+              .fill(color.tint.opacity(0.78))
+              .overlay {
+                Circle()
+                  .stroke(swatchStroke(for: color), lineWidth: selection == color ? 1.5 : 1)
+              }
+
+            if selection == color {
+              Image(systemName: "checkmark")
+                .font(.system(size: 8, weight: .bold))
+                .foregroundStyle(.white)
+                .accessibilityHidden(true)
+            }
+          }
+          .frame(width: 18, height: 18)
+          .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .help(color.title)
+        .accessibilityIdentifier("\(accessibilityIdentifier).\(color.rawValue)")
+        .accessibilityLabel("\(color.title) tag color")
+        .accessibilityValue(selection == color ? "Selected" : "Not selected")
+      }
+    }
+    .padding(.horizontal, 2)
+    .accessibilityElement(children: .contain)
+    .accessibilityIdentifier(accessibilityIdentifier)
+    .accessibilityLabel(accessibilityLabel)
+  }
+
+  private func swatchStroke(for color: CredentialTagColor) -> Color {
+    selection == color ? color.tint.opacity(0.95) : Color(nsColor: .separatorColor).opacity(0.32)
+  }
+}
+
 private struct SettingsTagEditableRow: View {
   @Binding var tag: CredentialTagRow
   let removeAction: () -> Void
@@ -430,15 +473,11 @@ private struct SettingsTagEditableRow: View {
           .accessibilityIdentifier("keydex.settings.tag.name")
           .accessibilityLabel("Tag name")
 
-        Picker("Tag color", selection: $tag.color) {
-          ForEach(CredentialTagColor.allCases) { color in
-            Text(color.title).tag(color)
-          }
-        }
-        .labelsHidden()
-        .frame(width: 118)
-        .accessibilityIdentifier("keydex.settings.tag.color")
-        .accessibilityLabel("Tag color")
+        CredentialTagColorSwatchPicker(
+          selection: $tag.color,
+          accessibilityIdentifier: "keydex.settings.tag.color",
+          accessibilityLabel: "Tag color"
+        )
 
         Button {
           removeAction()
