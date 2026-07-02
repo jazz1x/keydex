@@ -108,6 +108,12 @@ for needle in \
   "SettingsDisplayModeRow" \
   "KeydexSheetGlassPanelModifier" \
   "KeydexGroupedRowsSurfaceModifier" \
+  "controlGlassTint = Color.white.opacity(0.040)" \
+  "groupedRowsFill = Color.primary.opacity(0.010)" \
+  "settingsActiveBackdropDimAlpha = 0.020" \
+  "settingsInactiveBackdropDimAlpha = 0.11" \
+  "settingsPanelWash(appearsActive:" \
+  "@Environment(\\.appearsActive)" \
   "KeydexCapsuleGlassModifier" \
   ".labelsHidden()" \
   ".keyboardShortcut(.escape, modifiers: [])" \
