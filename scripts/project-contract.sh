@@ -41,6 +41,7 @@ for path in \
 done
 expect_file .pre-commit-config.yaml
 expect_file scripts/app-accessibility-smoke.sh
+expect_file scripts/app-evidence-scenarios.sh
 expect_file scripts/app-accessibility-evidence-template.sh
 expect_file scripts/app-accessibility-evidence-review.sh
 expect_file scripts/app-design-contract.sh
@@ -272,6 +273,13 @@ expect_file_contains scripts/app-screen-evidence.sh "tmp/screen-evidence"
 expect_file_contains scripts/app-screen-evidence.sh "screencapture"
 expect_file_contains scripts/app-screen-evidence.sh "missing dependency: sips"
 expect_file_contains scripts/app-screen-evidence.sh "--list"
+expect_file_contains scripts/app-screen-evidence.sh "source \"\$script_dir/app-evidence-scenarios.sh\""
+expect_file_contains scripts/app-screen-evidence-review.sh "source \"\$script_dir/app-evidence-scenarios.sh\""
+expect_file_contains scripts/app-accessibility-evidence-template.sh "source \"\$script_dir/app-evidence-scenarios.sh\""
+expect_file_contains scripts/app-accessibility-evidence-review.sh "source \"\$script_dir/app-evidence-scenarios.sh\""
+expect_file_contains scripts/app-screen-evidence-review.sh 'for scenario in "${KEYDEX_EVIDENCE_SCENARIOS[@]}"'
+expect_file_contains scripts/app-accessibility-evidence-template.sh 'for scenario in "${KEYDEX_EVIDENCE_SCENARIOS[@]}"'
+expect_file_contains scripts/app-accessibility-evidence-review.sh 'for scenario in "${KEYDEX_EVIDENCE_SCENARIOS[@]}"'
 for scenario in \
   default-window \
   card-view \
@@ -286,12 +294,13 @@ for scenario in \
   settings-tags \
   settings-rules \
   compact-window; do
-  expect_file_contains scripts/app-screen-evidence.sh "$scenario"
+  expect_file_contains scripts/app-evidence-scenarios.sh "$scenario"
   expect_file_contains docs/SCREEN-VALIDATION.md "$scenario"
-  expect_file_contains scripts/app-accessibility-evidence-template.sh "$scenario"
-  expect_file_contains scripts/app-accessibility-evidence-review.sh "$scenario"
 done
-expect_file_contains scripts/app-screen-evidence.sh "empty-inventory"
+expect_file_contains docs/SCREEN-VALIDATION.md "scripts/app-evidence-scenarios.sh"
+expect_file_contains scripts/app-evidence-scenarios.sh "keydex_evidence_inventory_mode"
+expect_file_contains scripts/app-evidence-scenarios.sh "keydex_evidence_window_preset"
+expect_file_contains scripts/app-evidence-scenarios.sh "empty-inventory"
 expect_file_contains scripts/app-screen-evidence.sh "KEYDEX_APP_INVENTORY_MODE"
 expect_file_contains scripts/app-screen-evidence.sh "KEYDEX_APP_SCREEN_SCENARIO"
 expect_file_contains scripts/app-screen-evidence.sh "KEYDEX_APP_WINDOW_PRESET"

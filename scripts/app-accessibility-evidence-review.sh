@@ -9,6 +9,9 @@ fail() {
 command -v git >/dev/null 2>&1 || fail "missing dependency: git"
 command -v rg >/dev/null 2>&1 || fail "missing dependency: rg (ripgrep)"
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$script_dir/app-evidence-scenarios.sh"
+
 git_dirty_state() {
   if ! git diff --quiet || ! git diff --cached --quiet || [[ -n "$(git ls-files --others --exclude-standard)" ]]; then
     printf 'dirty'
@@ -75,18 +78,8 @@ evidence_dir="${KEYDEX_ACCESSIBILITY_EVIDENCE_DIR:-tmp/accessibility-evidence}"
 head_sha="$(git rev-parse --short HEAD)"
 head_dirty="$(git_dirty_state)"
 
-review_scenario default-window
-review_scenario card-view
-review_scenario card-detail
-review_scenario empty-inventory
-review_scenario search-filter
-review_scenario inspector
-review_scenario settings
-review_scenario settings-appearance
-review_scenario settings-sources
-review_scenario settings-paths
-review_scenario settings-tags
-review_scenario settings-rules
-review_scenario compact-window
+for scenario in "${KEYDEX_EVIDENCE_SCENARIOS[@]}"; do
+  review_scenario "$scenario"
+done
 
 echo "app accessibility evidence review clean"

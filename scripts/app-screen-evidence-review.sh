@@ -10,6 +10,9 @@ command -v git >/dev/null 2>&1 || fail "missing dependency: git"
 command -v rg >/dev/null 2>&1 || fail "missing dependency: rg (ripgrep)"
 command -v sips >/dev/null 2>&1 || fail "missing dependency: sips"
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$script_dir/app-evidence-scenarios.sh"
+
 git_dirty_state() {
   if ! git diff --quiet || ! git diff --cached --quiet || [[ -n "$(git ls-files --others --exclude-standard)" ]]; then
     printf 'dirty'
@@ -127,18 +130,12 @@ evidence_dir="${KEYDEX_SCREEN_EVIDENCE_DIR:-tmp/screen-evidence}"
 head_sha="$(git rev-parse --short HEAD)"
 head_dirty="$(git_dirty_state)"
 
-review_scenario default-window sample default
-review_scenario card-view sample default
-review_scenario card-detail sample default
-review_scenario empty-inventory empty default
-review_scenario search-filter sample default
-review_scenario inspector sample default
-review_scenario settings sample default
-review_scenario settings-appearance sample default
-review_scenario settings-sources sample default
-review_scenario settings-paths sample default
-review_scenario settings-tags sample default
-review_scenario settings-rules sample default
-review_scenario compact-window sample compact
+for scenario in "${KEYDEX_EVIDENCE_SCENARIOS[@]}"; do
+  inventory_mode="$(keydex_evidence_inventory_mode "$scenario")" ||
+    fail "missing inventory mode for scenario: $scenario"
+  window_preset="$(keydex_evidence_window_preset "$scenario")" ||
+    fail "missing window preset for scenario: $scenario"
+  review_scenario "$scenario" "$inventory_mode" "$window_preset"
+done
 
 echo "app screen evidence review clean"

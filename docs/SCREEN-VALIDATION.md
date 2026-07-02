@@ -20,6 +20,9 @@ outside CI. The command writes a screenshot PNG plus a manifest into
 Use `scripts/app-screen-evidence.sh --list` to inspect supported local capture
 scenarios. Use `make app-screen-evidence SCENARIO=<name>` to capture a specific
 scenario.
+The supported scenario list is owned by `scripts/app-evidence-scenarios.sh` and
+is consumed by screen and accessibility evidence scripts so local review coverage
+does not drift across capture, template, and review paths.
 
 After capturing all required scenarios, run `make app-screen-evidence-review`.
 It verifies that each required manifest and PNG exists, points at the current Git
