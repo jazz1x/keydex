@@ -8,13 +8,36 @@ fail() {
 
 command -v rg >/dev/null 2>&1 || fail "missing dependency: rg (ripgrep)"
 
+import_regex() {
+  local pattern="$1"
+
+  printf '^[[:space:]]*(?:@[[:alnum:]_()".:,]+[[:space:]]+)*(?:(?:public|internal|package|private|fileprivate)[[:space:]]+)?import[[:space:]]+(?:(?:class|struct|enum|protocol|typealias|func|var)[[:space:]]+)?(%s)(\\.|[[:space:]]*$)' "$pattern"
+}
+
+expect_import_regex_match() {
+  local sample="$1"
+  local pattern="$2"
+
+  printf '%s\n' "$sample" | rg --quiet "$(import_regex "$pattern")" ||
+    fail "import guard did not match forbidden import sample: $sample"
+}
+
+expect_import_regex_miss() {
+  local sample="$1"
+  local pattern="$2"
+
+  if printf '%s\n' "$sample" | rg --quiet "$(import_regex "$pattern")"; then
+    fail "import guard matched allowed import sample: $sample"
+  fi
+}
+
 reject_import() {
   local label="$1"
   local pattern="$2"
   shift 2
 
-  if rg --line-number "^import (${pattern})$" "$@"; then
-    fail "$label imports a forbidden framework"
+  if rg --line-number "$(import_regex "$pattern")" "$@"; then
+    fail "$label imports a forbidden module or framework"
   fi
 }
 
@@ -34,6 +57,13 @@ reject_text() {
     fail "$path contains forbidden text: $text"
   fi
 }
+
+echo "0) import guard matcher..."
+expect_import_regex_match "import KeydexStore" "KeydexStore"
+expect_import_regex_match "import struct KeydexStore.MetadataRecord" "KeydexStore"
+expect_import_regex_match "internal import KeydexStore" "KeydexStore"
+expect_import_regex_match "@preconcurrency import KeydexStore" "KeydexStore"
+expect_import_regex_miss "import KeydexStoreKit" "KeydexStore"
 
 echo "1) architecture boundary imports..."
 reject_import "KeydexCore" "SwiftUI|AppKit|Security" Sources/KeydexCore
