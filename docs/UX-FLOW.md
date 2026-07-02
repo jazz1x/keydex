@@ -32,6 +32,8 @@ uncertainty to the next concrete action without making them decode implementatio
   poster's own low-alpha tint so focus remains reserved for keyboard navigation.
 - Card buttons keep keyboard focus semantics, but suppress the default system focus
   effect. Keyboard focus uses a neutral Keydex poster stroke instead of a blue ring.
+- Detail return navigation keeps keyboard focus visible with a neutral inline pill
+  instead of reintroducing the default blue focus ring after a card click.
 - Detail and inspector actions must not auto-read as focused blue controls. Global
   registration can stay prominent, but credential-scoped actions use neutral action
   buttons unless the user explicitly focuses them.

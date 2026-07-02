@@ -138,6 +138,8 @@ and honest about risk.
   cluster, status chip, and source rows that read like a playlist track list. Card
   click detail must not reintroduce a persistent right inspector or modal sheet
   into card mode.
+- Card detail return navigation uses a neutral inline focus pill. It must not show
+  the system blue focus ring immediately after a pointer card click.
 - Credential-scoped detail and inspector actions use neutral action buttons. The
   global toolbar registration command can stay prominent, but opening a credential
   must not make a scoped action look like a default focused blue control.
