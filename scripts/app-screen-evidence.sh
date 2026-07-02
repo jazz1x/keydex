@@ -8,6 +8,7 @@ fail() {
 
 command -v git >/dev/null 2>&1 || fail "missing dependency: git"
 command -v screencapture >/dev/null 2>&1 || fail "missing dependency: screencapture"
+command -v sips >/dev/null 2>&1 || fail "missing dependency: sips"
 command -v swift >/dev/null 2>&1 || fail "missing dependency: swift"
 
 git_dirty_state() {
@@ -16,6 +17,16 @@ git_dirty_state() {
   else
     printf 'clean'
   fi
+}
+
+image_dimension() {
+  local path="$1"
+  local key="$2"
+  local value
+
+  value="$(sips -g "$key" "$path" | awk -F': ' -v key="$key" '$1 ~ key { print $2 }')"
+  [[ "$value" =~ ^[0-9]+$ ]] || fail "unable to read $key from screenshot: $path"
+  printf '%s' "$value"
 }
 
 window_report() {
@@ -178,6 +189,9 @@ fi
 
 test -s "$capture_path" || fail "empty screenshot artifact: $capture_path"
 
+pixel_width="$(image_dimension "$capture_path" pixelWidth)"
+pixel_height="$(image_dimension "$capture_path" pixelHeight)"
+
 {
   printf 'scenario=%s\n' "$scenario"
   printf 'inventory_mode=%s\n' "$inventory_mode"
@@ -187,6 +201,8 @@ test -s "$capture_path" || fail "empty screenshot artifact: $capture_path"
   printf 'git_dirty=%s\n' "$(git_dirty_state)"
   printf '%s\n' "$report"
   printf 'screenshot=%s\n' "$capture_path"
+  printf 'screenshot_pixel_width=%s\n' "$pixel_width"
+  printf 'screenshot_pixel_height=%s\n' "$pixel_height"
 } >"$manifest_path"
 
 printf '%s\n' "$report"

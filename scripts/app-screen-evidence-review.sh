@@ -8,6 +8,7 @@ fail() {
 
 command -v git >/dev/null 2>&1 || fail "missing dependency: git"
 command -v rg >/dev/null 2>&1 || fail "missing dependency: rg (ripgrep)"
+command -v sips >/dev/null 2>&1 || fail "missing dependency: sips"
 
 git_dirty_state() {
   if ! git diff --quiet || ! git diff --cached --quiet || [[ -n "$(git ls-files --others --exclude-standard)" ]]; then
@@ -42,6 +43,52 @@ expect_manifest_key() {
     fail "$path is missing expected manifest key: $key"
 }
 
+image_dimension() {
+  local path="$1"
+  local key="$2"
+  local value
+
+  value="$(sips -g "$key" "$path" | awk -F': ' -v key="$key" '$1 ~ key { print $2 }')"
+  [[ "$value" =~ ^[0-9]+$ ]] || fail "unable to read $key from screenshot: $path"
+  printf '%s' "$value"
+}
+
+window_size() {
+  local path="$1"
+  local window_line
+  local window_pattern='width=([0-9]+) height=([0-9]+)'
+
+  if ! window_line="$(
+    rg --line-regexp --only-matching 'window=[0-9]+ x=[0-9]+ y=[0-9]+ width=[0-9]+ height=[0-9]+' "$path"
+  )"; then
+    fail "$path is missing exact window geometry"
+  fi
+
+  [[ "$window_line" =~ $window_pattern ]] || fail "$path has unreadable window geometry"
+  printf '%s %s\n' "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
+}
+
+review_screenshot_geometry() {
+  local manifest_path="$1"
+  local screenshot_path="$2"
+  local pixel_width
+  local pixel_height
+  local window_width
+  local window_height
+
+  pixel_width="$(image_dimension "$screenshot_path" pixelWidth)"
+  pixel_height="$(image_dimension "$screenshot_path" pixelHeight)"
+  read -r window_width window_height < <(window_size "$manifest_path")
+
+  expect_manifest_value "$manifest_path" screenshot_pixel_width "$pixel_width"
+  expect_manifest_value "$manifest_path" screenshot_pixel_height "$pixel_height"
+
+  ((pixel_width >= window_width)) ||
+    fail "$screenshot_path pixel width $pixel_width is smaller than manifest window width $window_width"
+  ((pixel_height >= window_height)) ||
+    fail "$screenshot_path pixel height $pixel_height is smaller than manifest window height $window_height"
+}
+
 review_scenario() {
   local scenario="$1"
   local inventory_mode="$2"
@@ -62,6 +109,7 @@ review_scenario() {
   expect_file_contains "$manifest_path" "height="
   expect_manifest_value "$manifest_path" screenshot "$screenshot_path"
   expect_manifest_key "$manifest_path" captured_at
+  review_screenshot_geometry "$manifest_path" "$screenshot_path"
 
   case "$window_preset" in
     default)
