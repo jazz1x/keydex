@@ -231,6 +231,7 @@ for needle in \
   "Credential-scoped detail and inspector actions use neutral action buttons" \
   "artwork.custom.override" \
   "Custom artwork controls live beside credential identity actions" \
+  "Custom artwork image resolution uses the Shell-owned artwork root" \
   "semantic state-color media wash" \
   "Poster glyphs stay subdued" \
   "flat semantic fills and strokes" \

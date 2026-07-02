@@ -50,6 +50,7 @@ for needle in \
   "global Register Keychain action stays in the toolbar" \
   "Custom artwork import only ships with a persisted asset store" \
   "Artwork actions stay near credential identity" \
+  "Custom artwork rendering uses the Shell-owned artwork root" \
   "Tag and label color management uses swatches" \
   "Settings overlay" \
   "labels on the left and controls on the right" \
@@ -86,6 +87,7 @@ for needle in \
   "keydex.inspector.manage-keychain" \
   "keydex.inspector.manage-tags" \
   "CredentialArtworkStore" \
+  "artworkRootURL" \
   "CredentialCustomArtwork" \
   "CredentialArtworkActionGroup" \
   "keydex.artwork.choose" \
@@ -190,6 +192,14 @@ if awk '
   END { exit found ? 0 : 1 }
 ' "$inventory_source"; then
   fail "Credential-scoped actions must not render as prominent blue focus-like controls"
+fi
+
+if rg --quiet --fixed-strings "CredentialArtworkStore().rootURL" "$inventory_source"; then
+  fail "Custom artwork views must use the Shell-owned artwork root instead of recreating the store"
+fi
+
+if ! rg --quiet --fixed-strings "artworkRootURL: artworkStore.rootURL" "$app_sources"; then
+  fail "Shell must pass its artwork store root into inventory and inspector views"
 fi
 
 if ! awk '
