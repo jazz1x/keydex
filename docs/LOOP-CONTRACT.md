@@ -31,7 +31,8 @@ before.
 
 Source imports follow the package dependency direction. `KeydexApp` consumes
 `KeydexCore` projections and local presentation state; it must not import
-`KeydexKeychain`, `KeydexSources`, or `KeydexStore` directly.
+`KeydexKeychain`, `KeydexSources`, or `KeydexStore` directly. Qualified imports
+such as `import struct KeydexStore.MetadataRecord` count as direct imports.
 
 ## Clean-Code Rules
 
