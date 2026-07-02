@@ -4,6 +4,7 @@ import SwiftUI
 struct DoctorPanel: View {
   let issues: [DoctorIssue]
   let isEmptyMode: Bool
+  let reviewIssueAction: (DoctorIssueRow) -> Void
   @State private var isHovered = false
 
   private var issueRows: [DoctorIssueRow] {
@@ -27,7 +28,8 @@ struct DoctorPanel: View {
       return "No repair issues are currently listed."
     }
 
-    return "Showing \(previewRows.count) of \(issueRows.count) repair issues."
+    return "Showing \(previewRows.count) of \(issueRows.count) repair issues. "
+      + "Use Review next to inspect the first issue."
   }
 
   private var feedbackTrigger: String {
@@ -102,6 +104,18 @@ struct DoctorPanel: View {
             .padding(.vertical, 4)
             .background(KeydexGlassTone.railControlFill, in: Capsule())
             .contentTransition(.numericText())
+        }
+
+        if let primaryIssue {
+          Button {
+            reviewIssueAction(primaryIssue)
+          } label: {
+            Label("Review next", systemImage: "arrow.up.forward.circle.fill")
+          }
+          .keydexActionButton(compact: true)
+          .help("Open the first credential that needs repair")
+          .accessibilityIdentifier("keydex.doctor.review-next")
+          .accessibilityLabel("Review next repair issue")
         }
       }
     }

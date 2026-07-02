@@ -39,9 +39,16 @@ for needle in \
   "Act" \
   "Configure" \
   "Card-first inventory" \
+  "default artwork presets" \
   "Sidebar search" \
   "Card detail or inspector" \
+  "Detail artwork does not carry a fake selected/focus stroke" \
   "Doctor rail" \
+  "action-button contract" \
+  "Review next entry point" \
+  "global Register Keychain action stays in the toolbar" \
+  "Custom artwork import only ships with a persisted asset store" \
+  "Tag and label color management uses swatches" \
   "Settings overlay" \
   "labels on the left and controls on the right" \
   "Escape" \
@@ -56,6 +63,9 @@ for needle in \
   "case cards" \
   "Switch between list and card inventory views" \
   "CredentialCardGrid" \
+  "CredentialArtworkPreset" \
+  "CredentialDefaultArtwork" \
+  "CredentialArtworkPanel" \
   "CredentialInventoryTable" \
   "MusicSearchField" \
   "Clear search" \
@@ -75,6 +85,7 @@ for needle in \
   "keydex.inspector.manage-tags" \
   "Manage Keychain reference" \
   "Manage credential tags" \
+  "keydexActionButton" \
   "primaryIssue.issue.action" \
   "Cause: \\(issue.message). Action: \\(issue.action)."; do
   expect_app_contains "$needle"
@@ -89,6 +100,9 @@ for needle in \
   "keydex.settings.keychain-access" \
   "keydex.settings.add-scan-path" \
   "keydex.settings.add-tag" \
+  "CredentialTagColorSwatchPicker" \
+  "keydex.settings.tag.color" \
+  "keydex.settings.tag.draft-color" \
   "keydex.settings.close" \
   "Close settings" \
   ".keyboardShortcut(.escape, modifiers: [])" \
@@ -99,6 +113,12 @@ done
 echo "5) repair queue usability anchors..."
 for needle in \
   "struct DoctorPanel" \
+  "keydex.doctor.review-next" \
+  "Review next repair issue" \
+  "reviewDoctorIssue" \
+  "settingsConfig.displayMode = .cards" \
+  "keydex.toolbar.register-keychain" \
+  "CredentialRow.identifier(for: issue.credential)" \
   "No repair issues are currently listed." \
   "doctorSeverityTint" \
   "issue.action" \
@@ -126,6 +146,15 @@ if ! awk '
   END { exit(button && label ? 0 : 1) }
 ' "$inventory_source"; then
   fail "Credential cards must remain selectable and carry workflow accessibility labels"
+fi
+
+if awk '
+  /private struct CredentialMusicDetailView/ { in_detail = 1 }
+  /private struct MusicSourceTrackRow/ { in_detail = 0 }
+  in_detail && /selected: true/ { found = 1 }
+  END { exit found ? 0 : 1 }
+' "$inventory_source"; then
+  fail "Card detail artwork must not carry a fake selected/focus stroke"
 fi
 
 if ! awk '

@@ -224,8 +224,12 @@ struct CredentialRow: Identifiable {
     self.tags = tags
   }
 
+  static func identifier(for ref: CredentialRef) -> String {
+    "\(ref.service.value)|\(ref.account.value)"
+  }
+
   static func identifier(for projection: CredentialProjection) -> String {
-    "\(projection.ref.service.value)|\(projection.ref.account.value)"
+    identifier(for: projection.ref)
   }
 
   var id: String {
@@ -287,6 +291,10 @@ struct CredentialRow: Identifiable {
     return "key"
   }
 
+  var artworkPreset: CredentialArtworkPreset {
+    credentialArtworkPreset(for: self)
+  }
+
   var cardCaptionLine: String {
     if let primaryTag = tags.first {
       let taggedState = "#\(primaryTag.name) · \(canonicalStateLabel(states))"
@@ -310,6 +318,110 @@ struct CredentialRow: Identifiable {
   }
 }
 
+struct CredentialArtworkPreset {
+  let title: String
+  let symbolName: String
+  let monogram: String
+  let primaryTint: Color
+  let secondaryTint: Color
+  let tertiaryTint: Color
+
+  static let cloud = CredentialArtworkPreset(
+    title: "Cloud key",
+    symbolName: "cloud.fill",
+    monogram: "CL",
+    primaryTint: Color(red: 0.92, green: 0.48, blue: 0.22),
+    secondaryTint: Color(red: 0.98, green: 0.77, blue: 0.46),
+    tertiaryTint: Color(red: 0.47, green: 0.69, blue: 0.95)
+  )
+
+  static let code = CredentialArtworkPreset(
+    title: "Developer token",
+    symbolName: "chevron.left.forwardslash.chevron.right",
+    monogram: "DV",
+    primaryTint: Color(red: 0.39, green: 0.55, blue: 0.95),
+    secondaryTint: Color(red: 0.43, green: 0.82, blue: 0.80),
+    tertiaryTint: Color(red: 0.62, green: 0.54, blue: 0.86)
+  )
+
+  static let vault = CredentialArtworkPreset(
+    title: "Vault reference",
+    symbolName: "lock.rectangle.stack.fill",
+    monogram: "VT",
+    primaryTint: Color(red: 0.37, green: 0.62, blue: 0.55),
+    secondaryTint: Color(red: 0.72, green: 0.80, blue: 0.66),
+    tertiaryTint: Color(red: 0.42, green: 0.51, blue: 0.65)
+  )
+
+  static let terminal = CredentialArtworkPreset(
+    title: "Shell source",
+    symbolName: "terminal.fill",
+    monogram: "SH",
+    primaryTint: Color(red: 0.33, green: 0.36, blue: 0.40),
+    secondaryTint: Color(red: 0.62, green: 0.82, blue: 0.35),
+    tertiaryTint: Color(red: 0.43, green: 0.53, blue: 0.76)
+  )
+
+  static let personal = CredentialArtworkPreset(
+    title: "Personal key",
+    symbolName: "person.crop.circle.fill",
+    monogram: "ME",
+    primaryTint: Color(red: 0.72, green: 0.47, blue: 0.84),
+    secondaryTint: Color(red: 0.93, green: 0.62, blue: 0.74),
+    tertiaryTint: Color(red: 0.52, green: 0.72, blue: 0.92)
+  )
+
+  static let keyring = CredentialArtworkPreset(
+    title: "Keyring default",
+    symbolName: "key.fill",
+    monogram: "KD",
+    primaryTint: Color(red: 0.48, green: 0.61, blue: 0.57),
+    secondaryTint: Color(red: 0.72, green: 0.76, blue: 0.68),
+    tertiaryTint: Color(red: 0.58, green: 0.68, blue: 0.76)
+  )
+
+  static let repair = CredentialArtworkPreset(
+    title: "Needs repair",
+    symbolName: "key.slash.fill",
+    monogram: "RX",
+    primaryTint: Color(red: 0.95, green: 0.35, blue: 0.38),
+    secondaryTint: Color(red: 0.95, green: 0.68, blue: 0.66),
+    tertiaryTint: Color(red: 0.91, green: 0.55, blue: 0.40)
+  )
+}
+
+func credentialArtworkPreset(for row: CredentialRow) -> CredentialArtworkPreset {
+  if row.states.contains(.missingKeychainItem) || row.states.contains(.expired) {
+    return .repair
+  }
+
+  let haystack = [row.service, row.account, row.tags.map(\.name).joined(separator: " ")]
+    .joined(separator: " ")
+    .lowercased()
+
+  if haystack.contains("aws") || haystack.contains("cloud") {
+    return .cloud
+  }
+
+  if haystack.contains("vault") || haystack.contains("secret") {
+    return .vault
+  }
+
+  if haystack.contains("github") || haystack.contains("git") || haystack.contains("ci") {
+    return .code
+  }
+
+  if haystack.contains("shell") || haystack.contains("terminal") || haystack.contains("zsh") {
+    return .terminal
+  }
+
+  if haystack.contains("personal") || haystack.contains("openai") {
+    return .personal
+  }
+
+  return .keyring
+}
+
 func canonicalStateLabel(_ states: [CredentialState]) -> String {
   states.map(\.rawValue).sorted().joined(separator: ", ")
 }
@@ -319,6 +431,10 @@ struct DoctorIssueRow: Identifiable {
 
   var id: String {
     "\(issue.credential.service.value)|\(issue.credential.account.value)|\(issue.state.rawValue)"
+  }
+
+  var credentialID: CredentialRow.ID {
+    CredentialRow.identifier(for: issue.credential)
   }
 
   var severityLabel: String {
@@ -660,7 +776,9 @@ enum CredentialTagColor: String, CaseIterable, Identifiable, Hashable {
   case red
   case orange
   case green
+  case teal
   case blue
+  case purple
   case gray
 
   var id: String { rawValue }
@@ -675,8 +793,12 @@ enum CredentialTagColor: String, CaseIterable, Identifiable, Hashable {
       "Orange"
     case .green:
       "Green"
+    case .teal:
+      "Teal"
     case .blue:
       "Blue"
+    case .purple:
+      "Purple"
     case .gray:
       "Gray"
     }
@@ -687,13 +809,17 @@ enum CredentialTagColor: String, CaseIterable, Identifiable, Hashable {
     case .accent:
       .accentColor
     case .red:
-      .red
+      Color(red: 0.86, green: 0.24, blue: 0.31)
     case .orange:
-      .orange
+      Color(red: 0.88, green: 0.48, blue: 0.20)
     case .green:
-      .green
+      Color(red: 0.34, green: 0.62, blue: 0.43)
+    case .teal:
+      Color(red: 0.22, green: 0.61, blue: 0.64)
     case .blue:
-      .blue
+      Color(red: 0.22, green: 0.48, blue: 0.88)
+    case .purple:
+      Color(red: 0.56, green: 0.43, blue: 0.80)
     case .gray:
       .secondary
     }
