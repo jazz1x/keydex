@@ -7,6 +7,7 @@ fail() {
 }
 
 command -v rg >/dev/null 2>&1 || fail "missing dependency: rg (ripgrep)"
+command -v swift >/dev/null 2>&1 || fail "missing dependency: swift"
 
 import_regex() {
   local pattern="$1"
@@ -58,6 +59,105 @@ reject_text() {
   fi
 }
 
+package_boundary_graph() {
+  local package_json
+  package_json="$(mktemp "${TMPDIR:-/tmp}/keydex-package.XXXXXX")"
+  swift package dump-package >"$package_json"
+
+  swift - "$package_json" <<'SWIFT'
+import Foundation
+
+struct PackageDump: Decodable {
+  let targets: [Target]
+}
+
+struct Target: Decodable {
+  let name: String
+  let dependencies: [Dependency]
+}
+
+struct Dependency: Decodable {
+  let name: String
+
+  enum CodingKeys: String, CodingKey {
+    case byName
+    case product
+  }
+
+  init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+
+    if let byName = try container.decodeIfPresent([String?].self, forKey: .byName),
+      let rawName = byName.first,
+      let name = rawName
+    {
+      self.name = name
+      return
+    }
+
+    if let product = try container.decodeIfPresent([String?].self, forKey: .product),
+      let rawName = product.first,
+      let name = rawName
+    {
+      self.name = "product:\(name)"
+      return
+    }
+
+    self.name = "<unknown>"
+  }
+}
+
+let packageURL = URL(fileURLWithPath: CommandLine.arguments[1])
+let package = try JSONDecoder().decode(
+  PackageDump.self,
+  from: Data(contentsOf: packageURL)
+)
+let targets = Dictionary(uniqueKeysWithValues: package.targets.map { ($0.name, $0) })
+let expected: [String: Set<String>] = [
+  "KeydexCore": [],
+  "KeydexKeychain": ["KeydexCore"],
+  "KeydexSources": ["KeydexCore"],
+  "KeydexStore": ["KeydexCore"],
+  "keydex": [
+    "KeydexCore",
+    "KeydexKeychain",
+    "KeydexSources",
+    "KeydexStore",
+    "product:ArgumentParser",
+  ],
+  "KeydexApp": ["KeydexCore"],
+  "KeydexCoreTests": ["KeydexCore"],
+  "KeydexKeychainTests": ["KeydexKeychain"],
+  "KeydexSourcesTests": ["KeydexSources"],
+  "KeydexStoreTests": ["KeydexStore"],
+  "KeydexAppTests": ["KeydexApp"],
+]
+
+for (targetName, expectedDependencies) in expected.sorted(by: { $0.key < $1.key }) {
+  guard let target = targets[targetName] else {
+    fputs("package boundary graph: missing target \(targetName)\n", stderr)
+    exit(1)
+  }
+
+  let actualDependencies = Set(target.dependencies.map(\.name))
+  guard actualDependencies == expectedDependencies else {
+    fputs(
+      """
+      package boundary graph: \(targetName) dependencies mismatch
+        expected: \(expectedDependencies.sorted())
+        actual:   \(actualDependencies.sorted())
+
+      """,
+      stderr
+    )
+    exit(1)
+  }
+}
+SWIFT
+
+  rm -f "$package_json"
+}
+
 echo "0) import guard matcher..."
 expect_import_regex_match "import KeydexStore" "KeydexStore"
 expect_import_regex_match "import struct KeydexStore.MetadataRecord" "KeydexStore"
@@ -85,6 +185,8 @@ expect_text Package.swift 'dependencies: ["KeydexCore"]'
 expect_text Package.swift '.target(name: "KeydexSources", dependencies: ["KeydexCore"])'
 expect_text Package.swift '.target(name: "KeydexStore", dependencies: ["KeydexCore"])'
 expect_text Package.swift 'path: "Apps/KeydexApp/Sources/KeydexApp"'
+package_boundary_graph
+echo "package boundary graph clean"
 
 echo "3) loop documentation wiring..."
 expect_text docs/LOOP-CONTRACT.md "Keydex improves through a closed loop"

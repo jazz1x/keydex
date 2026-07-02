@@ -33,6 +33,9 @@ Source imports follow the package dependency direction. `KeydexApp` consumes
 `KeydexCore` projections and local presentation state; it must not import
 `KeydexKeychain`, `KeydexSources`, or `KeydexStore` directly. Qualified imports
 such as `import struct KeydexStore.MetadataRecord` count as direct imports.
+`make loop-contract` also parses `swift package dump-package` output so the
+actual SwiftPM target dependency graph must match these boundaries, not just the
+source import text.
 
 ## Clean-Code Rules
 
