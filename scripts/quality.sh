@@ -65,7 +65,10 @@ echo "10) app design contract..."
 echo "11) app UX flow contract..."
 ./scripts/app-ux-flow-contract.sh
 
-echo "12) app menubar smoke script contract..."
+echo "12) app evidence scenarios contract..."
+./scripts/app-evidence-scenarios-contract.sh
+
+echo "13) app menubar smoke script contract..."
 expect_file_contains scripts/app-menubar-smoke.sh "Keydex"
 expect_file_contains scripts/app-menubar-smoke.sh "Open Keydex"
 expect_file_contains scripts/app-menubar-smoke.sh "Quit Keydex"
