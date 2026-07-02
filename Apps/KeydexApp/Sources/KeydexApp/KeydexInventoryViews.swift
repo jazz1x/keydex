@@ -332,6 +332,7 @@ private struct CredentialInventoryCard: View {
       )
     }
     .buttonStyle(.plain)
+    .focusEffectDisabled()
     .accessibilityLabel(row.cardAccessibilityLabel)
   }
 
@@ -864,9 +865,7 @@ private struct CredentialMusicDetailView: View {
           Button(action: closeAction) {
             Label("Credential Library", systemImage: "chevron.left")
           }
-          .font(.callout.weight(.semibold))
-          .foregroundStyle(.secondary)
-          .buttonStyle(.plain)
+          .keydexNavigationButton()
           .help("Return to credential library")
           .accessibilityIdentifier("keydex.card-detail.back")
 

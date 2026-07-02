@@ -45,6 +45,7 @@ for needle in \
   "Card detail or inspector" \
   "Detail artwork does not carry a fake selected/focus stroke" \
   "Card buttons keep keyboard focus semantics" \
+  "Detail return navigation keeps keyboard focus visible" \
   "Detail and inspector actions must not auto-read as focused blue controls" \
   "Doctor rail" \
   "action-button contract" \
@@ -98,6 +99,7 @@ for needle in \
   "Manage Keychain reference" \
   "Manage credential tags" \
   "keydexActionButton" \
+  "keydexNavigationButton" \
   "primaryIssue.issue.action" \
   "Cause: \\(issue.message). Action: \\(issue.action)."; do
   expect_app_contains "$needle"
@@ -190,6 +192,16 @@ if ! awk '
 fi
 
 if ! awk '
+  /private struct CredentialInventoryCard/ { in_card = 1 }
+  /private enum CredentialArtworkEmphasis/ { in_card = 0 }
+  in_card && /\.buttonStyle\(\.plain\)/ { plain = 1 }
+  in_card && /\.focusEffectDisabled\(\)/ { disabled = 1 }
+  END { exit(plain && disabled ? 0 : 1) }
+' "$inventory_source"; then
+  fail "Credential card buttons must directly suppress the default blue focus effect"
+fi
+
+if ! awk '
   /private enum CredentialArtworkEmphasis/ { in_emphasis = 1 }
   /private struct CredentialArtworkPanel/ { in_emphasis = 0 }
   in_emphasis && /case keyboardFocus/ { focus = 1 }
@@ -217,6 +229,28 @@ if ! awk '
   END { exit(state && focused && disabled && neutral ? 0 : 1) }
 ' "$design_source"; then
   fail "Scoped action buttons must replace the default blue focus ring with neutral Keydex focus"
+fi
+
+if ! awk '
+  /private struct KeydexNavigationButtonModifier/ { in_nav = 1 }
+  /private struct KeydexContentPanelModifier/ { in_nav = 0 }
+  in_nav && /@FocusState private var isKeyboardFocused/ { state = 1 }
+  in_nav && /\.focused\(\$isKeyboardFocused\)/ { focused = 1 }
+  in_nav && /\.focusEffectDisabled\(\)/ { disabled = 1 }
+  in_nav && /Color\(nsColor: \.separatorColor\)\.opacity\(0\.32\)/ { neutral = 1 }
+  END { exit(state && focused && disabled && neutral ? 0 : 1) }
+' "$design_source"; then
+  fail "Detail return navigation must replace the default blue focus ring with neutral Keydex focus"
+fi
+
+if ! awk '
+  /private struct CredentialMusicDetailView/ { in_detail = 1 }
+  /private struct MusicSourceTrackRow/ { in_detail = 0 }
+  in_detail && /\.keydexNavigationButton\(\)/ { nav = 1 }
+  in_detail && /keydex\.card-detail\.back/ { back = 1 }
+  END { exit(nav && back ? 0 : 1) }
+' "$inventory_source"; then
+  fail "Card detail back navigation must use the neutral Keydex navigation focus contract"
 fi
 
 if awk '

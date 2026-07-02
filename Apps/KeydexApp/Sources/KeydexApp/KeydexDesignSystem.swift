@@ -241,6 +241,41 @@ private struct KeydexActionButtonModifier: ViewModifier {
   }
 }
 
+private struct KeydexNavigationButtonModifier: ViewModifier {
+  @FocusState private var isKeyboardFocused: Bool
+
+  private var foreground: Color {
+    isKeyboardFocused ? Color.primary : Color.secondary
+  }
+
+  func body(content: Content) -> some View {
+    let shape = Capsule()
+
+    content
+      .buttonStyle(.plain)
+      .font(.callout.weight(.semibold))
+      .labelStyle(.titleAndIcon)
+      .lineLimit(1)
+      .padding(.horizontal, 8)
+      .padding(.vertical, 5)
+      .foregroundStyle(foreground)
+      .background {
+        if isKeyboardFocused {
+          shape.fill(Color.primary.opacity(0.045))
+        }
+      }
+      .overlay {
+        if isKeyboardFocused {
+          shape.stroke(Color(nsColor: .separatorColor).opacity(0.32), lineWidth: 1)
+        }
+      }
+      .contentShape(shape)
+      .focused($isKeyboardFocused)
+      .focusEffectDisabled()
+      .accessibilityAddTraits(.isButton)
+  }
+}
+
 private struct KeydexContentPanelModifier: ViewModifier {
   let stroke: Color
   let selected: Bool
@@ -564,6 +599,10 @@ extension View {
 
   func keydexActionButton(prominent: Bool = false, compact: Bool = false) -> some View {
     modifier(KeydexActionButtonModifier(prominent: prominent, compact: compact))
+  }
+
+  func keydexNavigationButton() -> some View {
+    modifier(KeydexNavigationButtonModifier())
   }
 
   func keydexContentPanel(stroke: Color, selected: Bool) -> some View {
