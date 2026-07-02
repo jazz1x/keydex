@@ -703,6 +703,9 @@ private struct CredentialMusicDetailView: View {
                   Label("Manage Keychain", systemImage: "key.fill")
                 }
                 .keydexGlassButton(prominent: true)
+                .help("Open Keychain reference management")
+                .accessibilityIdentifier("keydex.card-detail.manage-keychain")
+                .accessibilityLabel("Manage Keychain reference")
 
                 Button(action: manageTagsAction) {
                   Label("Manage Tags", systemImage: "tag.fill")

@@ -35,7 +35,7 @@ make loop-contract
 `make guard` is stack-free. It runs Swift formatting, tests, app build, and forbidden pattern scans.
 `make quality` checks user-facing drift: CLI command inventory, state taxonomy docs, guard
 documentation, anti-goals, workflow wiring, project contract, loop contract, CLI smoke,
-app accessibility/design contracts, and the menubar smoke script contract.
+app accessibility/design/UX flow contracts, and the menubar smoke script contract.
 
 ## Branch And PR Workflow
 
