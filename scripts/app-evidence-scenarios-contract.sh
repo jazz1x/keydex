@@ -28,6 +28,18 @@ if [[ "$listed_scenarios" != "$expected_scenarios" ]]; then
   fail "app-screen-evidence --list drifted from KEYDEX_EVIDENCE_SCENARIOS"
 fi
 
+if keydex_is_evidence_scenario "missing-scenario"; then
+  fail "unknown evidence scenario must not resolve as supported"
+fi
+
+if keydex_evidence_inventory_mode "missing-scenario" >/dev/null; then
+  fail "unknown evidence scenario must not resolve to an inventory mode"
+fi
+
+if keydex_evidence_window_preset "missing-scenario" >/dev/null; then
+  fail "unknown evidence scenario must not resolve to a window preset"
+fi
+
 app_scenarios_path="$(mktemp "${TMPDIR:-/tmp}/keydex-app-scenarios.XXXXXX")"
 swift - "$app_source" >"$app_scenarios_path" <<'SWIFT'
 import Foundation
