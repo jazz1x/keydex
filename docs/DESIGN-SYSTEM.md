@@ -127,6 +127,9 @@ and honest about risk.
 - Repeated card selection must not use the global blue accent ring. Selected posters
   use the artwork preset's own low-alpha stroke so mouse selection does not read as
   keyboard focus.
+- Repeated card keyboard focus suppresses the default system focus effect and uses
+  a neutral poster stroke. The card remains a keyboard-accessible button; only the
+  blue ring is replaced.
 - Repeated inventory cards follow a single poster frame only contract. Card mode
   has no repeated capsule badge strip below each poster; account, canonical state,
   and Keychain status compress into one plain caption below the title.

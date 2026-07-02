@@ -43,6 +43,7 @@ for needle in \
   "Sidebar search" \
   "Card detail or inspector" \
   "Detail artwork does not carry a fake selected/focus stroke" \
+  "Card buttons keep keyboard focus semantics" \
   "Detail and inspector actions must not auto-read as focused blue controls" \
   "Doctor rail" \
   "action-button contract" \
@@ -174,6 +175,35 @@ if awk '
   END { exit found ? 0 : 1 }
 ' "$inventory_source"; then
   fail "Card selection must not use the global accent color as a focus-like ring"
+fi
+
+if ! awk '
+  /private struct CredentialCardGrid/ { in_grid = 1 }
+  /private struct MusicContentSectionHeader/ { in_grid = 0 }
+  in_grid && /@FocusState private var focusedCredentialID/ { state = 1 }
+  in_grid && /\.focused\(\$focusedCredentialID, equals: row\.id\)/ { focused = 1 }
+  in_grid && /\.focusEffectDisabled\(\)/ { disabled = 1 }
+  END { exit(state && focused && disabled ? 0 : 1) }
+' "$inventory_source"; then
+  fail "Credential cards must suppress the default blue focus effect while keeping keyboard focus state"
+fi
+
+if ! awk '
+  /private enum CredentialArtworkEmphasis/ { in_emphasis = 1 }
+  /private struct CredentialArtworkPanel/ { in_emphasis = 0 }
+  in_emphasis && /case keyboardFocus/ { focus = 1 }
+  END { exit focus ? 0 : 1 }
+' "$inventory_source"; then
+  fail "Credential card keyboard focus must use a dedicated artwork emphasis instead of selection"
+fi
+
+if awk '
+  /private struct CredentialInventoryCard/ { in_card = 1 }
+  /private enum CredentialArtworkEmphasis/ { in_card = 0 }
+  in_card && /\.focusable\(false\)/ { found = 1 }
+  END { exit found ? 0 : 1 }
+' "$inventory_source"; then
+  fail "Credential cards must not remove keyboard focus to hide the blue focus ring"
 fi
 
 if awk '
