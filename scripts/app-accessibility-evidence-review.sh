@@ -25,6 +25,23 @@ expect_file_contains() {
     fail "$path is missing expected text: $needle"
 }
 
+expect_manifest_value() {
+  local path="$1"
+  local key="$2"
+  local value="$3"
+
+  rg --fixed-strings --line-regexp --quiet -- "$key=$value" "$path" ||
+    fail "$path is missing expected manifest value: $key=$value"
+}
+
+expect_manifest_key() {
+  local path="$1"
+  local key="$2"
+
+  rg --quiet "^${key}=" "$path" ||
+    fail "$path is missing expected manifest key: $key"
+}
+
 review_scenario() {
   local scenario="$1"
   local manifest_path="$evidence_dir/$scenario.manifest"
@@ -33,16 +50,16 @@ review_scenario() {
   test -f "$manifest_path" || fail "missing manifest: $manifest_path"
   test -s "$notes_path" || fail "missing notes: $notes_path"
 
-  expect_file_contains "$manifest_path" "scenario=$scenario"
-  expect_file_contains "$manifest_path" "git_sha=$head_sha"
-  expect_file_contains "$manifest_path" "git_dirty=$head_dirty"
-  expect_file_contains "$manifest_path" "voiceover=pass"
-  expect_file_contains "$manifest_path" "keyboard=pass"
-  expect_file_contains "$manifest_path" "state_not_color_only=pass"
-  expect_file_contains "$manifest_path" "dynamic_type=pass"
-  expect_file_contains "$manifest_path" "notes=$notes_path"
-  expect_file_contains "$manifest_path" "reviewed_at="
-  expect_file_contains "$manifest_path" "reviewer="
+  expect_manifest_value "$manifest_path" scenario "$scenario"
+  expect_manifest_value "$manifest_path" git_sha "$head_sha"
+  expect_manifest_value "$manifest_path" git_dirty "$head_dirty"
+  expect_manifest_value "$manifest_path" voiceover pass
+  expect_manifest_value "$manifest_path" keyboard pass
+  expect_manifest_value "$manifest_path" state_not_color_only pass
+  expect_manifest_value "$manifest_path" dynamic_type pass
+  expect_manifest_value "$manifest_path" notes "$notes_path"
+  expect_manifest_key "$manifest_path" reviewed_at
+  expect_manifest_key "$manifest_path" reviewer
 
   expect_file_contains "$notes_path" "# Accessibility Evidence: $scenario"
   expect_file_contains "$notes_path" "VoiceOver"
