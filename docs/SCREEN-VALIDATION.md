@@ -23,7 +23,8 @@ scenario.
 
 After capturing all required scenarios, run `make app-screen-evidence-review`.
 It verifies that each required manifest and PNG exists, points at the current Git
-SHA plus dirty state, and records the local window dimensions used for review.
+SHA plus dirty state, records the local window dimensions used for review, and
+matches the manifest against the actual PNG pixel dimensions.
 
 The first source-level accessibility contract is `scripts/app-accessibility-contract.sh`.
 It proves required SwiftUI surfaces expose stable accessibility labels and identifiers
@@ -131,7 +132,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Window shell | `scripts/app-window-smoke.sh` | The app launches and publishes the default window. |
 | Menu bar shell | `make app-menubar-smoke` | The app exposes the Keydex menu bar item plus Open and Quit actions. |
 | Local screen evidence | `scripts/app-screen-evidence.sh --list` and `make app-screen-evidence SCENARIO=<name>` | Captures local screenshot and manifest for manual screen review evidence in `tmp/screen-evidence` (not CI required). |
-| Local screen review | `make app-screen-evidence-review` | Verifies the local screenshot and manifest set for all required script scenarios with exact manifest key-value matching for SHA, dirty state, scenario, mode, preset, and screenshot path. |
+| Local screen review | `make app-screen-evidence-review` | Verifies the local screenshot and manifest set for all required script scenarios with exact manifest key-value matching for SHA, dirty state, scenario, mode, preset, screenshot path, and actual PNG pixel dimensions. |
 | Accessibility contract | `scripts/app-accessibility-contract.sh` | Required app surfaces expose stable labels and identifiers. |
 | Runtime accessibility smoke | `make app-accessibility-smoke` | Running app exposes expected sidebar, table, doctor, inspector, settings, and state names through AX. |
 | Accessibility evidence template | `make app-accessibility-evidence-template` | Creates pending local manifest and notes files for every required scenario. |
