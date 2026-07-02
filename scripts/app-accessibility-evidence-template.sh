@@ -15,6 +15,9 @@ fi
 
 command -v git >/dev/null 2>&1 || fail "missing dependency: git"
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$script_dir/app-evidence-scenarios.sh"
+
 git_dirty_state() {
   if ! git diff --quiet || ! git diff --cached --quiet || [[ -n "$(git ls-files --others --exclude-standard)" ]]; then
     printf 'dirty'
@@ -83,18 +86,8 @@ NOTES
 
 mkdir -p "$evidence_dir"
 
-write_scenario_template default-window
-write_scenario_template card-view
-write_scenario_template card-detail
-write_scenario_template empty-inventory
-write_scenario_template search-filter
-write_scenario_template inspector
-write_scenario_template settings
-write_scenario_template settings-appearance
-write_scenario_template settings-sources
-write_scenario_template settings-paths
-write_scenario_template settings-tags
-write_scenario_template settings-rules
-write_scenario_template compact-window
+for scenario in "${KEYDEX_EVIDENCE_SCENARIOS[@]}"; do
+  write_scenario_template "$scenario"
+done
 
 echo "app accessibility evidence template clean"

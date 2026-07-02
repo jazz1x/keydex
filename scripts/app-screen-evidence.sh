@@ -11,6 +11,9 @@ command -v screencapture >/dev/null 2>&1 || fail "missing dependency: screencapt
 command -v sips >/dev/null 2>&1 || fail "missing dependency: sips"
 command -v swift >/dev/null 2>&1 || fail "missing dependency: swift"
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$script_dir/app-evidence-scenarios.sh"
+
 git_dirty_state() {
   if ! git diff --quiet || ! git diff --cached --quiet || [[ -n "$(git ls-files --others --exclude-standard)" ]]; then
     printf 'dirty'
@@ -88,25 +91,10 @@ window_report() {
 }
 
 list_scenarios() {
-  printf '%s\n' \
-    default-window \
-    card-view \
-    card-detail \
-    empty-inventory \
-    search-filter \
-    inspector \
-    settings \
-    settings-appearance \
-    settings-sources \
-    settings-paths \
-    settings-tags \
-    settings-rules \
-    compact-window
+  keydex_list_evidence_scenarios
 }
 
 scenario="${1:-default-window}"
-inventory_mode="sample"
-window_preset="default"
 window_selector="main"
 
 if [[ "$scenario" == "--list" ]]; then
@@ -114,33 +102,10 @@ if [[ "$scenario" == "--list" ]]; then
   exit 0
 fi
 
-case "$scenario" in
-  default-window)
-    inventory_mode="sample"
-    ;;
-  card-view)
-    inventory_mode="sample"
-    ;;
-  card-detail)
-    inventory_mode="sample"
-    ;;
-  empty-inventory)
-    inventory_mode="empty"
-    ;;
-  search-filter | inspector)
-    inventory_mode="sample"
-    ;;
-  settings | settings-appearance | settings-sources | settings-paths | settings-tags | settings-rules)
-    inventory_mode="sample"
-    ;;
-  compact-window)
-    inventory_mode="sample"
-    window_preset="compact"
-    ;;
-  *)
-    fail "unknown screen evidence scenario: $scenario. Supported scenarios: default-window, card-view, card-detail, empty-inventory, search-filter, inspector, settings, settings-appearance, settings-sources, settings-paths, settings-tags, settings-rules, compact-window"
-    ;;
-esac
+inventory_mode="$(keydex_evidence_inventory_mode "$scenario")" ||
+  fail "unknown screen evidence scenario: $scenario. Supported scenarios: $(keydex_supported_evidence_scenarios)"
+window_preset="$(keydex_evidence_window_preset "$scenario")" ||
+  fail "unknown screen evidence scenario: $scenario. Supported scenarios: $(keydex_supported_evidence_scenarios)"
 
 output_dir="${KEYDEX_SCREEN_EVIDENCE_DIR:-tmp/screen-evidence}"
 mkdir -p "$output_dir"
