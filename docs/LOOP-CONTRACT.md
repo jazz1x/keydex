@@ -29,6 +29,10 @@ before.
 | `keydex` | CLI orchestration and terminal presentation | Core, sources, store, keychain | SwiftUI, AppKit |
 | `KeydexApp` | Native macOS presentation and screen evidence hooks | KeydexCore, SwiftUI, AppKit | Security |
 
+Source imports follow the package dependency direction. `KeydexApp` consumes
+`KeydexCore` projections and local presentation state; it must not import
+`KeydexKeychain`, `KeydexSources`, or `KeydexStore` directly.
+
 ## Clean-Code Rules
 
 - State names are product vocabulary. Adding or changing one requires docs, CLI,
