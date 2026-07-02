@@ -32,6 +32,12 @@ image_dimension() {
   printf '%s' "$value"
 }
 
+window_geometry() {
+  local report="$1"
+
+  printf '%s' "${report#window=* }"
+}
+
 window_report() {
   local pid="$1"
   local selector="$2"
@@ -129,14 +135,15 @@ cleanup() {
 trap cleanup EXIT
 
 report=""
-previous_report=""
+previous_geometry=""
 for attempt in 1 2 3 4 5 6 7 8 9 10; do
   if current_report="$(window_report "$app_pid" "$window_selector")"; then
-    if [[ "$current_report" == "$previous_report" ]] && ((attempt >= 5)); then
+    current_geometry="$(window_geometry "$current_report")"
+    if [[ "$current_geometry" == "$previous_geometry" ]] && ((attempt >= 5)); then
       report="$current_report"
       break
     fi
-    previous_report="$current_report"
+    previous_geometry="$current_geometry"
   fi
   sleep 1
 done
