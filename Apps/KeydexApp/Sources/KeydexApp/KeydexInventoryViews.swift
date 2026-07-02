@@ -204,6 +204,7 @@ private struct CredentialCardGrid: View {
   let restoreScrollAnchorID: CredentialRow.ID?
   @Binding var selectedCredentialID: CredentialRow.ID?
   let selectCredential: (CredentialRow.ID) -> Void
+  @FocusState private var focusedCredentialID: CredentialRow.ID?
 
   private let columns = [
     GridItem(
@@ -239,11 +240,14 @@ private struct CredentialCardGrid: View {
                   CredentialInventoryCard(
                     row: row,
                     artworkRootURL: artworkRootURL,
-                    isSelected: selectedCredentialID == row.id
+                    isSelected: selectedCredentialID == row.id,
+                    isKeyboardFocused: focusedCredentialID == row.id
                   ) {
                     selectCredential(row.id)
                   }
                   .id(row.id)
+                  .focused($focusedCredentialID, equals: row.id)
+                  .focusEffectDisabled()
                 }
               }
             }
@@ -294,6 +298,7 @@ private struct CredentialInventoryCard: View {
   let row: CredentialRow
   let artworkRootURL: URL
   let isSelected: Bool
+  let isKeyboardFocused: Bool
   let selectAction: () -> Void
 
   var body: some View {
@@ -303,7 +308,7 @@ private struct CredentialInventoryCard: View {
           row: row,
           height: KeydexCardGridLayout.posterHeight,
           artworkRootURL: artworkRootURL,
-          selected: isSelected
+          emphasis: artworkEmphasis
         )
 
         VStack(alignment: .leading, spacing: KeydexCardGridLayout.textDeckSpacing) {
@@ -329,13 +334,31 @@ private struct CredentialInventoryCard: View {
     .buttonStyle(.plain)
     .accessibilityLabel(row.cardAccessibilityLabel)
   }
+
+  private var artworkEmphasis: CredentialArtworkEmphasis {
+    if isKeyboardFocused {
+      return .keyboardFocus
+    }
+
+    if isSelected {
+      return .selected
+    }
+
+    return .none
+  }
+}
+
+private enum CredentialArtworkEmphasis {
+  case none
+  case selected
+  case keyboardFocus
 }
 
 private struct CredentialArtworkPanel: View {
   let row: CredentialRow
   var height: CGFloat = 82
   let artworkRootURL: URL
-  var selected = false
+  var emphasis: CredentialArtworkEmphasis = .none
 
   var body: some View {
     ZStack {
@@ -393,11 +416,14 @@ private struct CredentialArtworkPanel: View {
   }
 
   private var panelStroke: Color {
-    if selected {
+    switch emphasis {
+    case .keyboardFocus:
+      return Color.primary.opacity(isPoster ? 0.30 : 0.22)
+    case .selected:
       return preset.primaryTint.opacity(isPoster ? 0.28 : 0.20)
+    case .none:
+      return preset.primaryTint.opacity(isPoster ? 0.18 : 0.12)
     }
-
-    return preset.primaryTint.opacity(isPoster ? 0.18 : 0.12)
   }
 
   private var panelRadius: CGFloat {
