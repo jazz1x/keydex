@@ -13,10 +13,12 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$script_dir/app-evidence-scenarios.sh"
 
 app_source="Apps/KeydexApp/Sources/KeydexApp/KeydexPresentationModel.swift"
+accessibility_smoke_script="scripts/app-accessibility-smoke.sh"
 screen_doc="docs/SCREEN-VALIDATION.md"
 validation_doc="docs/VALIDATION-SCENARIOS.md"
 release_candidate_doc="docs/RELEASE-CANDIDATE.md"
 test -f "$app_source" || fail "missing app presentation model: $app_source"
+test -f "$accessibility_smoke_script" || fail "missing accessibility smoke script: $accessibility_smoke_script"
 test -f "$screen_doc" || fail "missing screen validation doc: $screen_doc"
 test -f "$validation_doc" || fail "missing validation scenarios doc: $validation_doc"
 test -f "$release_candidate_doc" || fail "missing release candidate doc: $release_candidate_doc"
@@ -121,6 +123,19 @@ if [[ "$app_scenarios" != "$expected_scenarios" ]]; then
   fail "AppScreenScenario raw values drifted from KEYDEX_EVIDENCE_SCENARIOS"
 fi
 
+accessibility_smoke_scenarios="$(
+  awk '/^[[:space:]]*run_scenario[[:space:]]+/ { print $2 }' "$accessibility_smoke_script"
+)"
+
+if [[ -z "$accessibility_smoke_scenarios" ]]; then
+  fail "$accessibility_smoke_script does not declare any run_scenario checks"
+fi
+
+while IFS= read -r scenario; do
+  keydex_is_evidence_scenario "$scenario" ||
+    fail "$accessibility_smoke_script references unsupported evidence scenario: $scenario"
+done <<<"$accessibility_smoke_scenarios"
+
 while IFS= read -r scenario; do
   inventory_mode="$(keydex_evidence_inventory_mode "$scenario")" ||
     fail "missing inventory mode for scenario: $scenario"
@@ -146,6 +161,15 @@ while IFS= read -r scenario; do
     fail "$screen_doc is missing required evidence scenario: $scenario"
   fi
 done <<<"$expected_scenarios"
+
+for needle in \
+  "Runtime accessibility" \
+  "scripts/app-accessibility-smoke.sh" \
+  "scripts/app-evidence-scenarios.sh"; do
+  if ! rg --fixed-strings --quiet -- "$needle" "$screen_doc"; then
+    fail "$screen_doc is missing accessibility smoke scenario SSOT text: $needle"
+  fi
+done
 
 for needle in \
   "scripts/app-evidence-scenarios.sh" \
