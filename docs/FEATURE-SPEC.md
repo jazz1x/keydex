@@ -78,6 +78,7 @@ The first M3 CLI boundary uses `CredentialProjection` from `InventoryGraph` so `
 | Feature | Behavior | Acceptance Criteria |
 | --- | --- | --- |
 | Metadata persistence | Store references, tags, notes, ignore rules, expiry metadata. | Tests prove no secret value field is persisted. |
+| Card artwork metadata | Store user-selected card artwork references outside secret metadata. | Imported images are copied to the app support artwork store and can reset to default presets. |
 | Metadata fixture | Load safe JSON metadata records for CLI scenarios. | File store tests prove parsing and invalid states. |
 | Graph reconstruction | Load metadata and observations into graph. | Store fixture creates deterministic graph. |
 | Ignore rules | Mark source or credential as intentionally unmanaged. | Doctor respects ignore metadata. |
@@ -110,8 +111,8 @@ User language maps to graph truth:
 | Sidebar | Navigate graph scopes. | All, Expiring, Plaintext, Orphans, Duplicates, Services, Tags exist. |
 | Sidebar search | Narrow projection in place. | Search filters projection by service, account, tag, state, and source label. |
 | Inventory table | Show dense credential rows in grouped library sections. | Rows use canonical states, source counts, and selected pill state. |
-| Inventory cards | Show scannable credential cards. | Cards show service/account, canonical states, Keychain status, and source previews from the same graph projection as the table. |
-| Inspector | Show selected graph relationships. | Credential, sources, state, findings, notes, actions visible. |
+| Inventory cards | Show scannable credential cards. | Cards show service/account, canonical states, Keychain status, default or custom artwork, and source previews from the same graph projection as the table. |
+| Inspector | Show selected graph relationships. | Credential, sources, state, findings, notes, Keychain actions, tag actions, and artwork actions visible. |
 | Doctor panel | Show repair queue. | Findings grouped by severity and include cause/action. |
 | List/card display | Switch between list and card inventory layouts. | The selected mode and projection are preserved across sidebar selection changes. |
 | Settings | Show permissions, appearance, and scan paths. | User can manage local Keychain permission preference, Keychain references, light/dark appearance mode, scan sources, scan paths, expiry reminder policy, and ignored/unmanaged source rules. |

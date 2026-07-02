@@ -29,6 +29,7 @@ and honest about risk.
 | `glass.floating.refraction` | native clear interactive glass + materialize transition; no tint path | centered Doctor rail surface |
 | `surface.footerRail` | transparent footer lane + 90 pt content reserve + top separator 0.08 alpha | Apple Music-like footer rail and bottom player lane |
 | `artwork.state.tint` | semantic state color 0.18 alpha | card poster color field |
+| `artwork.custom.override` | local image copied under Application Support/Keydex/Artwork with preset fallback | user-owned card artwork |
 | `artwork.poster.symbol` | 50 pt size + 0.50 alpha | subdued credential glyph inside poster |
 | `artwork.poster.wash` | semantic state color 0.045 alpha + white 0.055 highlight | Apple Music-like poster media wash |
 | `text.primary` | label | credential names and actions |
@@ -123,6 +124,9 @@ and honest about risk.
   shelf of artwork tiles instead of stretching into dashboard banners.
 - Repeated inventory cards have no second outer card shell. Selection belongs on
   the poster outline so the artwork remains the only framed tile.
+- Repeated card selection must not use the global blue accent ring. Selected posters
+  use the artwork preset's own low-alpha stroke so mouse selection does not read as
+  keyboard focus.
 - Repeated inventory cards follow a single poster frame only contract. Card mode
   has no repeated capsule badge strip below each poster; account, canonical state,
   and Keychain status compress into one plain caption below the title.
@@ -131,6 +135,9 @@ and honest about risk.
   cluster, status chip, and source rows that read like a playlist track list. Card
   click detail must not reintroduce a persistent right inspector or modal sheet
   into card mode.
+- Credential-scoped detail and inspector actions use neutral action buttons. The
+  global toolbar registration command can stay prominent, but opening a credential
+  must not make a scoped action look like a default focused blue control.
 - Card-to-detail and detail-to-card transitions use the content motion token and
   restore the clicked card as the return anchor instead of resetting the shelf to
   the top.
@@ -138,6 +145,9 @@ and honest about risk.
   graph lines, constellations, glow-only hierarchy, or fake analytics imagery.
 - Poster glyphs stay subdued so the credential card reads like Music library artwork,
   not a dashboard status tile.
+- Custom artwork controls live beside credential identity actions in card detail and
+  inspector surfaces. They must not be nested under tag management, and missing files
+  fall back to the credential's default preset artwork.
 - The repair queue uses a centered music-player-like repair rail inside a
   transparent footer lane instead of a hard split panel or opaque painted overlay.
   The lane has a 0.08 alpha top separator, and scrollable content keeps a 90 pt

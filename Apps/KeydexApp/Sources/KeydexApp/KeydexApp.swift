@@ -65,6 +65,7 @@ struct KeydexApp: App {
 
 struct CredentialInventoryShellView: View {
   @Environment(\.appearsActive) private var appearsActive
+  private let artworkStore: CredentialArtworkStore
   @State private var selectedSidebar: SidebarSelection
   @State private var selectedCredentialID: CredentialRow.ID?
   @State private var searchText: String
@@ -72,12 +73,16 @@ struct CredentialInventoryShellView: View {
   @State private var selectedSettingsSection: SettingsSection
   @State private var inventoryMode: InventoryMode
   @State private var settingsConfig: ShellSettingsConfig
+  @State private var artworkOverrides: [CredentialRow.ID: CredentialArtworkOverride]
+  @State private var artworkIssueMessage: String?
 
-  init() {
+  init(artworkStore: CredentialArtworkStore = CredentialArtworkStore()) {
     let initialScenario = Self.screenScenarioFromEnvironment()
     let initialMode = Self.inventoryModeFromEnvironment(
       defaultingTo: initialScenario.inventoryMode
     )
+    let artworkLoadState = artworkStore.loadOverrides()
+    self.artworkStore = artworkStore
     _selectedSidebar = State(initialValue: initialScenario.sidebarSelection)
     _selectedCredentialID = State(initialValue: initialScenario.selectedCredentialID)
     _searchText = State(initialValue: initialScenario.searchText)
@@ -89,6 +94,8 @@ struct CredentialInventoryShellView: View {
         displayMode: initialScenario.displayMode
       )
     )
+    _artworkOverrides = State(initialValue: artworkLoadState.overrides)
+    _artworkIssueMessage = State(initialValue: artworkLoadState.issueMessage)
   }
 
   fileprivate static func inventoryModeFromEnvironment(
@@ -162,7 +169,12 @@ struct CredentialInventoryShellView: View {
   private var rows: [CredentialRow] {
     projectedCredentials
       .map { projection in
-        CredentialRow(projection: projection, tags: tags(for: projection))
+        let credentialID = CredentialRow.identifier(for: projection)
+        return CredentialRow(
+          projection: projection,
+          tags: tags(for: projection),
+          artworkOverride: artworkOverrides[credentialID]
+        )
       }
       .filter { rowMatchesSidebar($0, selectedSidebar) }
       .filter { rowMatchesSearch($0) }
@@ -230,6 +242,13 @@ struct CredentialInventoryShellView: View {
         .animation(KeydexMotion.contentTransition, value: isShowingSettings)
         .accessibilityIdentifier("keydex.settings.overlay")
       }
+    }
+    .alert("Artwork could not be updated", isPresented: artworkIssueBinding) {
+      Button("OK", role: .cancel) {
+        artworkIssueMessage = nil
+      }
+    } message: {
+      Text(artworkIssueMessage ?? "The artwork library reported an unknown issue.")
     }
     .toolbar {
       ToolbarItem(placement: .status) {
@@ -301,6 +320,12 @@ struct CredentialInventoryShellView: View {
       } manageTagsAction: {
         selectedSettingsSection = .tags
         isShowingSettings = true
+      } importArtworkAction: { sourceURL, row in
+        importArtwork(from: sourceURL, for: row)
+      } resetArtworkAction: { row in
+        resetArtwork(for: row)
+      } artworkFailureAction: { error in
+        artworkIssueMessage = error.localizedDescription
       }
       .frame(minHeight: 320, maxHeight: .infinity)
 
@@ -326,6 +351,12 @@ struct CredentialInventoryShellView: View {
         } manageTagsAction: {
           selectedSettingsSection = .tags
           isShowingSettings = true
+        } importArtworkAction: { sourceURL, row in
+          importArtwork(from: sourceURL, for: row)
+        } resetArtworkAction: { row in
+          resetArtwork(for: row)
+        } artworkFailureAction: { error in
+          artworkIssueMessage = error.localizedDescription
         }
       } else {
         ContentUnavailableView(
@@ -382,6 +413,46 @@ struct CredentialInventoryShellView: View {
     withAnimation(KeydexMotion.contentTransition) {
       settingsConfig.displayMode = .cards
       selectedCredentialID = issue.credentialID
+    }
+  }
+
+  private var artworkIssueBinding: Binding<Bool> {
+    Binding(
+      get: { artworkIssueMessage != nil },
+      set: { isPresented in
+        if !isPresented {
+          artworkIssueMessage = nil
+        }
+      }
+    )
+  }
+
+  private func importArtwork(from sourceURL: URL, for row: CredentialRow) {
+    let result = artworkStore.importArtwork(
+      from: sourceURL,
+      credentialID: row.id,
+      existingOverrides: artworkOverrides
+    )
+
+    switch result {
+    case .success(let override):
+      artworkOverrides[row.id] = override
+    case .failure(let error):
+      artworkIssueMessage = error.localizedDescription
+    }
+  }
+
+  private func resetArtwork(for row: CredentialRow) {
+    let result = artworkStore.removeArtwork(
+      for: row.id,
+      existingOverrides: artworkOverrides
+    )
+
+    switch result {
+    case .success:
+      artworkOverrides.removeValue(forKey: row.id)
+    case .failure(let error):
+      artworkIssueMessage = error.localizedDescription
     }
   }
 
