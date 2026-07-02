@@ -190,3 +190,6 @@ VoiceOver, Keyboard, State Not Color Only, Dynamic Type, and Open Issues.
 The first M4 shell is complete when the SwiftUI app target builds from `make guard`.
 M4 itself is not complete until every required screen has screenshot evidence,
 accessibility evidence, and a passing review against this document.
+Completion claims must use `make evidence-status` output, not screenshots alone:
+`app_screen_evidence=pass`, `app_accessibility_manual=pass`, and `needs_attention=0`
+must all be current for the same Git SHA.
