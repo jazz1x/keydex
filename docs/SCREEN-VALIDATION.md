@@ -38,7 +38,11 @@ before permissioned screenshot or VoiceOver evidence is attached.
 The first runtime accessibility smoke is `scripts/app-accessibility-smoke.sh`. It launches
 the app locally, reads the macOS accessibility tree with `AXUIElement`, and proves core
 surface names are visible from the running app. It requires macOS accessibility trust for
-the host process and is not a substitute for VoiceOver review notes. AX window publication is asynchronous after app launch, so the smoke uses bounded polling only to wait for the first readable window tree; missing windows still fail.
+the host process and is not a substitute for VoiceOver review notes. Runtime accessibility
+smoke scenarios must remain members of `scripts/app-evidence-scenarios.sh`, so renamed
+or removed screen states fail the shared scenario contract instead of silently drifting.
+AX window publication is asynchronous after app launch, so the smoke uses bounded polling
+only to wait for the first readable window tree; missing windows still fail.
 
 Manual accessibility evidence is reviewed with
 `scripts/app-accessibility-evidence-review.sh`. It verifies local manifests and notes in
