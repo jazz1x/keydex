@@ -15,6 +15,7 @@ CLI, app, and release evidence.
 | App build tests | Prove the SwiftUI shell compiles against graph projections. |
 | App window smoke | Prove the SwiftUI shell launches a default window locally. |
 | App accessibility contract | Prove required SwiftUI surfaces expose stable labels and identifiers. |
+| App evidence scenario contract | Prove screen, accessibility, runtime smoke, docs, and SwiftUI scenarios share one supported scenario list. |
 | App screen tests | Prove SwiftUI surfaces render the graph truth. |
 | Release smoke tests | Prove local release artifacts build, bundle, ad-hoc sign, create DMG, run, checksum, and omit fixture metadata. |
 
@@ -82,6 +83,9 @@ The first empty inventory shell must render an empty `InventoryGraph` rather tha
 separate hardcoded list.
 The first accessibility contract must run in `make quality` and check stable SwiftUI
 surface labels and identifiers before permissioned screenshot evidence exists.
+The first app evidence scenario contract must run in `make quality` and reject screen,
+accessibility evidence, runtime smoke, docs, or SwiftUI scenario drift from
+`scripts/app-evidence-scenarios.sh`.
 
 ## Completion Rule
 
