@@ -93,13 +93,16 @@ first scenario set for `list`, `where`, `doctor`, and `scan config`.
 ## Screen Scenarios
 
 Screen validation details live in `SCREEN-VALIDATION.md`.
+The supported screen and accessibility scenario list is owned by
+`scripts/app-evidence-scenarios.sh`; inspect it with
+`scripts/app-screen-evidence.sh --list`.
 Manual local screen evidence capture is done with `scripts/app-screen-evidence.sh`, which
 requires local Screen Recording permission on macOS and writes PNG output plus manifest files
 to `tmp/screen-evidence`. This command is not CI-required and does not replace the required
 screen review evidence flow.
-The first supported scenarios are `default-window` and `empty-inventory`.
-Functional release cannot be called complete until screen scenarios have screenshot and
-accessibility evidence.
+`make app-evidence-scenarios-contract` keeps the scenario SSOT aligned with the SwiftUI app
+and evidence scripts. Functional release cannot be called complete until every required
+scenario has current screenshot and accessibility evidence.
 
 ## Release Scenarios
 

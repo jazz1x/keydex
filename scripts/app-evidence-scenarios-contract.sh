@@ -7,12 +7,17 @@ fail() {
 }
 
 command -v swift >/dev/null 2>&1 || fail "missing dependency: swift"
+command -v rg >/dev/null 2>&1 || fail "missing dependency: rg (ripgrep)"
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$script_dir/app-evidence-scenarios.sh"
 
 app_source="Apps/KeydexApp/Sources/KeydexApp/KeydexPresentationModel.swift"
+screen_doc="docs/SCREEN-VALIDATION.md"
+validation_doc="docs/VALIDATION-SCENARIOS.md"
 test -f "$app_source" || fail "missing app presentation model: $app_source"
+test -f "$screen_doc" || fail "missing screen validation doc: $screen_doc"
+test -f "$validation_doc" || fail "missing validation scenarios doc: $validation_doc"
 
 expected_scenarios="$(keydex_list_evidence_scenarios)"
 listed_scenarios="$("$script_dir/app-screen-evidence.sh" --list)"
@@ -100,6 +105,26 @@ if [[ "$app_scenarios" != "$expected_scenarios" ]]; then
   printf 'expected scenarios:\n%s\n' "$expected_scenarios" >&2
   printf 'app scenarios:\n%s\n' "$app_scenarios" >&2
   fail "AppScreenScenario raw values drifted from KEYDEX_EVIDENCE_SCENARIOS"
+fi
+
+while IFS= read -r scenario; do
+  if ! rg --fixed-strings --quiet -- "$scenario" "$screen_doc"; then
+    fail "$screen_doc is missing required evidence scenario: $scenario"
+  fi
+done <<<"$expected_scenarios"
+
+for needle in \
+  "scripts/app-evidence-scenarios.sh" \
+  "scripts/app-screen-evidence.sh --list" \
+  "make app-evidence-scenarios-contract" \
+  "scenario has current screenshot and accessibility evidence"; do
+  if ! rg --fixed-strings --quiet -- "$needle" "$validation_doc"; then
+    fail "$validation_doc is missing scenario SSOT text: $needle"
+  fi
+done
+
+if rg --fixed-strings --quiet -- "The first supported scenarios are" "$validation_doc"; then
+  fail "$validation_doc must not name a partial first scenario set"
 fi
 
 echo "app evidence scenarios contract clean"
