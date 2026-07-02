@@ -73,3 +73,6 @@ values.
 
 This candidate can become a public Mac app release only after the publish blockers are
 resolved or explicitly deferred in `RELEASE-READINESS.md`.
+A deferred signing decision may describe a pre-signing artifact, but it must not call the
+candidate trusted or M5 complete while `release_signing_readiness` or
+`release_signing_evidence` are not `pass` in `make evidence-status`.
