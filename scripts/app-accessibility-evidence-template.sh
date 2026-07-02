@@ -15,8 +15,17 @@ fi
 
 command -v git >/dev/null 2>&1 || fail "missing dependency: git"
 
+git_dirty_state() {
+  if ! git diff --quiet || ! git diff --cached --quiet || [[ -n "$(git ls-files --others --exclude-standard)" ]]; then
+    printf 'dirty'
+  else
+    printf 'clean'
+  fi
+}
+
 evidence_dir="${KEYDEX_ACCESSIBILITY_EVIDENCE_DIR:-tmp/accessibility-evidence}"
 head_sha="$(git rev-parse --short HEAD)"
+head_dirty="$(git_dirty_state)"
 
 write_scenario_template() {
   local scenario="$1"
@@ -31,6 +40,7 @@ write_scenario_template() {
   cat >"$manifest_path" <<MANIFEST
 scenario=$scenario
 git_sha=$head_sha
+git_dirty=$head_dirty
 voiceover=pending
 keyboard=pending
 state_not_color_only=pending

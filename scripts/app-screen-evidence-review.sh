@@ -6,7 +6,16 @@ fail() {
   exit 1
 }
 
+command -v git >/dev/null 2>&1 || fail "missing dependency: git"
 command -v rg >/dev/null 2>&1 || fail "missing dependency: rg (ripgrep)"
+
+git_dirty_state() {
+  if ! git diff --quiet || ! git diff --cached --quiet || [[ -n "$(git ls-files --others --exclude-standard)" ]]; then
+    printf 'dirty'
+  else
+    printf 'clean'
+  fi
+}
 
 expect_file_contains() {
   local path="$1"
@@ -30,6 +39,7 @@ review_scenario() {
   expect_file_contains "$manifest_path" "inventory_mode=$inventory_mode"
   expect_file_contains "$manifest_path" "window_preset=$window_preset"
   expect_file_contains "$manifest_path" "git_sha=$head_sha"
+  expect_file_contains "$manifest_path" "git_dirty=$head_dirty"
   expect_file_contains "$manifest_path" "window="
   expect_file_contains "$manifest_path" "width="
   expect_file_contains "$manifest_path" "height="
@@ -47,6 +57,7 @@ review_scenario() {
 
 evidence_dir="${KEYDEX_SCREEN_EVIDENCE_DIR:-tmp/screen-evidence}"
 head_sha="$(git rev-parse --short HEAD)"
+head_dirty="$(git_dirty_state)"
 
 review_scenario default-window sample default
 review_scenario card-view sample default

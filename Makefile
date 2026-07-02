@@ -1,4 +1,4 @@
-.PHONY: guard format test app-build forbidden quality contract cli-smoke app-window-smoke app-menubar-smoke app-accessibility-contract app-accessibility-smoke app-accessibility-evidence-template app-accessibility-evidence-review app-design-contract app-screen-evidence app-screen-evidence-review release-smoke release-signing-readiness release-signing-evidence-template release-signing-evidence-review
+.PHONY: guard format test app-build forbidden quality contract loop-contract cli-smoke app-window-smoke app-menubar-smoke app-accessibility-contract app-accessibility-smoke app-accessibility-evidence-template app-accessibility-evidence-review app-design-contract app-screen-evidence app-screen-evidence-review release-smoke release-signing-readiness release-signing-evidence-template release-signing-evidence-review
 
 SWIFT_FORMAT ?= /Library/Developer/CommandLineTools/usr/bin/swift-format
 
@@ -21,6 +21,9 @@ quality:
 
 contract:
 	./scripts/project-contract.sh
+
+loop-contract:
+	./scripts/loop-contract.sh
 
 cli-smoke:
 	./scripts/cli-smoke.sh

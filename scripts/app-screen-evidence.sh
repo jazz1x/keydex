@@ -6,8 +6,17 @@ fail() {
   exit 1
 }
 
+command -v git >/dev/null 2>&1 || fail "missing dependency: git"
 command -v screencapture >/dev/null 2>&1 || fail "missing dependency: screencapture"
 command -v swift >/dev/null 2>&1 || fail "missing dependency: swift"
+
+git_dirty_state() {
+  if ! git diff --quiet || ! git diff --cached --quiet || [[ -n "$(git ls-files --others --exclude-standard)" ]]; then
+    printf 'dirty'
+  else
+    printf 'clean'
+  fi
+}
 
 window_report() {
   local pid="$1"
@@ -181,6 +190,7 @@ test -s "$capture_path" || fail "empty screenshot artifact: $capture_path"
   printf 'window_preset=%s\n' "$window_preset"
   printf 'captured_at=%s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
   printf 'git_sha=%s\n' "$(git rev-parse --short HEAD)"
+  printf 'git_dirty=%s\n' "$(git_dirty_state)"
   printf '%s\n' "$report"
   printf 'screenshot=%s\n' "$capture_path"
 } >"$manifest_path"

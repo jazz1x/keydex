@@ -38,7 +38,7 @@ First-run success means:
 - `swift run keydex reminders --metadata Tests/Fixtures/metadata.json --now 2026-07-01`
   reports the expired fixture reminder.
 - `make guard` passes format, tests, app build, and forbidden-pattern checks.
-- `make quality` passes command inventory, docs drift, contract, CLI smoke,
+- `make quality` passes command inventory, docs drift, loop contract, project contract, CLI smoke,
   accessibility contract, and design contract checks.
 
 ---
@@ -225,7 +225,8 @@ Design rules live in docs and scripts rather than screenshots alone:
 | Gate | What it checks |
 | --- | --- |
 | `make guard` | Swift format, tests, app build, forbidden patterns. |
-| `make quality` | CLI inventory drift, state/docs drift, project contract, CLI smoke, app design/accessibility contracts. |
+| `make quality` | CLI inventory drift, state/docs drift, loop contract, project contract, CLI smoke, app design/accessibility contracts. |
+| `make loop-contract` | Clean Architecture import boundaries, package dependency boundaries, and loop documentation wiring. |
 | `make release-smoke` | Release payload, CLI smoke artifact, ad-hoc app signing, archive, checksum, and DMG verification. |
 | `make release-signing-readiness` | Developer ID / notarization readiness evidence. |
 | `pre-commit run --all-files` | Local hook suite before commit. |
@@ -247,6 +248,7 @@ Keydex follows one rule first: **state must not lie**.
 - [VALIDATION-SCENARIOS.md](docs/VALIDATION-SCENARIOS.md) - functional validation scenarios
 - [SCREEN-VALIDATION.md](docs/SCREEN-VALIDATION.md) - screenshot and accessibility evidence
 - [GRAPH-WORKFLOW.md](docs/GRAPH-WORKFLOW.md) - graph traversal and workflow contract
+- [LOOP-CONTRACT.md](docs/LOOP-CONTRACT.md) - quality loop, architecture boundary, and evidence contract
 - [ENFORCEMENT.md](docs/ENFORCEMENT.md) - guardrail policy
 - [VERIFICATION.md](docs/VERIFICATION.md) - verification surfaces
 - [TESTING-STRATEGY.md](docs/TESTING-STRATEGY.md) - test pyramid and boundary rules

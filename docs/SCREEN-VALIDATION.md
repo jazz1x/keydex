@@ -23,16 +23,16 @@ scenario.
 
 After capturing all required scenarios, run `make app-screen-evidence-review`.
 It verifies that each required manifest and PNG exists, points at the current Git
-SHA, and records the local window dimensions used for review.
+SHA plus dirty state, and records the local window dimensions used for review.
 
 The first source-level accessibility contract is `scripts/app-accessibility-contract.sh`.
 It proves required SwiftUI surfaces expose stable accessibility labels and identifiers
 before permissioned screenshot or VoiceOver evidence is attached.
 
 The first runtime accessibility smoke is `scripts/app-accessibility-smoke.sh`. It launches
-the app locally, reads the macOS accessibility tree with System Events, and proves core
-surface names are visible from the running app. It requires macOS accessibility scripting
-permission and is not a substitute for VoiceOver review notes.
+the app locally, reads the macOS accessibility tree with `AXUIElement`, and proves core
+surface names are visible from the running app. It requires macOS accessibility trust for
+the host process and is not a substitute for VoiceOver review notes. AX window publication is asynchronous after app launch, so the smoke uses bounded polling only to wait for the first readable window tree; missing windows still fail.
 
 Manual accessibility evidence is reviewed with
 `scripts/app-accessibility-evidence-review.sh`. It verifies local manifests and notes in
@@ -42,7 +42,7 @@ must be reviewed on a permissioned Mac session.
 
 Use `make app-accessibility-evidence-template` to create pending local evidence files for
 all required scenarios. The generated manifests intentionally use `pending` values; change
-them to `pass` only after reviewing the paired notes on the current Git SHA.
+them to `pass` only after reviewing the paired notes on the current Git SHA plus dirty state.
 
 The first source-level HIG and Liquid Glass contract is `scripts/app-design-contract.sh`.
 It proves the app keeps native Mac utility structure, graph-derived repair surfaces,
@@ -163,6 +163,7 @@ For each required script scenario, create
 
 - `scenario=<scenario>`
 - `git_sha=<short sha>`
+- `git_dirty=<clean|dirty>`
 - `voiceover=pass`
 - `keyboard=pass`
 - `state_not_color_only=pass`

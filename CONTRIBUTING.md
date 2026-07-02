@@ -25,9 +25,17 @@ verification:
 make contract
 ```
 
-`make guard` is stack-free. It runs Swift formatting, tests, and forbidden pattern scans.
+Run the loop-contract gate when changing module boundaries, UI/framework imports, or
+the evidence loop:
+
+```bash
+make loop-contract
+```
+
+`make guard` is stack-free. It runs Swift formatting, tests, app build, and forbidden pattern scans.
 `make quality` checks user-facing drift: CLI command inventory, state taxonomy docs, guard
-documentation, anti-goals, workflow wiring, and the project contract.
+documentation, anti-goals, workflow wiring, project contract, loop contract, CLI smoke,
+app accessibility/design contracts, and the menubar smoke script contract.
 
 ## Branch And PR Workflow
 
@@ -50,6 +58,7 @@ Read these before non-trivial changes:
 - [DESIGN-FOUNDATION.md](docs/DESIGN-FOUNDATION.md)
 - [DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md)
 - [GRAPH-WORKFLOW.md](docs/GRAPH-WORKFLOW.md)
+- [LOOP-CONTRACT.md](docs/LOOP-CONTRACT.md)
 - [ENFORCEMENT.md](docs/ENFORCEMENT.md)
 - [VERIFICATION.md](docs/VERIFICATION.md)
 - [VALIDATION-SCENARIOS.md](docs/VALIDATION-SCENARIOS.md)

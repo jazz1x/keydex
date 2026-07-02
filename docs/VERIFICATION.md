@@ -11,19 +11,20 @@ prove its own contract will drift into wishful UI.
 | Tests | `swift test` | Domain, graph, source parser, and doctor behavior. |
 | App Build | `swift build --product KeydexApp` | SwiftUI Mac app shell compiles against graph projections. |
 | App Window Smoke | `scripts/app-window-smoke.sh` | SwiftUI Mac app shell launches a stable default local window and reports its dimensions. |
-| App Screen Evidence Review | `scripts/app-screen-evidence-review.sh` | Local screenshot manifests and PNGs cover required screen scenarios for the current Git SHA. |
-| App Accessibility Smoke | `scripts/app-accessibility-smoke.sh` | Running app exposes core sidebar, table, doctor, inspector, settings, and state names through the macOS accessibility tree. |
+| App Screen Evidence Review | `scripts/app-screen-evidence-review.sh` | Local screenshot manifests and PNGs cover required screen scenarios for the current Git SHA and dirty state. |
+| App Accessibility Smoke | `scripts/app-accessibility-smoke.sh` | Running app exposes core sidebar, table, doctor, inspector, settings, and state names through the macOS `AXUIElement` tree. |
 | App Accessibility Evidence Template | `scripts/app-accessibility-evidence-template.sh` | Pending local evidence files can be generated for each required scenario without falsely passing review. |
-| App Accessibility Evidence Review | `scripts/app-accessibility-evidence-review.sh` | Local VoiceOver, keyboard, state-label, and dynamic type evidence covers required screen scenarios for the current Git SHA. |
+| App Accessibility Evidence Review | `scripts/app-accessibility-evidence-review.sh` | Local VoiceOver, keyboard, state-label, and dynamic type evidence covers required screen scenarios for the current Git SHA and dirty state. |
 | App Design Contract | `scripts/app-design-contract.sh` | Native Mac utility structure, graph-derived repair surfaces, and anti-theater visual rules remain wired. |
 | Forbidden Patterns | `scripts/forbidden-patterns.sh` | No silent `try?`, empty `catch`, or obvious secret-value metadata. |
+| Loop Contract | `scripts/loop-contract.sh` | Clean Architecture import boundaries, package dependency boundaries, and loop documentation wiring remain aligned. |
 | Project Contract | `scripts/project-contract.sh` | Goals, planning pack, design system, graph workflow, verification docs, and README links stay aligned. |
-| Quality | `make quality` | CLI docs, state taxonomy, workflow wiring, and project contract. |
+| Quality | `make quality` | CLI docs, state taxonomy, workflow wiring, project contract, loop contract, CLI smoke, app accessibility/design contracts, and menubar smoke script contract. |
 | CLI Smoke | `scripts/cli-smoke.sh` | Fixture-backed `list`, `where`, `doctor`, `reminders`, and `scan config` outputs, including status symbols and scope labels. |
 | Release Smoke | `scripts/release-smoke.sh` | Release-mode artifacts bundle locally, ad-hoc sign cleanly, create unsigned DMG smoke evidence, checksum cleanly, and omit fixture metadata. |
 | Release Signing Readiness | `scripts/release-signing-readiness.sh` | Local Developer ID Application identity and Apple notarization tools exist before public app signing. |
 | Release Signing Evidence Template | `scripts/release-signing-evidence-template.sh` | Pending local evidence can be generated for Developer ID signing and notarization without falsely passing review. |
-| Release Signing Evidence Review | `scripts/release-signing-evidence-review.sh` | Signed app, notarized/stapled DMG, checksum, and release-candidate evidence are verified for the current Git SHA. |
+| Release Signing Evidence Review | `scripts/release-signing-evidence-review.sh` | Signed app, notarized/stapled DMG, checksum, and release-candidate evidence are verified for the current Git SHA and dirty state. |
 | Security | GitHub Actions `gitleaks` and `trivy` | Secret leaks, high-risk dependency and config findings. |
 | Branch Protection | GitHub `main` protection | Required checks, PR flow, linear history, and force-push prevention. |
 
