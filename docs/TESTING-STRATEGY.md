@@ -11,6 +11,7 @@ CLI, app, and release evidence.
 | Source parser tests | Prove scanner inputs become observations without secret values. |
 | Store fixture tests | Prove metadata input excludes secret values and rejects invalid states. |
 | CLI scenario tests | Prove commands use graph projections and stable output. |
+| App store tests | Prove presentation metadata stores copy, load, reset, and surface visible fallback issues. |
 | App build tests | Prove the SwiftUI shell compiles against graph projections. |
 | App window smoke | Prove the SwiftUI shell launches a default window locally. |
 | App accessibility contract | Prove required SwiftUI surfaces expose stable labels and identifiers. |
@@ -30,6 +31,7 @@ CLI, app, and release evidence.
 | UI fit | Screens do not overlap or truncate critical text. |
 | Keychain reconciliation | Registered, missing, and orphan states are derived from metadata-Keychain relationships. |
 | Expiry reminders | `expiresAt` and `notifyBeforeDays` create deterministic scheduled/due/expired reminder evidence. |
+| Presentation metadata | Custom artwork state is stored outside secret metadata and can fall back visibly. |
 
 ## Test Data Rules
 
@@ -68,6 +70,7 @@ The first CLI smoke gate is `scripts/cli-smoke.sh`. It uses tracked fixtures in
 | Inspector | Selection shows relationships. |
 | Doctor panel | Findings show cause and action. |
 | Settings | Scan path and permission controls render. |
+| Artwork store | Imported artwork copies into the app support store, manifest state loads, reset removes files, and unreadable manifests surface an issue. |
 
 The first Doctor panel shell must read `CredentialDoctor().inspect(graph)` so repair
 queue rows stay graph-derived.
