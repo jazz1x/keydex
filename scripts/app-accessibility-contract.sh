@@ -33,6 +33,9 @@ for identifier in \
   keydex.inspector \
   keydex.inspector.manage-keychain \
   keydex.inspector.manage-tags \
+  keydex.card-detail.page \
+  keydex.card-detail.back \
+  keydex.card-detail.manage-keychain \
   keydex.card-detail.manage-tags \
   keydex.artwork.choose \
   keydex.artwork.reset \
@@ -70,6 +73,9 @@ for label in \
   "Credential inventory cards" \
   "Credential repair queue" \
   "Credential inspector" \
+  "Credential card detail" \
+  "Manage Keychain reference" \
+  "Manage credential tags" \
   "Choose custom artwork" \
   "Reset custom artwork" \
   "Close settings" \
