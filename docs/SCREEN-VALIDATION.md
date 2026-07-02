@@ -16,6 +16,9 @@ required screenshot and accessibility evidence below.
 manual validation runs. It requires macOS Screen Recording permission and must be run
 outside CI. The command writes a screenshot PNG plus a manifest into
 `tmp/screen-evidence`.
+The capture harness treats window geometry as the stability signal and uses the latest
+window id for `screencapture`, so AppKit window-number churn does not masquerade as a
+screen regression.
 
 Use `scripts/app-screen-evidence.sh --list` to inspect supported local capture
 scenarios. Use `make app-screen-evidence SCENARIO=<name>` to capture a specific
