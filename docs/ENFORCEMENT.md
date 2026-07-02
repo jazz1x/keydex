@@ -22,6 +22,7 @@ Keydex uses three enforcement layers.
 | Secret value stays outside metadata | review plus forbidden scan |
 | Project Contract docs stay present | `scripts/project-contract.sh` |
 | Evidence manifests match current SHA and dirty state | evidence review scripts |
+| Evidence status stays explicit | `make evidence-status` distinguishes `pass`, `pending`, `blocked`, and `needs-attention` without turning manual blockers into false passes. |
 | Planning pack stays present | `scripts/project-contract.sh` |
 | Graph workflow stays visible | `scripts/project-contract.sh` |
 | UI does not invent state | review |

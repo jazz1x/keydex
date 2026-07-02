@@ -25,6 +25,7 @@ prove its own contract will drift into wishful UI.
 | Release Signing Readiness | `scripts/release-signing-readiness.sh` | Local Developer ID Application identity and Apple notarization tools exist before public app signing. |
 | Release Signing Evidence Template | `scripts/release-signing-evidence-template.sh` | Pending local evidence can be generated for Developer ID signing and notarization without falsely passing review. |
 | Release Signing Evidence Review | `scripts/release-signing-evidence-review.sh` | Signed app, notarized/stapled DMG, checksum, and release-candidate evidence are verified for the current Git SHA and dirty state. |
+| Evidence Status | `scripts/evidence-status.sh` | Current local evidence is summarized without replacing review gates: automatic evidence must be current, manual evidence can remain `pending`, and external signing prerequisites are reported as `blocked`. |
 | Security | GitHub Actions `gitleaks` and `trivy` | Secret leaks, high-risk dependency and config findings. |
 | Branch Protection | GitHub `main` protection | Required checks, PR flow, linear history, and force-push prevention. |
 

@@ -47,6 +47,7 @@ expect_file scripts/app-design-contract.sh
 expect_file scripts/release-signing-readiness.sh
 expect_file scripts/release-signing-evidence-template.sh
 expect_file scripts/release-signing-evidence-review.sh
+expect_file scripts/evidence-status.sh
 
 echo "1) project goals contract..."
 for goal in G1 G2 G3 G4 G5 G6 G7 G8; do
@@ -197,6 +198,7 @@ expect_file_contains Makefile "release-smoke"
 expect_file_contains Makefile "release-signing-readiness"
 expect_file_contains Makefile "release-signing-evidence-template"
 expect_file_contains Makefile "release-signing-evidence-review"
+expect_file_contains Makefile "evidence-status"
 expect_file_contains Makefile "loop-contract"
 expect_file_contains scripts/loop-contract.sh "architecture boundary imports"
 expect_file_contains scripts/quality.sh "scripts/loop-contract.sh"
@@ -315,6 +317,14 @@ expect_file_contains docs/RELEASE-READINESS.md "make release-signing-readiness"
 expect_file_contains docs/RELEASE-READINESS.md "make release-signing-evidence-template"
 expect_file_contains docs/RELEASE-READINESS.md "make release-signing-evidence-review"
 expect_file_contains docs/RELEASE-READINESS.md "make app-screen-evidence-review"
+expect_file_contains docs/VERIFICATION.md "Evidence Status"
+expect_file_contains docs/ENFORCEMENT.md "Evidence status stays explicit"
+expect_file_contains README.md "make evidence-status"
+expect_file_contains scripts/evidence-status.sh "app_screen_evidence"
+expect_file_contains scripts/evidence-status.sh "app_accessibility_manual"
+expect_file_contains scripts/evidence-status.sh "release_signing_readiness"
+expect_file_contains scripts/evidence-status.sh "release_signing_evidence"
+expect_file_contains scripts/evidence-status.sh "needs-attention"
 expect_file_contains scripts/quality.sh "scripts/app-accessibility-contract.sh"
 expect_file_contains scripts/quality.sh "scripts/app-design-contract.sh"
 expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift "CredentialDoctor().inspect(graph)"
