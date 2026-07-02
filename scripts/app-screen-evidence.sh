@@ -112,7 +112,6 @@ case "$scenario" in
     ;;
   settings | settings-appearance | settings-sources | settings-paths | settings-tags | settings-rules)
     inventory_mode="sample"
-    window_selector="settings"
     ;;
   compact-window)
     inventory_mode="sample"
@@ -127,16 +126,19 @@ output_dir="${KEYDEX_SCREEN_EVIDENCE_DIR:-tmp/screen-evidence}"
 mkdir -p "$output_dir"
 
 swift build --product KeydexApp
+bin_dir="$(swift build --show-bin-path)"
+app_binary="$bin_dir/KeydexApp"
+test -x "$app_binary" || fail "missing built app binary: $app_binary"
 
 if [[ "$window_preset" == "compact" ]]; then
   KEYDEX_APP_INVENTORY_MODE="$inventory_mode" \
     KEYDEX_APP_SCREEN_SCENARIO="$scenario" \
     KEYDEX_APP_WINDOW_PRESET="$window_preset" \
-    swift run KeydexApp &
+    "$app_binary" &
 else
   KEYDEX_APP_INVENTORY_MODE="$inventory_mode" \
     KEYDEX_APP_SCREEN_SCENARIO="$scenario" \
-    swift run KeydexApp &
+    "$app_binary" &
 fi
 app_pid="$!"
 

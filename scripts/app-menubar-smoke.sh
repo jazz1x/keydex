@@ -26,8 +26,11 @@ ui_elements_enabled="$(osascript -e 'tell application "System Events" to get UI 
   fail "macOS accessibility UI scripting is disabled"
 
 swift build --product KeydexApp
+bin_dir="$(swift build --show-bin-path)"
+app_binary="$bin_dir/KeydexApp"
+test -x "$app_binary" || fail "missing built app binary: $app_binary"
 
-KEYDEX_APP_WINDOW_PRESET=default swift run KeydexApp &
+KEYDEX_APP_WINDOW_PRESET=default "$app_binary" &
 app_pid="$!"
 
 osascript - "$app_pid" <<'APPLESCRIPT'

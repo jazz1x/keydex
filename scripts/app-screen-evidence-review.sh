@@ -38,7 +38,7 @@ review_scenario() {
 
   case "$scenario" in
     settings | settings-appearance | settings-sources | settings-paths | settings-tags | settings-rules)
-      expect_file_contains "$manifest_path" "width=720 height=520"
+      expect_file_contains "$manifest_path" "width=1080 height=680"
       ;;
   esac
 

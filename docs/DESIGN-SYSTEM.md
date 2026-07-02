@@ -23,14 +23,14 @@ and honest about risk.
 | `surface.inspector` | native Liquid Glass, 8 px radius | selected item detail |
 | `surface.card` | poster-only native Liquid Glass, 8 px radius | inventory card artwork and grouped settings only |
 | `glass.sidebar.selection` | primary 0.045 alpha | selected sidebar rows |
-| `glass.content.tint` | white 0.06 alpha | card and inspector glass shell tint |
-| `glass.control.tint` | white 0.10 alpha | toolbar mode cluster tint |
+| `glass.content.tint` | white 0.035 alpha | card and inspector glass shell tint |
+| `glass.control.tint` | white 0.055 alpha | toolbar mode cluster tint |
 | `glass.poster.tint` | semantic state color 0.18 alpha | card poster glass tint |
 | `glass.floating.refraction` | native clear interactive glass + materialize transition; no tint path | centered Doctor rail surface |
 | `surface.footerRail` | transparent footer lane + 90 pt content reserve + top separator 0.08 alpha | Apple Music-like footer rail and bottom player lane |
 | `artwork.state.tint` | semantic state color 0.18 alpha | card poster color field |
 | `artwork.poster.symbol` | 50 pt size + 0.50 alpha | subdued credential glyph inside poster |
-| `artwork.poster.wash` | semantic state color 0.03 alpha + white 0.06 highlight | Apple Music-like poster media wash |
+| `artwork.poster.wash` | semantic state color 0.045 alpha + white 0.055 highlight | Apple Music-like poster media wash |
 | `text.primary` | label | credential names and actions |
 | `text.secondary` | secondary label | metadata and source paths |
 | `risk.info` | blue | neutral findings |
@@ -42,6 +42,9 @@ and honest about risk.
 | `layout.card.shelf` | top 18 pt, page-to-section 16 pt, section-to-grid 10 pt, row gap 14 pt | card-mode shelf rhythm |
 | `layout.card.poster` | 248 pt height, 8 pt radius, poster-only artwork | repeated credential card artwork |
 | `layout.card.textDeck` | poster-to-text 8 pt, title/caption gap 2 pt, 2 pt horizontal inset | credential title and caption below poster |
+| `layout.footerRail.maxWidth` | 720 pt | Music-like centered bottom rail width |
+| `motion.content` | snappy 0.24 s, extraBounce 0.04 | card/list/detail surface transitions |
+| `motion.control` | snappy 0.18 s, extraBounce 0.08 | hover and small control feedback |
 | `radius.control` | system default | buttons, fields, segmented controls |
 | `radius.card` | 8 px max | repeated issue rows only |
 | `appearance.mode` | system light/dark | no product-level custom palettes |
@@ -57,7 +60,7 @@ and honest about risk.
 | Inventory Cards | Secondary scan view | poster-only credential artwork, two-line title/caption deck below, source count affordance, Music-like detail page on click |
 | Inspector | Relationship detail | credential, sources, graph edges, expiry, notes, actions |
 | Doctor Panel | Repair queue | transparent music-player-like footer lane with centered clear glass rail, 90 pt content reserve, severity, cause, action, and count controls |
-| Settings | Permissions, appearance, tags, and rules | Keychain access, system appearance mode, scan paths, user-owned tags, ignored sources |
+| Settings | Permissions, appearance, tags, and rules | in-window Liquid Glass overlay for Keychain access, system appearance mode, scan paths, user-owned tags, ignored sources |
 
 ## Component Contracts
 
@@ -86,13 +89,22 @@ and honest about risk.
   not a default scroll fill, is the visible surface.
 - Sidebar content sits directly on native material. Scroll containers must not add
   their own neutral fill above the split-view material.
-- Sidebar navigation opens at its top anchor so the search row and first selected
-  item are visible when card and list surfaces open.
+- Sidebar navigation preserves user scroll position; do not force-scroll the sidebar
+  to the top on selection, mode, or detail changes.
 - Sidebar search is not a nested glass card. It is a plain search row on the sidebar
   material, matching Music's Library and Playlist navigation.
 - Toolbar mode controls stay in one glass cluster instead of separate floating islands.
 - Settings uses a material header plus grouped list sections; repeated rows stay plain
   and editable. Tags are user-owned metadata managed beside sources, not graph truth.
+- Settings outer overlay and header controls use native Liquid Glass on macOS 26+.
+  Inner grouped rows stay plain low-alpha surfaces so nested cards do not flatten
+  the sheet into an opaque gray panel.
+- `.regularMaterial`, `.thinMaterial`, and `.ultraThinMaterial` are fallback-only
+  paths for older macOS.
+- Settings overlays must expose an icon-only close affordance in the header and bind
+  Escape to the same dismiss action.
+- Settings header status pills stay single-line; controls may compress surrounding
+  spacing, but labels must not wrap.
 - Settings toggle rows keep label copy left-aligned and place the switch control on
   the right edge of the row.
 - Native glass buttons use `.glass` or `.glassProminent` when available, with system
@@ -119,6 +131,9 @@ and honest about risk.
   cluster, status chip, and source rows that read like a playlist track list. Card
   click detail must not reintroduce a persistent right inspector or modal sheet
   into card mode.
+- Card-to-detail and detail-to-card transitions use the content motion token and
+  restore the clicked card as the return anchor instead of resetting the shelf to
+  the top.
 - Poster surfaces may use semantic state-color media wash. They must not use decorative
   graph lines, constellations, glow-only hierarchy, or fake analytics imagery.
 - Poster glyphs stay subdued so the credential card reads like Music library artwork,
@@ -130,7 +145,8 @@ and honest about risk.
   still has real content behind it.
 - The floating repair rail uses native clear interactive glass with materialize
   transition and no tint path; do not simulate Liquid Glass by painting a clear
-  or milky overlay on top.
+  or milky overlay on top. Clear glass is limited to the poster-backed bottom rail
+  and explicitly dimmed settings sheet.
 - Doctor rail feedback uses native SwiftUI feedback hooks: symbol bounce,
   numeric content transitions, macOS hover scale, and sensory feedback on state
   changes.
