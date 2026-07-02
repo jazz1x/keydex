@@ -76,6 +76,8 @@ expect_text Apps/KeydexApp/Sources/KeydexApp/KeydexSidebarViews.swift "struct Mu
 expect_text Apps/KeydexApp/Sources/KeydexApp/KeydexSidebarViews.swift "struct MusicToolbarCluster"
 expect_text Apps/KeydexApp/Sources/KeydexApp/KeydexSettingsViews.swift "struct SettingsPanel"
 expect_text Apps/KeydexApp/Sources/KeydexApp/KeydexSettingsViews.swift "private struct SettingsGlassSection"
+expect_text Apps/KeydexApp/Sources/KeydexApp/KeydexArtworkStore.swift "typealias CredentialArtworkID"
+reject_text Apps/KeydexApp/Sources/KeydexApp/KeydexArtworkStore.swift "CredentialRow"
 expect_text docs/LOOP-CONTRACT.md "App bootstrap helpers"
 expect_text docs/LOOP-CONTRACT.md "App design tokens"
 expect_text docs/LOOP-CONTRACT.md "App presentation rows"
@@ -83,6 +85,7 @@ expect_text docs/LOOP-CONTRACT.md "Inventory content, cards, tables, and inspect
 expect_text docs/LOOP-CONTRACT.md "Doctor repair rail"
 expect_text docs/LOOP-CONTRACT.md "Sidebar, toolbar, and rail"
 expect_text docs/LOOP-CONTRACT.md "Settings panels and rows"
+expect_text docs/LOOP-CONTRACT.md "App persistence helpers use their own boundary IDs"
 
 
 echo "5) shell orchestration boundary..."

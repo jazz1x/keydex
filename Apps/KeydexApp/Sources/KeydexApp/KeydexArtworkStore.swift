@@ -1,7 +1,9 @@
 import Foundation
 
+typealias CredentialArtworkID = String
+
 struct CredentialArtworkOverride: Codable, Equatable {
-  let credentialID: String
+  let credentialID: CredentialArtworkID
   let fileName: String
 
   func fileURL(rootURL: URL) -> URL {
@@ -15,7 +17,7 @@ struct CredentialArtworkOverride: Codable, Equatable {
 }
 
 struct CredentialArtworkLoadState {
-  let overrides: [CredentialRow.ID: CredentialArtworkOverride]
+  let overrides: [CredentialArtworkID: CredentialArtworkOverride]
   let issueMessage: String?
 }
 
@@ -66,7 +68,7 @@ struct CredentialArtworkStore {
     do {
       let data = try Data(contentsOf: manifestURL)
       let overrides = try decoder.decode(
-        [CredentialRow.ID: CredentialArtworkOverride].self,
+        [CredentialArtworkID: CredentialArtworkOverride].self,
         from: data
       )
       return CredentialArtworkLoadState(overrides: overrides, issueMessage: nil)
@@ -81,8 +83,8 @@ struct CredentialArtworkStore {
 
   func importArtwork(
     from sourceURL: URL,
-    credentialID: CredentialRow.ID,
-    existingOverrides: [CredentialRow.ID: CredentialArtworkOverride]
+    credentialID: CredentialArtworkID,
+    existingOverrides: [CredentialArtworkID: CredentialArtworkOverride]
   ) -> Result<CredentialArtworkOverride, CredentialArtworkStoreError> {
     let pathExtension = normalizedPathExtension(for: sourceURL)
     guard supportedImageExtensions.contains(pathExtension) else {
@@ -124,8 +126,8 @@ struct CredentialArtworkStore {
   }
 
   func removeArtwork(
-    for credentialID: CredentialRow.ID,
-    existingOverrides: [CredentialRow.ID: CredentialArtworkOverride]
+    for credentialID: CredentialArtworkID,
+    existingOverrides: [CredentialArtworkID: CredentialArtworkOverride]
   ) -> Result<Void, CredentialArtworkStoreError> {
     do {
       var nextOverrides = existingOverrides
@@ -155,7 +157,7 @@ struct CredentialArtworkStore {
     url.pathExtension.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
   }
 
-  private func safeFileStem(for credentialID: CredentialRow.ID) -> String {
+  private func safeFileStem(for credentialID: CredentialArtworkID) -> String {
     let allowed = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "-_"))
     let scalars = credentialID.unicodeScalars.map { scalar in
       allowed.contains(scalar) ? Character(scalar) : "-"
@@ -166,7 +168,7 @@ struct CredentialArtworkStore {
     return stem.isEmpty ? "credential-artwork" : stem
   }
 
-  private func writeManifest(_ overrides: [CredentialRow.ID: CredentialArtworkOverride]) throws {
+  private func writeManifest(_ overrides: [CredentialArtworkID: CredentialArtworkOverride]) throws {
     try fileManager.createDirectory(at: rootURL, withIntermediateDirectories: true)
     let data = try encoder.encode(overrides)
     try data.write(to: manifestURL, options: [.atomic])

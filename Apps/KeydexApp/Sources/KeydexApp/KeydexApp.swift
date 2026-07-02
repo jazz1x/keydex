@@ -73,7 +73,7 @@ struct CredentialInventoryShellView: View {
   @State private var selectedSettingsSection: SettingsSection
   @State private var inventoryMode: InventoryMode
   @State private var settingsConfig: ShellSettingsConfig
-  @State private var artworkOverrides: [CredentialRow.ID: CredentialArtworkOverride]
+  @State private var artworkOverrides: [CredentialArtworkID: CredentialArtworkOverride]
   @State private var artworkIssueMessage: String?
 
   init(artworkStore: CredentialArtworkStore = CredentialArtworkStore()) {
