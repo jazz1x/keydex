@@ -9,6 +9,10 @@ fail() {
 command -v rg >/dev/null 2>&1 || fail "missing dependency: rg (ripgrep)"
 
 app_source="Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift"
+app_sources="Apps/KeydexApp/Sources/KeydexApp"
+inventory_source="Apps/KeydexApp/Sources/KeydexApp/KeydexInventoryViews.swift"
+sidebar_source="Apps/KeydexApp/Sources/KeydexApp/KeydexSidebarViews.swift"
+doctor_source="Apps/KeydexApp/Sources/KeydexApp/KeydexDoctorViews.swift"
 
 expect_file_contains() {
   local path="$1"
@@ -37,6 +41,21 @@ reject_file_contains() {
 
   if rg --fixed-strings --quiet -- "$needle" "$path"; then
     fail "$path contains forbidden design pattern: $needle"
+  fi
+}
+
+expect_app_source_contains() {
+  local needle="$1"
+
+  rg --fixed-strings --quiet -- "$needle" "$app_sources" ||
+    fail "app sources are missing expected text: $needle"
+}
+
+reject_app_source_contains() {
+  local needle="$1"
+
+  if rg --fixed-strings --quiet -- "$needle" "$app_sources"; then
+    fail "app sources contain forbidden design pattern: $needle"
   fi
 }
 
@@ -145,7 +164,7 @@ for needle in \
   ".background(.ultraThinMaterial, in: shape)" \
   ".background(.thinMaterial" \
   ".help("; do
-  expect_file_contains "$app_source" "$needle"
+  expect_app_source_contains "$needle"
 done
 
 echo "2) graph and repair surfaces..."
@@ -158,7 +177,7 @@ for needle in \
   "primaryIssue.issue.action" \
   "Cause: \\(issue.message). Action: \\(issue.action)." \
   ".textSelection(.enabled)"; do
-  expect_file_contains "$app_source" "$needle"
+  expect_app_source_contains "$needle"
 done
 
 echo "3) design system rules..."
@@ -229,7 +248,7 @@ for forbidden in \
   "graph-derived metadata" \
   "shadow(" \
   "Copy secret"; do
-  reject_file_contains "$app_source" "$forbidden"
+  reject_app_source_contains "$forbidden"
 done
 
 reject_file_contains "$app_source" "CredentialMusicDetailSheet"
@@ -242,7 +261,7 @@ if awk '
   /private struct CredentialArtworkPanel/ { in_card = 0 }
   in_card && /keydexContentPanel\(/ { found = 1 }
   END { exit found ? 0 : 1 }
-' "$app_source"; then
+' "$inventory_source"; then
   fail "CredentialInventoryCard must not use a second outer card shell"
 fi
 
@@ -251,7 +270,7 @@ if awk '
   /private struct CredentialArtworkPanel/ { in_card = 0 }
   in_card && /(CredentialStateSummaryView|KeychainStatusBadge|SourceCountBadge)\(/ { found = 1 }
   END { exit found ? 0 : 1 }
-' "$app_source"; then
+' "$inventory_source"; then
   fail "CredentialInventoryCard must not render a repeated capsule badge strip"
 fi
 
@@ -260,7 +279,7 @@ if awk '
   /private struct CredentialPosterWash/ { in_artwork = 0 }
   in_artwork && /\.background\(\.(ultraThinMaterial|thinMaterial|regularMaterial)/ { found = 1 }
   END { exit found ? 0 : 1 }
-' "$app_source"; then
+' "$inventory_source"; then
   fail "CredentialArtworkPanel must keep badges flat inside the single poster frame"
 fi
 
@@ -269,25 +288,24 @@ if awk '
   /private struct CredentialPosterWash/ { in_artwork = 0 }
   in_artwork && /Text\(row\.(service|account)\)/ { found = 1 }
   END { exit found ? 0 : 1 }
-' "$app_source"; then
+' "$inventory_source"; then
   fail "CredentialArtworkPanel must keep service/account text below the poster"
 fi
 
 if awk '
-  /private struct DoctorPanel/ { in_doctor = 1 }
-  /private func stateTint/ { in_doctor = 0 }
-  in_doctor && /frame\(maxWidth: \.infinity/ { found = 1 }
+  /struct DoctorPanel/ { in_doctor = 1 }
+  in_doctor && /maxWidth: \.infinity/ { found = 1 }
   END { exit found ? 0 : 1 }
-' "$app_source"; then
+' "$doctor_source"; then
   fail "DoctorPanel must use the centered music-player-like repair rail width"
 fi
 
 if awk '
-  /private struct MusicSearchField/ { in_search = 1 }
-  /private struct MusicSidebarSection/ { in_search = 0 }
+  /struct MusicSearchField/ { in_search = 1 }
+  /struct MusicSidebarSection/ { in_search = 0 }
   in_search && /\.background\(/ { found = 1 }
   END { exit found ? 0 : 1 }
-' "$app_source"; then
+' "$sidebar_source"; then
   fail "MusicSearchField must remain a plain row on the sidebar material"
 fi
 

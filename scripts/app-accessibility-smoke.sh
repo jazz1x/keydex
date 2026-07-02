@@ -6,7 +6,6 @@ fail() {
   exit 1
 }
 
-command -v osascript >/dev/null 2>&1 || fail "missing dependency: osascript"
 command -v rg >/dev/null 2>&1 || fail "missing dependency: rg (ripgrep)"
 command -v swift >/dev/null 2>&1 || fail "missing dependency: swift"
 
@@ -35,86 +34,88 @@ dump_accessibility_tree() {
   local pid="$1"
   local readiness_needle="$2"
 
-  osascript - "$pid" "$readiness_needle" <<'APPLESCRIPT'
-on collectText(target)
-  set output to ""
-  tell application "System Events"
-    try
-      set output to output & (name of target as text) & linefeed
-    end try
-    try
-      set output to output & (description of target as text) & linefeed
-    end try
-    try
-      set output to output & (value of target as text) & linefeed
-    end try
-    try
-      set childElements to UI elements of target
-      repeat with childElement in childElements
-        set output to output & my collectText(childElement)
-      end repeat
-    end try
-  end tell
+  swift -e '
+import ApplicationServices
+import Foundation
+
+let pid = pid_t(CommandLine.arguments[1])!
+let readinessNeedle = CommandLine.arguments[2]
+let app = AXUIElementCreateApplication(pid)
+let maxAXReadinessAttempts = 40
+let axReadinessPollInterval: TimeInterval = 0.25
+
+// AX can publish the app process before its window tree is readable.
+// The smoke waits only for that observable readiness state; missing windows still fail.
+func attribute(_ name: String, from element: AXUIElement) -> AnyObject? {
+  var value: AnyObject?
+  let result = AXUIElementCopyAttributeValue(element, name as CFString, &value)
+  guard result == .success else { return nil }
+  return value
+}
+
+func textValue(_ value: AnyObject) -> String? {
+  if let string = value as? String {
+    return string.isEmpty ? nil : string
+  }
+
+  if let number = value as? NSNumber {
+    return number.stringValue
+  }
+
+  return nil
+}
+
+func collectText(from element: AXUIElement) -> String {
+  var output = ""
+  let textAttributes = [
+    kAXTitleAttribute,
+    kAXDescriptionAttribute,
+    kAXValueAttribute,
+    kAXHelpAttribute,
+    kAXRoleAttribute,
+    kAXSubroleAttribute,
+  ]
+
+  for attributeName in textAttributes {
+    if let value = attribute(attributeName, from: element), let text = textValue(value) {
+      output += text + "\n"
+    }
+  }
+
+  if let children = attribute(kAXChildrenAttribute, from: element) as? [AXUIElement] {
+    for child in children {
+      output += collectText(from: child)
+    }
+  }
+
   return output
-end collectText
+}
 
-on collectWindows(targetProcess)
-  set output to ""
-  tell application "System Events"
-    try
-      set targetWindows to windows of targetProcess
-      repeat with targetWindow in targetWindows
-        set output to output & my collectText(targetWindow)
-      end repeat
-    end try
-  end tell
-  return output
-end collectWindows
+func collectWindows() -> String {
+  guard let windows = attribute(kAXWindowsAttribute, from: app) as? [AXUIElement], !windows.isEmpty else {
+    return ""
+  }
 
-on run argv
-  set targetPID to item 1 of argv as integer
-  set readinessNeedle to item 2 of argv as text
-  set targetProcess to missing value
-  set axDump to ""
+  return windows.map { collectText(from: $0) }.joined(separator: "\n")
+}
 
-  tell application "System Events"
-    repeat 40 times
-      try
-        set targetProcess to first application process whose unix id is targetPID
-        exit repeat
-      end try
-      delay 0.25
-    end repeat
+for _ in 0..<maxAXReadinessAttempts {
+  let dump = collectWindows()
+  if !dump.isEmpty, readinessNeedle.isEmpty || dump.contains(readinessNeedle) {
+    print(dump)
+    exit(0)
+  }
+  Thread.sleep(forTimeInterval: axReadinessPollInterval)
+}
 
-    if targetProcess is missing value then
-      error "missing app process"
-    end if
+let finalDump = collectWindows()
+if finalDump.isEmpty {
+  fputs("missing app window\n", stderr)
+  exit(2)
+}
 
-    repeat 40 times
-      if exists window 1 of targetProcess then
-        exit repeat
-      end if
-      delay 0.25
-    end repeat
-
-    if not (exists window 1 of targetProcess) then
-      error "missing app window"
-    end if
-
-    set frontmost of targetProcess to true
-
-    repeat 40 times
-      set axDump to my collectWindows(targetProcess)
-      if readinessNeedle is "" or axDump contains readinessNeedle then
-        return axDump
-      end if
-      delay 0.25
-    end repeat
-
-    return axDump
-  end tell
-end run
-APPLESCRIPT
+print(finalDump)
+' "$pid" "$readiness_needle"
 }
 
 run_scenario() {
@@ -140,9 +141,8 @@ run_scenario() {
   printf 'accessibility_smoke=%s\n' "$scenario"
 }
 
-ui_elements_enabled="$(osascript -e 'tell application "System Events" to get UI elements enabled')"
-[[ "$ui_elements_enabled" == "true" ]] ||
-  fail "macOS accessibility UI scripting is disabled"
+swift -e 'import ApplicationServices; import Foundation; exit(AXIsProcessTrusted() ? 0 : 1)' ||
+  fail "macOS accessibility permission is not trusted for this host"
 
 swift build --product KeydexApp
 bin_dir="$(swift build --show-bin-path)"

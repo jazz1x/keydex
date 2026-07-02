@@ -15,8 +15,17 @@ fi
 
 command -v git >/dev/null 2>&1 || fail "missing dependency: git"
 
+git_dirty_state() {
+  if ! git diff --quiet || ! git diff --cached --quiet || [[ -n "$(git ls-files --others --exclude-standard)" ]]; then
+    printf 'dirty'
+  else
+    printf 'clean'
+  fi
+}
+
 evidence_dir="${KEYDEX_RELEASE_SIGNING_EVIDENCE_DIR:-tmp/release-signing-evidence}"
 head_sha="$(git rev-parse --short HEAD)"
+head_dirty="$(git_dirty_state)"
 payload_dir="tmp/release-smoke/keydex-$head_sha-Darwin-arm64"
 manifest_path="$evidence_dir/release-signing.manifest"
 notes_path="$evidence_dir/release-signing.md"
@@ -30,6 +39,7 @@ mkdir -p "$evidence_dir"
 
 cat >"$manifest_path" <<MANIFEST
 git_sha=$head_sha
+git_dirty=$head_dirty
 app_path=$payload_dir/Keydex.app
 dmg_path=$payload_dir.dmg
 developer_id_identity=pending

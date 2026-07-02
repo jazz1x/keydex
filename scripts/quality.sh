@@ -50,16 +50,19 @@ expect_file_contains .github/workflows/security.yml "aquasecurity/trivy-action"
 echo "6) project contract drift..."
 ./scripts/project-contract.sh
 
-echo "7) CLI smoke scenarios..."
+echo "7) loop contract drift..."
+./scripts/loop-contract.sh
+
+echo "8) CLI smoke scenarios..."
 ./scripts/cli-smoke.sh
 
-echo "8) app accessibility contract..."
+echo "9) app accessibility contract..."
 ./scripts/app-accessibility-contract.sh
 
-echo "9) app design contract..."
+echo "10) app design contract..."
 ./scripts/app-design-contract.sh
 
-echo "10) app menubar smoke script contract..."
+echo "11) app menubar smoke script contract..."
 expect_file_contains scripts/app-menubar-smoke.sh "Keydex"
 expect_file_contains scripts/app-menubar-smoke.sh "Open Keydex"
 expect_file_contains scripts/app-menubar-smoke.sh "Quit Keydex"

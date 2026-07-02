@@ -16,7 +16,7 @@ expect_file_contains() {
     fail "$path is missing expected text: $needle"
 }
 
-app_source="Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift"
+app_sources="Apps/KeydexApp/Sources/KeydexApp"
 
 echo "1) required accessibility identifiers..."
 for identifier in \
@@ -37,7 +37,7 @@ for identifier in \
   keydex.settings.close \
   keydex.settings.section-picker \
   keydex.settings.panel; do
-  expect_file_contains "$app_source" ".accessibilityIdentifier(\"$identifier\")"
+  expect_file_contains "$app_sources" ".accessibilityIdentifier(\"$identifier\")"
 done
 
 echo "2) required reusable accessibility identifiers..."
@@ -57,7 +57,7 @@ for identifier in \
   keydex.settings.remove-tag \
   keydex.settings.add-ignored-source \
   keydex.settings.add-unmanaged-source; do
-  expect_file_contains "$app_source" "$identifier"
+  expect_file_contains "$app_sources" "$identifier"
 done
 
 echo "3) required accessibility labels..."
@@ -72,7 +72,7 @@ for label in \
   "Register Keychain reference" \
   "Settings section" \
   "Keydex settings"; do
-  expect_file_contains "$app_source" ".accessibilityLabel(\"$label\")"
+  expect_file_contains "$app_sources" ".accessibilityLabel(\"$label\")"
 done
 
 echo "4) required reusable accessibility labels..."
@@ -87,7 +87,7 @@ for label in \
   "Remove ignored source" \
   "Add unmanaged source" \
   "Remove unmanaged source"; do
-  expect_file_contains "$app_source" "$label"
+  expect_file_contains "$app_sources" "$label"
 done
 
 echo "app accessibility contract clean"
