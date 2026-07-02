@@ -282,29 +282,14 @@ expect_file_contains scripts/app-accessibility-evidence-review.sh "source \"\$sc
 expect_file_contains scripts/app-screen-evidence-review.sh 'for scenario in "${KEYDEX_EVIDENCE_SCENARIOS[@]}"'
 expect_file_contains scripts/app-accessibility-evidence-template.sh 'for scenario in "${KEYDEX_EVIDENCE_SCENARIOS[@]}"'
 expect_file_contains scripts/app-accessibility-evidence-review.sh 'for scenario in "${KEYDEX_EVIDENCE_SCENARIOS[@]}"'
-for scenario in \
-  default-window \
-  card-view \
-  card-detail \
-  empty-inventory \
-  search-filter \
-  inspector \
-  settings \
-  settings-appearance \
-  settings-sources \
-  settings-paths \
-  settings-tags \
-  settings-rules \
-  compact-window; do
-  expect_file_contains scripts/app-evidence-scenarios.sh "$scenario"
-  expect_file_contains docs/SCREEN-VALIDATION.md "$scenario"
-done
 expect_file_contains docs/SCREEN-VALIDATION.md "scripts/app-evidence-scenarios.sh"
 expect_file_contains scripts/app-evidence-scenarios.sh "keydex_evidence_inventory_mode"
 expect_file_contains scripts/app-evidence-scenarios.sh "keydex_evidence_window_preset"
-expect_file_contains scripts/app-evidence-scenarios.sh "empty-inventory"
 expect_file_contains scripts/app-evidence-scenarios-contract.sh "AppScreenScenario raw values drifted"
 expect_file_contains scripts/app-evidence-scenarios-contract.sh "KEYDEX_EVIDENCE_SCENARIOS"
+expect_file_contains scripts/app-evidence-scenarios-contract.sh "docs/SCREEN-VALIDATION.md"
+expect_file_contains scripts/app-evidence-scenarios-contract.sh "docs/VALIDATION-SCENARIOS.md"
+expect_file_contains scripts/app-evidence-scenarios-contract.sh "must not name a partial first scenario set"
 expect_file_contains docs/SCREEN-VALIDATION.md "make app-evidence-scenarios-contract"
 expect_file_contains scripts/quality.sh "scripts/app-evidence-scenarios-contract.sh"
 expect_file_contains scripts/app-screen-evidence.sh "KEYDEX_APP_INVENTORY_MODE"
