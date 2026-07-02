@@ -6,6 +6,12 @@ fail() {
   exit 1
 }
 
+window_geometry() {
+  local report="$1"
+
+  printf '%s' "${report#window=* }"
+}
+
 window_report() {
   local pid="$1"
 
@@ -61,17 +67,23 @@ test -x "$app_binary" || fail "missing built app binary: $app_binary"
 
 KEYDEX_APP_WINDOW_PRESET=default "$app_binary" &
 app_pid="$!"
-trap 'kill "$app_pid" >/dev/null 2>&1 || true' EXIT
+
+cleanup() {
+  kill "$app_pid" >/dev/null 2>&1 || true
+  wait "$app_pid" >/dev/null 2>&1 || true
+}
+trap cleanup EXIT
 
 report=""
-previous_report=""
+previous_geometry=""
 for attempt in 1 2 3 4 5; do
   if current_report="$(window_report "$app_pid")"; then
-    if [[ "$current_report" == "$previous_report" ]] && ((attempt >= 5)); then
+    current_geometry="$(window_geometry "$current_report")"
+    if [[ "$current_geometry" == "$previous_geometry" ]] && ((attempt >= 5)); then
       report="$current_report"
       break
     fi
-    previous_report="$current_report"
+    previous_geometry="$current_geometry"
   fi
   sleep 1
 done
