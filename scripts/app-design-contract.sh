@@ -78,6 +78,9 @@ for needle in \
   "CredentialCardGrid" \
   "CredentialArtworkPreset" \
   "CredentialDefaultArtwork" \
+  "CredentialCustomArtwork" \
+  "CredentialArtworkActionGroup" \
+  "CredentialArtworkStore" \
   "CredentialPosterWash" \
   "CredentialMusicDetailView" \
   "MusicSourceTrackRow" \
@@ -224,6 +227,10 @@ for needle in \
   "Settings outer overlay and header controls use native Liquid Glass" \
   "Inner grouped rows stay plain low-alpha surfaces" \
   "Music-like content cadence" \
+  "Repeated card selection must not use the global blue accent ring" \
+  "Credential-scoped detail and inspector actions use neutral action buttons" \
+  "artwork.custom.override" \
+  "Custom artwork controls live beside credential identity actions" \
   "semantic state-color media wash" \
   "Poster glyphs stay subdued" \
   "flat semantic fills and strokes" \

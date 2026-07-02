@@ -218,10 +218,16 @@ enum SidebarSelection: Hashable {
 struct CredentialRow: Identifiable {
   let projection: CredentialProjection
   let tags: [CredentialTagRow]
+  let artworkOverride: CredentialArtworkOverride?
 
-  init(projection: CredentialProjection, tags: [CredentialTagRow] = []) {
+  init(
+    projection: CredentialProjection,
+    tags: [CredentialTagRow] = [],
+    artworkOverride: CredentialArtworkOverride? = nil
+  ) {
     self.projection = projection
     self.tags = tags
+    self.artworkOverride = artworkOverride
   }
 
   static func identifier(for ref: CredentialRef) -> String {
@@ -313,8 +319,9 @@ struct CredentialRow: Identifiable {
     }
 
     let stateSummary = canonicalStateLabel(states)
+    let artworkSummary = artworkOverride == nil ? "default artwork" : "custom artwork"
     return "\(service) \(account), states \(stateSummary), \(tagSummary), "
-      + "Keychain \(keychainStatusTitle), \(locations.count) sources."
+      + "Keychain \(keychainStatusTitle), \(locations.count) sources, \(artworkSummary)."
   }
 }
 

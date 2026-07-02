@@ -28,6 +28,11 @@ uncertainty to the next concrete action without making them decode implementatio
 - Details must answer why before how. State and sources come before action buttons.
 - Detail artwork does not carry a fake selected/focus stroke. Keyboard focus belongs to
   actual controls, not decorative identity artwork.
+- Card selection must not look like a blue focus ring. Mouse selection uses the
+  poster's own low-alpha tint so focus remains reserved for keyboard navigation.
+- Detail and inspector actions must not auto-read as focused blue controls. Global
+  registration can stay prominent, but credential-scoped actions use neutral action
+  buttons unless the user explicitly focuses them.
 - Actions must be explicit. Managing Keychain references, tags, ignored sources, and scan
   paths must be visible user actions rather than automatic repair.
 - Primary and secondary action buttons use the action-button contract so they do not read
@@ -42,6 +47,9 @@ uncertainty to the next concrete action without making them decode implementatio
   replace it because registration is a global command and Doctor is a contextual repair
   queue.
 - Custom artwork import only ships with a persisted asset store and fallback contract.
+- Artwork actions stay near credential identity in card detail and inspector surfaces.
+  They must not be nested inside tag management because artwork is presentation metadata,
+  not a tag.
 - Accessibility labels must preserve the same workflow vocabulary: inventory, search
   results, credential detail, manage Keychain reference, manage tags, settings, and repair.
 
@@ -51,6 +59,7 @@ uncertainty to the next concrete action without making them decode implementatio
 | --- | --- |
 | Card/list mode | `InventoryDisplayMode`, `CredentialCardGrid`, `CredentialInventoryTable`. |
 | Default artwork | `CredentialArtworkPreset`, `CredentialDefaultArtwork`, `CredentialArtworkPanel`. |
+| Custom artwork | `CredentialArtworkStore`, `CredentialCustomArtwork`, `CredentialArtworkActionGroup`, `keydex.artwork.choose`, `keydex.artwork.reset`. |
 | Search narrowing | `MusicSearchField`, `Clear search`, `MusicSearchResultHeader`. |
 | Empty state | `ContentUnavailableView`. |
 | Detail and return | `CredentialMusicDetailView`, `keydex.card-detail.back`. |

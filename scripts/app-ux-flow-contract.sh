@@ -43,11 +43,13 @@ for needle in \
   "Sidebar search" \
   "Card detail or inspector" \
   "Detail artwork does not carry a fake selected/focus stroke" \
+  "Detail and inspector actions must not auto-read as focused blue controls" \
   "Doctor rail" \
   "action-button contract" \
   "Review next entry point" \
   "global Register Keychain action stays in the toolbar" \
   "Custom artwork import only ships with a persisted asset store" \
+  "Artwork actions stay near credential identity" \
   "Tag and label color management uses swatches" \
   "Settings overlay" \
   "labels on the left and controls on the right" \
@@ -83,6 +85,12 @@ for needle in \
   "keydex.card-detail.manage-tags" \
   "keydex.inspector.manage-keychain" \
   "keydex.inspector.manage-tags" \
+  "CredentialArtworkStore" \
+  "CredentialCustomArtwork" \
+  "CredentialArtworkActionGroup" \
+  "keydex.artwork.choose" \
+  "keydex.artwork.reset" \
+  "allowedContentTypes: [.image]" \
   "Manage Keychain reference" \
   "Manage credential tags" \
   "keydexActionButton" \
@@ -155,6 +163,33 @@ if awk '
   END { exit found ? 0 : 1 }
 ' "$inventory_source"; then
   fail "Card detail artwork must not carry a fake selected/focus stroke"
+fi
+
+if awk '
+  /private var panelStroke: Color/ { in_stroke = 1 }
+  /private var panelRadius: CGFloat/ { in_stroke = 0 }
+  in_stroke && /Color\.accentColor/ { found = 1 }
+  END { exit found ? 0 : 1 }
+' "$inventory_source"; then
+  fail "Card selection must not use the global accent color as a focus-like ring"
+fi
+
+if awk '
+  /title: "Tags"/ { in_tags = 1 }
+  /title: "Keychain"/ { in_tags = 0 }
+  in_tags && /CredentialArtworkActionGroup/ { found = 1 }
+  END { exit found ? 0 : 1 }
+' "$inventory_source"; then
+  fail "Artwork actions must stay out of tag management"
+fi
+
+if awk '
+  /struct CredentialInspectorPanel/ { in_scoped_actions = 1 }
+  /private struct MusicSourceTrackRow/ { in_scoped_actions = 0 }
+  in_scoped_actions && /\.keydexActionButton\(prominent: true\)/ { found = 1 }
+  END { exit found ? 0 : 1 }
+' "$inventory_source"; then
+  fail "Credential-scoped actions must not render as prominent blue focus-like controls"
 fi
 
 if ! awk '

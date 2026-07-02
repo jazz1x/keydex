@@ -1,5 +1,7 @@
+import AppKit
 import KeydexCore
 import SwiftUI
+import UniformTypeIdentifiers
 
 private struct EmptyStatePanel: View {
   let title: String
@@ -37,6 +39,9 @@ struct InventoryContentView: View {
   let footerReserveHeight: CGFloat
   let manageKeychainAction: () -> Void
   let manageTagsAction: () -> Void
+  let importArtworkAction: (URL, CredentialRow) -> Void
+  let resetArtworkAction: (CredentialRow) -> Void
+  let artworkFailureAction: (Error) -> Void
   @State private var cardReturnAnchorID: CredentialRow.ID?
 
   var body: some View {
@@ -61,7 +66,10 @@ struct InventoryContentView: View {
             row: selectedCardRow,
             footerReserveHeight: footerReserveHeight,
             manageKeychainAction: manageKeychainAction,
-            manageTagsAction: manageTagsAction
+            manageTagsAction: manageTagsAction,
+            importArtworkAction: importArtworkAction,
+            resetArtworkAction: resetArtworkAction,
+            artworkFailureAction: artworkFailureAction
           ) {
             withAnimation(KeydexMotion.contentTransition) {
               selectedCredentialID = nil
@@ -326,8 +334,17 @@ private struct CredentialArtworkPanel: View {
       panelShape
         .keydexArtworkGlass(tint: panelFill, stroke: panelStroke)
         .overlay {
-          CredentialDefaultArtwork(preset: preset, isPoster: isPoster)
+          if let artworkOverride = row.artworkOverride {
+            CredentialCustomArtwork(
+              override: artworkOverride,
+              fallbackPreset: preset,
+              isPoster: isPoster
+            )
             .clipShape(panelShape)
+          } else {
+            CredentialDefaultArtwork(preset: preset, isPoster: isPoster)
+              .clipShape(panelShape)
+          }
         }
         .overlay(alignment: .topTrailing) {
           Text("\(row.locations.count)")
@@ -368,7 +385,7 @@ private struct CredentialArtworkPanel: View {
 
   private var panelStroke: Color {
     if selected {
-      return Color.accentColor.opacity(0.74)
+      return preset.primaryTint.opacity(isPoster ? 0.28 : 0.20)
     }
 
     return preset.primaryTint.opacity(isPoster ? 0.18 : 0.12)
@@ -419,6 +436,35 @@ private struct CredentialPosterWash: View {
       Rectangle()
         .fill(Color.white.opacity(KeydexGlassTone.posterHighlightAlpha))
         .frame(height: isPoster ? 48 : 24)
+    }
+  }
+}
+
+private struct CredentialCustomArtwork: View {
+  let override: CredentialArtworkOverride
+  let fallbackPreset: CredentialArtworkPreset
+  let isPoster: Bool
+
+  var body: some View {
+    let imageURL = override.fileURL(rootURL: CredentialArtworkStore().rootURL)
+
+    if let image = NSImage(contentsOf: imageURL) {
+      Image(nsImage: image)
+        .resizable()
+        .scaledToFill()
+        .accessibilityHidden(true)
+    } else {
+      ZStack {
+        CredentialDefaultArtwork(preset: fallbackPreset, isPoster: isPoster)
+
+        Label("Missing custom artwork", systemImage: "exclamationmark.triangle.fill")
+          .font(.caption2.weight(.semibold))
+          .labelStyle(.iconOnly)
+          .foregroundStyle(.secondary)
+          .padding(6)
+          .background(Color.white.opacity(0.20), in: Capsule())
+      }
+      .accessibilityHidden(true)
     }
   }
 }
@@ -605,10 +651,69 @@ private struct CredentialTagChip: View {
   }
 }
 
+private struct CredentialArtworkActionGroup: View {
+  let row: CredentialRow
+  let compact: Bool
+  let importArtworkAction: (URL, CredentialRow) -> Void
+  let resetArtworkAction: (CredentialRow) -> Void
+  let artworkFailureAction: (Error) -> Void
+  @State private var isImportingArtwork = false
+
+  var body: some View {
+    Group {
+      if compact {
+        VStack(alignment: .leading, spacing: 8) {
+          artworkButtons
+        }
+      } else {
+        HStack(spacing: 8) {
+          artworkButtons
+        }
+      }
+    }
+    .fileImporter(isPresented: $isImportingArtwork, allowedContentTypes: [.image]) { result in
+      switch result {
+      case .success(let sourceURL):
+        importArtworkAction(sourceURL, row)
+      case .failure(let error):
+        artworkFailureAction(error)
+      }
+    }
+  }
+
+  @ViewBuilder
+  private var artworkButtons: some View {
+    Button {
+      isImportingArtwork = true
+    } label: {
+      Label("Choose Artwork", systemImage: "photo.on.rectangle.angled")
+    }
+    .keydexActionButton(compact: compact)
+    .help("Import a custom card artwork image")
+    .accessibilityIdentifier("keydex.artwork.choose")
+    .accessibilityLabel("Choose custom artwork")
+
+    if row.artworkOverride != nil {
+      Button {
+        resetArtworkAction(row)
+      } label: {
+        Label("Reset Artwork", systemImage: "arrow.counterclockwise")
+      }
+      .keydexActionButton(compact: compact)
+      .help("Reset to the default artwork preset")
+      .accessibilityIdentifier("keydex.artwork.reset")
+      .accessibilityLabel("Reset custom artwork")
+    }
+  }
+}
+
 struct CredentialInspectorPanel: View {
   let row: CredentialRow
   let manageKeychainAction: () -> Void
   let manageTagsAction: () -> Void
+  let importArtworkAction: (URL, CredentialRow) -> Void
+  let resetArtworkAction: (CredentialRow) -> Void
+  let artworkFailureAction: (Error) -> Void
 
   var body: some View {
     ScrollView {
@@ -632,13 +737,21 @@ struct CredentialInspectorPanel: View {
           Button(action: manageKeychainAction) {
             Label("Manage Keychain", systemImage: "key.fill")
           }
-          .keydexActionButton(prominent: true)
+          .keydexActionButton()
           .help("Open Keychain reference management")
           .accessibilityIdentifier("keydex.inspector.manage-keychain")
           .accessibilityLabel("Manage Keychain reference")
 
           KeychainStatusBadge(row: row)
         }
+
+        CredentialArtworkActionGroup(
+          row: row,
+          compact: true,
+          importArtworkAction: importArtworkAction,
+          resetArtworkAction: resetArtworkAction,
+          artworkFailureAction: artworkFailureAction
+        )
 
         InspectorGlassSection(
           title: "States",
@@ -699,6 +812,9 @@ private struct CredentialMusicDetailView: View {
   let footerReserveHeight: CGFloat
   let manageKeychainAction: () -> Void
   let manageTagsAction: () -> Void
+  let importArtworkAction: (URL, CredentialRow) -> Void
+  let resetArtworkAction: (CredentialRow) -> Void
+  let artworkFailureAction: (Error) -> Void
   let closeAction: () -> Void
 
   var body: some View {
@@ -747,7 +863,7 @@ private struct CredentialMusicDetailView: View {
                 Button(action: manageKeychainAction) {
                   Label("Manage Keychain", systemImage: "key.fill")
                 }
-                .keydexActionButton(prominent: true)
+                .keydexActionButton()
                 .help("Open Keychain reference management")
                 .accessibilityIdentifier("keydex.card-detail.manage-keychain")
                 .accessibilityLabel("Manage Keychain reference")
@@ -762,6 +878,14 @@ private struct CredentialMusicDetailView: View {
 
                 KeychainStatusBadge(row: row)
               }
+
+              CredentialArtworkActionGroup(
+                row: row,
+                compact: false,
+                importArtworkAction: importArtworkAction,
+                resetArtworkAction: resetArtworkAction,
+                artworkFailureAction: artworkFailureAction
+              )
             }
             .frame(maxWidth: .infinity, alignment: .leading)
           }
