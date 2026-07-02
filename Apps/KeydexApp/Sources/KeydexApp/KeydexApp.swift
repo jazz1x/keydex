@@ -128,6 +128,7 @@ private final class WindowPresetView: NSView {
 }
 
 struct CredentialInventoryShellView: View {
+  @Environment(\.appearsActive) private var appearsActive
   @State private var selectedSidebar: SidebarSelection
   @State private var selectedCredentialID: CredentialRow.ID?
   @State private var searchText: String
@@ -273,8 +274,10 @@ struct CredentialInventoryShellView: View {
     .overlay {
       if isShowingSettings {
         ZStack {
-          Color.black.opacity(KeydexGlassTone.settingsBackdropDimAlpha)
+          Color.black.opacity(settingsBackdropDimAlpha)
             .ignoresSafeArea()
+            .contentShape(Rectangle())
+            .onTapGesture {}
             .transition(.opacity)
             .accessibilityHidden(true)
 
@@ -332,6 +335,10 @@ struct CredentialInventoryShellView: View {
 
   private var isCardLibrarySurface: Bool {
     settingsConfig.displayMode == .cards
+  }
+
+  private var settingsBackdropDimAlpha: Double {
+    KeydexGlassTone.settingsBackdropDimAlpha(appearsActive: appearsActive)
   }
 
   private var sidebarPane: some View {
@@ -794,9 +801,9 @@ private enum AppScreenScenario: String, CaseIterable {
 
   var displayMode: InventoryDisplayMode {
     switch self {
-    case .cardView, .cardDetail:
+    case .defaultWindow, .cardView, .cardDetail:
       .cards
-    case .defaultWindow, .emptyInventory, .searchFilter, .inspector, .settings,
+    case .emptyInventory, .searchFilter, .inspector, .settings,
       .settingsAppearance, .settingsSources, .settingsPaths, .settingsTags, .settingsRules,
       .compactWindow:
       .list
@@ -2385,7 +2392,7 @@ private enum SettingsSection: String, CaseIterable, Identifiable {
   }
 }
 
-private func sampleSettingsData(displayMode: InventoryDisplayMode = .list) -> ShellSettingsConfig {
+private func sampleSettingsData(displayMode: InventoryDisplayMode = .cards) -> ShellSettingsConfig {
   ShellSettingsConfig(
     keychainAccess: true,
     requestPrompt: false,
@@ -3124,8 +3131,8 @@ private enum KeydexGlassTone {
   static let sidebarSelectionFill = Color.primary.opacity(0.045)
   static let contentPanelFill = Color.primary.opacity(0.018)
   static let contentGlassTint = Color.white.opacity(0.035)
-  static let controlGlassTint = Color.white.opacity(0.055)
-  static let groupedRowsFill = Color.primary.opacity(0.018)
+  static let controlGlassTint = Color.white.opacity(0.040)
+  static let groupedRowsFill = Color.primary.opacity(0.010)
   static let railFloatingStroke = Color(nsColor: .separatorColor).opacity(0.18)
   static let railControlFill = Color.primary.opacity(0.045)
   static let panelStroke = Color(nsColor: .separatorColor).opacity(0.18)
@@ -3136,11 +3143,31 @@ private enum KeydexGlassTone {
   static let metadataChipFill = Color.primary.opacity(0.045)
   static let posterBadgeFill = Color.primary.opacity(0.045)
   static let posterBadgeStroke = Color(nsColor: .separatorColor).opacity(0.22)
-  static let settingsBackdropDimAlpha = 0.12
+  static let settingsActiveBackdropDimAlpha = 0.020
+  static let settingsInactiveBackdropDimAlpha = 0.11
+  static let settingsActivePanelWash = Color.white.opacity(0.006)
+  static let settingsInactivePanelWash = Color.accentColor.opacity(0.040)
   static let artworkColorAlpha = 0.18
   static let posterSymbolAlpha = 0.50
   static let posterWashHighAlpha = 0.045
   static let posterHighlightAlpha = 0.055
+
+  static func settingsBackdropDimAlpha(appearsActive: Bool) -> Double {
+    appearsActive ? settingsActiveBackdropDimAlpha : settingsInactiveBackdropDimAlpha
+  }
+
+  static func settingsPanelWash(appearsActive: Bool) -> Color {
+    appearsActive ? settingsActivePanelWash : settingsInactivePanelWash
+  }
+
+  static func settingsPanelStroke(appearsActive: Bool) -> Color {
+    Color(nsColor: .separatorColor)
+      .opacity(appearsActive ? 0.18 : 0.32)
+  }
+
+  static func settingsPanelStrokeWidth(appearsActive: Bool) -> CGFloat {
+    appearsActive ? 1 : 1.25
+  }
 }
 
 private enum KeydexMotion {
@@ -3351,6 +3378,7 @@ private struct KeydexControlGlassPanelModifier: ViewModifier {
 }
 
 private struct KeydexSheetGlassPanelModifier: ViewModifier {
+  @Environment(\.appearsActive) private var appearsActive
   var namespace: Namespace.ID?
 
   @ViewBuilder
@@ -3364,10 +3392,20 @@ private struct KeydexSheetGlassPanelModifier: ViewModifier {
       if #available(macOS 26.0, *) {
         let glassContent =
           content
-          .glassEffect(.clear.interactive(), in: shape)
+          .glassEffect(
+            .clear.tint(KeydexGlassTone.settingsPanelWash(appearsActive: appearsActive))
+              .interactive(),
+            in: shape
+          )
           .glassEffectTransition(.materialize)
           .overlay {
-            shape.stroke(KeydexGlassTone.panelStroke, lineWidth: 1)
+            shape.fill(KeydexGlassTone.settingsPanelWash(appearsActive: appearsActive))
+          }
+          .overlay {
+            shape.stroke(
+              KeydexGlassTone.settingsPanelStroke(appearsActive: appearsActive),
+              lineWidth: KeydexGlassTone.settingsPanelStrokeWidth(appearsActive: appearsActive)
+            )
           }
 
         if let namespace {
@@ -3389,7 +3427,13 @@ private struct KeydexSheetGlassPanelModifier: ViewModifier {
     content
       .background(.ultraThinMaterial, in: shape)
       .overlay {
-        shape.stroke(KeydexGlassTone.panelStroke, lineWidth: 1)
+        shape.fill(KeydexGlassTone.settingsPanelWash(appearsActive: appearsActive))
+      }
+      .overlay {
+        shape.stroke(
+          KeydexGlassTone.settingsPanelStroke(appearsActive: appearsActive),
+          lineWidth: KeydexGlassTone.settingsPanelStrokeWidth(appearsActive: appearsActive)
+        )
       }
   }
 }
