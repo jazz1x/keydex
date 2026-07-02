@@ -50,6 +50,8 @@ uncertainty to the next concrete action without making them decode implementatio
 - Artwork actions stay near credential identity in card detail and inspector surfaces.
   They must not be nested inside tag management because artwork is presentation metadata,
   not a tag.
+- Custom artwork rendering uses the Shell-owned artwork root. Views must not recreate a
+  default artwork store while resolving image files.
 - Accessibility labels must preserve the same workflow vocabulary: inventory, search
   results, credential detail, manage Keychain reference, manage tags, settings, and repair.
 
@@ -59,7 +61,7 @@ uncertainty to the next concrete action without making them decode implementatio
 | --- | --- |
 | Card/list mode | `InventoryDisplayMode`, `CredentialCardGrid`, `CredentialInventoryTable`. |
 | Default artwork | `CredentialArtworkPreset`, `CredentialDefaultArtwork`, `CredentialArtworkPanel`. |
-| Custom artwork | `CredentialArtworkStore`, `CredentialCustomArtwork`, `CredentialArtworkActionGroup`, `keydex.artwork.choose`, `keydex.artwork.reset`. |
+| Custom artwork | `CredentialArtworkStore`, `artworkRootURL`, `CredentialCustomArtwork`, `CredentialArtworkActionGroup`, `keydex.artwork.choose`, `keydex.artwork.reset`. |
 | Search narrowing | `MusicSearchField`, `Clear search`, `MusicSearchResultHeader`. |
 | Empty state | `ContentUnavailableView`. |
 | Detail and return | `CredentialMusicDetailView`, `keydex.card-detail.back`. |

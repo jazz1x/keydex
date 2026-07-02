@@ -37,6 +37,7 @@ struct InventoryContentView: View {
   @Binding var selectedCredentialID: CredentialRow.ID?
   let isEmptyMode: Bool
   let footerReserveHeight: CGFloat
+  let artworkRootURL: URL
   let manageKeychainAction: () -> Void
   let manageTagsAction: () -> Void
   let importArtworkAction: (URL, CredentialRow) -> Void
@@ -65,6 +66,7 @@ struct InventoryContentView: View {
           CredentialMusicDetailView(
             row: selectedCardRow,
             footerReserveHeight: footerReserveHeight,
+            artworkRootURL: artworkRootURL,
             manageKeychainAction: manageKeychainAction,
             manageTagsAction: manageTagsAction,
             importArtworkAction: importArtworkAction,
@@ -82,6 +84,7 @@ struct InventoryContentView: View {
             title: title,
             searchText: searchText,
             footerReserveHeight: footerReserveHeight,
+            artworkRootURL: artworkRootURL,
             restoreScrollAnchorID: cardReturnAnchorID,
             selectedCredentialID: $selectedCredentialID
           ) { rowID in
@@ -197,6 +200,7 @@ private struct CredentialCardGrid: View {
   let title: String
   let searchText: String
   let footerReserveHeight: CGFloat
+  let artworkRootURL: URL
   let restoreScrollAnchorID: CredentialRow.ID?
   @Binding var selectedCredentialID: CredentialRow.ID?
   let selectCredential: (CredentialRow.ID) -> Void
@@ -234,6 +238,7 @@ private struct CredentialCardGrid: View {
                 ForEach(rows) { row in
                   CredentialInventoryCard(
                     row: row,
+                    artworkRootURL: artworkRootURL,
                     isSelected: selectedCredentialID == row.id
                   ) {
                     selectCredential(row.id)
@@ -287,6 +292,7 @@ private struct MusicContentSectionHeader: View {
 
 private struct CredentialInventoryCard: View {
   let row: CredentialRow
+  let artworkRootURL: URL
   let isSelected: Bool
   let selectAction: () -> Void
 
@@ -296,6 +302,7 @@ private struct CredentialInventoryCard: View {
         CredentialArtworkPanel(
           row: row,
           height: KeydexCardGridLayout.posterHeight,
+          artworkRootURL: artworkRootURL,
           selected: isSelected
         )
 
@@ -327,6 +334,7 @@ private struct CredentialInventoryCard: View {
 private struct CredentialArtworkPanel: View {
   let row: CredentialRow
   var height: CGFloat = 82
+  let artworkRootURL: URL
   var selected = false
 
   var body: some View {
@@ -338,6 +346,7 @@ private struct CredentialArtworkPanel: View {
             CredentialCustomArtwork(
               override: artworkOverride,
               fallbackPreset: preset,
+              artworkRootURL: artworkRootURL,
               isPoster: isPoster
             )
             .clipShape(panelShape)
@@ -443,10 +452,11 @@ private struct CredentialPosterWash: View {
 private struct CredentialCustomArtwork: View {
   let override: CredentialArtworkOverride
   let fallbackPreset: CredentialArtworkPreset
+  let artworkRootURL: URL
   let isPoster: Bool
 
   var body: some View {
-    let imageURL = override.fileURL(rootURL: CredentialArtworkStore().rootURL)
+    let imageURL = override.fileURL(rootURL: artworkRootURL)
 
     if let image = NSImage(contentsOf: imageURL) {
       Image(nsImage: image)
@@ -709,6 +719,7 @@ private struct CredentialArtworkActionGroup: View {
 
 struct CredentialInspectorPanel: View {
   let row: CredentialRow
+  let artworkRootURL: URL
   let manageKeychainAction: () -> Void
   let manageTagsAction: () -> Void
   let importArtworkAction: (URL, CredentialRow) -> Void
@@ -718,7 +729,7 @@ struct CredentialInspectorPanel: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 16) {
-        CredentialArtworkPanel(row: row)
+        CredentialArtworkPanel(row: row, artworkRootURL: artworkRootURL)
           .frame(height: 148)
 
         VStack(alignment: .leading, spacing: 6) {
@@ -810,6 +821,7 @@ struct CredentialInspectorPanel: View {
 private struct CredentialMusicDetailView: View {
   let row: CredentialRow
   let footerReserveHeight: CGFloat
+  let artworkRootURL: URL
   let manageKeychainAction: () -> Void
   let manageTagsAction: () -> Void
   let importArtworkAction: (URL, CredentialRow) -> Void
@@ -835,7 +847,8 @@ private struct CredentialMusicDetailView: View {
           HStack(alignment: .bottom, spacing: KeydexCardDetailLayout.headerSpacing) {
             CredentialArtworkPanel(
               row: row,
-              height: KeydexCardDetailLayout.artworkSize
+              height: KeydexCardDetailLayout.artworkSize,
+              artworkRootURL: artworkRootURL
             )
             .frame(width: KeydexCardDetailLayout.artworkSize)
 

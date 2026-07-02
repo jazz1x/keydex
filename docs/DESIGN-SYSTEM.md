@@ -148,6 +148,8 @@ and honest about risk.
 - Custom artwork controls live beside credential identity actions in card detail and
   inspector surfaces. They must not be nested under tag management, and missing files
   fall back to the credential's default preset artwork.
+- Custom artwork image resolution uses the Shell-owned artwork root, not a default
+  store recreated inside the artwork view.
 - The repair queue uses a centered music-player-like repair rail inside a
   transparent footer lane instead of a hard split panel or opaque painted overlay.
   The lane has a 0.08 alpha top separator, and scrollable content keeps a 90 pt

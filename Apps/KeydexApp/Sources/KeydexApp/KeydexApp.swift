@@ -313,7 +313,8 @@ struct CredentialInventoryShellView: View {
         displayMode: settingsConfig.displayMode,
         selectedCredentialID: $selectedCredentialID,
         isEmptyMode: isEmptyMode,
-        footerReserveHeight: KeydexRailLayout.footerLaneHeight
+        footerReserveHeight: KeydexRailLayout.footerLaneHeight,
+        artworkRootURL: artworkStore.rootURL
       ) {
         selectedSettingsSection = .permissions
         isShowingSettings = true
@@ -344,7 +345,8 @@ struct CredentialInventoryShellView: View {
     VStack(alignment: .leading, spacing: 14) {
       if let row = selectedRow {
         CredentialInspectorPanel(
-          row: row
+          row: row,
+          artworkRootURL: artworkStore.rootURL
         ) {
           selectedSettingsSection = .permissions
           isShowingSettings = true
