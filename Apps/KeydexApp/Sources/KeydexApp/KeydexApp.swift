@@ -276,6 +276,8 @@ struct CredentialInventoryShellView: View {
         ZStack {
           Color.black.opacity(settingsBackdropDimAlpha)
             .ignoresSafeArea()
+            .contentShape(Rectangle())
+            .onTapGesture {}
             .transition(.opacity)
             .accessibilityHidden(true)
 
@@ -799,9 +801,9 @@ private enum AppScreenScenario: String, CaseIterable {
 
   var displayMode: InventoryDisplayMode {
     switch self {
-    case .cardView, .cardDetail:
+    case .defaultWindow, .cardView, .cardDetail:
       .cards
-    case .defaultWindow, .emptyInventory, .searchFilter, .inspector, .settings,
+    case .emptyInventory, .searchFilter, .inspector, .settings,
       .settingsAppearance, .settingsSources, .settingsPaths, .settingsTags, .settingsRules,
       .compactWindow:
       .list
@@ -2390,7 +2392,7 @@ private enum SettingsSection: String, CaseIterable, Identifiable {
   }
 }
 
-private func sampleSettingsData(displayMode: InventoryDisplayMode = .list) -> ShellSettingsConfig {
+private func sampleSettingsData(displayMode: InventoryDisplayMode = .cards) -> ShellSettingsConfig {
   ShellSettingsConfig(
     keychainAccess: true,
     requestPrompt: false,

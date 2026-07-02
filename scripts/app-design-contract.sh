@@ -108,6 +108,9 @@ for needle in \
   "SettingsDisplayModeRow" \
   "KeydexSheetGlassPanelModifier" \
   "KeydexGroupedRowsSurfaceModifier" \
+  "sampleSettingsData(displayMode: InventoryDisplayMode = .cards)" \
+  ".contentShape(Rectangle())" \
+  ".onTapGesture {}" \
   "controlGlassTint = Color.white.opacity(0.040)" \
   "groupedRowsFill = Color.primary.opacity(0.010)" \
   "settingsActiveBackdropDimAlpha = 0.020" \
