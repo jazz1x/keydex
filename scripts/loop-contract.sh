@@ -42,6 +42,11 @@ reject_import "KeydexStore" "SwiftUI|AppKit|Security" Sources/KeydexStore
 reject_import "KeydexKeychain" "SwiftUI|AppKit" Sources/KeydexKeychain
 reject_import "keydex CLI" "SwiftUI|AppKit" Sources/keydex
 reject_import "KeydexApp" "Security" Apps/KeydexApp/Sources/KeydexApp
+reject_import "KeydexCore" "KeydexKeychain|KeydexSources|KeydexStore|KeydexApp" Sources/KeydexCore
+reject_import "KeydexSources" "KeydexKeychain|KeydexStore|KeydexApp" Sources/KeydexSources
+reject_import "KeydexStore" "KeydexKeychain|KeydexSources|KeydexApp" Sources/KeydexStore
+reject_import "KeydexKeychain" "KeydexSources|KeydexStore|KeydexApp" Sources/KeydexKeychain
+reject_import "KeydexApp" "KeydexKeychain|KeydexSources|KeydexStore" Apps/KeydexApp/Sources/KeydexApp
 
 echo "2) package dependency boundaries..."
 expect_text Package.swift '.target(name: "KeydexCore")'
@@ -54,6 +59,7 @@ expect_text Package.swift 'path: "Apps/KeydexApp/Sources/KeydexApp"'
 echo "3) loop documentation wiring..."
 expect_text docs/LOOP-CONTRACT.md "Keydex improves through a closed loop"
 expect_text docs/LOOP-CONTRACT.md "Architecture Boundaries"
+expect_text docs/LOOP-CONTRACT.md "Source imports follow the package dependency direction"
 expect_text docs/LOOP-CONTRACT.md "Verification Ladder"
 expect_text docs/VERIFICATION.md "Loop Contract"
 expect_text README.md "LOOP-CONTRACT.md"
