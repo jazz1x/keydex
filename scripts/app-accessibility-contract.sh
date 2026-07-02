@@ -34,6 +34,7 @@ for identifier in \
   keydex.inspector.manage-keychain \
   keydex.inspector.manage-tags \
   keydex.card-detail.manage-tags \
+  keydex.settings.close \
   keydex.settings.section-picker \
   keydex.settings.panel; do
   expect_file_contains "$app_source" ".accessibilityIdentifier(\"$identifier\")"
@@ -67,6 +68,7 @@ for label in \
   "Credential inventory cards" \
   "Credential repair queue" \
   "Credential inspector" \
+  "Close settings" \
   "Register Keychain reference" \
   "Settings section" \
   "Keydex settings"; do

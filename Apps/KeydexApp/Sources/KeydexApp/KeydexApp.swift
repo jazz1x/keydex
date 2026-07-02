@@ -270,6 +270,28 @@ struct CredentialInventoryShellView: View {
         }
       }
     }
+    .overlay {
+      if isShowingSettings {
+        ZStack {
+          Color.black.opacity(KeydexGlassTone.settingsBackdropDimAlpha)
+            .ignoresSafeArea()
+            .transition(.opacity)
+            .accessibilityHidden(true)
+
+          SettingsPanel(
+            settings: $settingsConfig,
+            selectedSection: $selectedSettingsSection
+          ) {
+            withAnimation(KeydexMotion.contentTransition) {
+              isShowingSettings = false
+            }
+          }
+          .transition(.opacity.combined(with: .scale(scale: 0.985)))
+        }
+        .animation(KeydexMotion.contentTransition, value: isShowingSettings)
+        .accessibilityIdentifier("keydex.settings.overlay")
+      }
+    }
     .toolbar {
       ToolbarItem(placement: .status) {
         MusicToolbarCluster(
@@ -305,13 +327,6 @@ struct CredentialInventoryShellView: View {
     }
     .onChange(of: inventoryMode) { _, _ in
       selectedCredentialID = nil
-    }
-    .sheet(isPresented: $isShowingSettings) {
-      SettingsPanel(
-        settings: $settingsConfig,
-        selectedSection: $selectedSettingsSection
-      )
-      .frame(width: 720, height: 520)
     }
   }
 
@@ -550,55 +565,37 @@ private struct MusicSidebarView: View {
   }
 
   var body: some View {
-    ScrollViewReader { scrollProxy in
-      ScrollView {
-        VStack(alignment: .leading, spacing: KeydexSidebarLayout.sectionSpacing) {
-          Color.clear
-            .frame(height: 0)
-            .accessibilityHidden(true)
-            .id(KeydexSidebarScrollAnchor.top)
+    ScrollView {
+      VStack(alignment: .leading, spacing: KeydexSidebarLayout.sectionSpacing) {
+        MusicSearchField(searchText: $searchText)
+          .padding(.horizontal, 4)
+          .padding(.top, KeydexSidebarLayout.searchTopPadding)
 
-          MusicSearchField(searchText: $searchText)
-            .padding(.horizontal, 4)
-            .padding(.top, KeydexSidebarLayout.searchTopPadding)
-
-          MusicSidebarSection(title: nil) {
-            ForEach(inventoryItems, id: \.self) { item in
-              MusicSidebarRow(
-                item: item,
-                selected: selectedSidebar == item
-              ) {
-                selectedSidebar = item
-              }
+        MusicSidebarSection(title: nil) {
+          ForEach(inventoryItems, id: \.self) { item in
+            MusicSidebarRow(
+              item: item,
+              selected: selectedSidebar == item
+            ) {
+              selectedSidebar = item
             }
           }
+        }
 
-          MusicSidebarSection(title: "Library") {
-            ForEach(libraryItems, id: \.self) { item in
-              MusicSidebarRow(
-                item: item,
-                selected: selectedSidebar == item
-              ) {
-                selectedSidebar = item
-              }
+        MusicSidebarSection(title: "Library") {
+          ForEach(libraryItems, id: \.self) { item in
+            MusicSidebarRow(
+              item: item,
+              selected: selectedSidebar == item
+            ) {
+              selectedSidebar = item
             }
           }
+        }
 
-          if !tagItems.isEmpty {
-            MusicSidebarSection(title: "Tags") {
-              ForEach(tagItems, id: \.self) { item in
-                MusicSidebarRow(
-                  item: item,
-                  selected: selectedSidebar == item
-                ) {
-                  selectedSidebar = item
-                }
-              }
-            }
-          }
-
-          MusicSidebarSection(title: "Services") {
-            ForEach(serviceItems, id: \.self) { item in
+        if !tagItems.isEmpty {
+          MusicSidebarSection(title: "Tags") {
+            ForEach(tagItems, id: \.self) { item in
               MusicSidebarRow(
                 item: item,
                 selected: selectedSidebar == item
@@ -608,15 +605,23 @@ private struct MusicSidebarView: View {
             }
           }
         }
-        .padding(.horizontal, KeydexSidebarLayout.contentHorizontalPadding)
-        .padding(.bottom, KeydexSidebarLayout.contentBottomPadding)
-        .frame(maxWidth: .infinity, alignment: .topLeading)
+
+        MusicSidebarSection(title: "Services") {
+          ForEach(serviceItems, id: \.self) { item in
+            MusicSidebarRow(
+              item: item,
+              selected: selectedSidebar == item
+            ) {
+              selectedSidebar = item
+            }
+          }
+        }
       }
-      .scrollContentBackground(.hidden)
-      .onAppear {
-        scrollProxy.scrollTo(KeydexSidebarScrollAnchor.top, anchor: .top)
-      }
+      .padding(.horizontal, KeydexSidebarLayout.contentHorizontalPadding)
+      .padding(.bottom, KeydexSidebarLayout.contentBottomPadding)
+      .frame(maxWidth: .infinity, alignment: .topLeading)
     }
+    .scrollContentBackground(.hidden)
     .keydexSidebarGlass()
     .accessibilityIdentifier("keydex.sidebar.scopes")
     .accessibilityLabel("Credential scopes")
@@ -901,6 +906,7 @@ private struct InventoryContentView: View {
   let footerReserveHeight: CGFloat
   let manageKeychainAction: () -> Void
   let manageTagsAction: () -> Void
+  @State private var cardReturnAnchorID: CredentialRow.ID?
 
   var body: some View {
     ZStack {
@@ -926,16 +932,26 @@ private struct InventoryContentView: View {
             manageKeychainAction: manageKeychainAction,
             manageTagsAction: manageTagsAction
           ) {
-            selectedCredentialID = nil
+            withAnimation(KeydexMotion.contentTransition) {
+              selectedCredentialID = nil
+            }
           }
+          .transition(.opacity.combined(with: .scale(scale: 0.985)))
         } else {
           CredentialCardGrid(
             rows: rows,
             title: title,
             searchText: searchText,
             footerReserveHeight: footerReserveHeight,
+            restoreScrollAnchorID: cardReturnAnchorID,
             selectedCredentialID: $selectedCredentialID
-          )
+          ) { rowID in
+            cardReturnAnchorID = rowID
+            withAnimation(KeydexMotion.contentTransition) {
+              selectedCredentialID = rowID
+            }
+          }
+          .transition(.opacity.combined(with: .scale(scale: 0.985)))
         }
       }
 
@@ -952,6 +968,8 @@ private struct InventoryContentView: View {
         )
       }
     }
+    .animation(KeydexMotion.contentTransition, value: displayMode)
+    .animation(KeydexMotion.contentTransition, value: selectedCredentialID)
   }
 
   private var activeSearchQuery: String? {
@@ -1040,7 +1058,9 @@ private struct CredentialCardGrid: View {
   let title: String
   let searchText: String
   let footerReserveHeight: CGFloat
+  let restoreScrollAnchorID: CredentialRow.ID?
   @Binding var selectedCredentialID: CredentialRow.ID?
+  let selectCredential: (CredentialRow.ID) -> Void
 
   private let columns = [
     GridItem(
@@ -1057,34 +1077,42 @@ private struct CredentialCardGrid: View {
     ZStack {
       InventoryBackdropView()
 
-      ScrollView {
-        VStack(alignment: .leading, spacing: KeydexCardGridLayout.pageToSectionSpacing) {
-          Text(title)
-            .font(.largeTitle.weight(.bold))
-            .lineLimit(1)
+      ScrollViewReader { scrollProxy in
+        ScrollView {
+          VStack(alignment: .leading, spacing: KeydexCardGridLayout.pageToSectionSpacing) {
+            Text(title)
+              .font(.largeTitle.weight(.bold))
+              .lineLimit(1)
 
-          VStack(alignment: .leading, spacing: KeydexCardGridLayout.sectionToGridSpacing) {
-            MusicContentSectionHeader(title: sectionTitle)
+            VStack(alignment: .leading, spacing: KeydexCardGridLayout.sectionToGridSpacing) {
+              MusicContentSectionHeader(title: sectionTitle)
 
-            LazyVGrid(
-              columns: columns,
-              alignment: .leading,
-              spacing: KeydexCardGridLayout.rowSpacing
-            ) {
-              ForEach(rows) { row in
-                CredentialInventoryCard(
-                  row: row,
-                  isSelected: selectedCredentialID == row.id
-                ) {
-                  selectedCredentialID = row.id
+              LazyVGrid(
+                columns: columns,
+                alignment: .leading,
+                spacing: KeydexCardGridLayout.rowSpacing
+              ) {
+                ForEach(rows) { row in
+                  CredentialInventoryCard(
+                    row: row,
+                    isSelected: selectedCredentialID == row.id
+                  ) {
+                    selectCredential(row.id)
+                  }
+                  .id(row.id)
                 }
               }
             }
           }
+          .padding(.horizontal, KeydexCardGridLayout.contentHorizontalPadding)
+          .padding(.top, KeydexCardGridLayout.contentTopPadding)
+          .padding(.bottom, KeydexCardGridLayout.contentBottomPadding + footerReserveHeight)
         }
-        .padding(.horizontal, KeydexCardGridLayout.contentHorizontalPadding)
-        .padding(.top, KeydexCardGridLayout.contentTopPadding)
-        .padding(.bottom, KeydexCardGridLayout.contentBottomPadding + footerReserveHeight)
+        .onAppear {
+          if let restoreScrollAnchorID {
+            scrollProxy.scrollTo(restoreScrollAnchorID, anchor: .center)
+          }
+        }
       }
     }
     .accessibilityIdentifier("keydex.inventory.cards")
@@ -1950,8 +1978,8 @@ private struct DoctorPanel: View {
     .onHover { hovering in
       isHovered = hovering
     }
-    .animation(.snappy(duration: 0.18, extraBounce: 0.08), value: isHovered)
-    .animation(.snappy(duration: 0.24, extraBounce: 0.12), value: feedbackTrigger)
+    .animation(KeydexMotion.controlHover, value: isHovered)
+    .animation(KeydexMotion.railStateChange, value: feedbackTrigger)
     .sensoryFeedback(issues.isEmpty ? .success : .warning, trigger: feedbackTrigger)
     .accessibilityIdentifier("keydex.doctor.panel")
     .accessibilityLabel("Credential repair queue")
@@ -2424,14 +2452,38 @@ private func sampleSettingsData(displayMode: InventoryDisplayMode = .list) -> Sh
 private struct SettingsPanel: View {
   @Binding var settings: ShellSettingsConfig
   @Binding var selectedSection: SettingsSection
+  let closeAction: () -> Void
+  @Namespace private var settingsGlassNamespace
 
+  @ViewBuilder
   var body: some View {
+    #if compiler(>=6.2)
+      if #available(macOS 26.0, *) {
+        GlassEffectContainer(spacing: KeydexSettingsLayout.glassContainerSpacing) {
+          panelContent
+            .keydexSheetGlassPanel(namespace: settingsGlassNamespace)
+        }
+      } else {
+        legacyPanel
+      }
+    #else
+      legacyPanel
+    #endif
+  }
+
+  private var legacyPanel: some View {
+    panelContent
+      .keydexSheetGlassPanel()
+  }
+
+  private var panelContent: some View {
     VStack(spacing: 0) {
       VStack(alignment: .leading, spacing: 14) {
         HStack(alignment: .firstTextBaseline) {
           VStack(alignment: .leading, spacing: 4) {
             Text("Settings")
               .font(.title2.weight(.semibold))
+              .accessibilityLabel("Keydex settings")
             Text(settingsSummary)
               .font(.caption)
               .foregroundStyle(.secondary)
@@ -2455,7 +2507,12 @@ private struct SettingsPanel: View {
               value: "\(settings.tags.count)",
               systemImage: "tag"
             )
+
+            SettingsCloseButton {
+              closeAction()
+            }
           }
+          .layoutPriority(1)
         }
 
         Picker("Settings section", selection: $selectedSection) {
@@ -2465,14 +2522,13 @@ private struct SettingsPanel: View {
         }
         .pickerStyle(.segmented)
         .padding(4)
-        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .keydexControlGlassPanel(cornerRadius: 8)
         .accessibilityIdentifier("keydex.settings.section-picker")
         .accessibilityLabel("Settings section")
       }
       .padding(.horizontal, 24)
       .padding(.top, 20)
       .padding(.bottom, 16)
-      .background(.regularMaterial)
       .overlay(alignment: .bottom) {
         Rectangle()
           .fill(.separator.opacity(0.45))
@@ -2605,10 +2661,9 @@ private struct SettingsPanel: View {
         }
         .padding(24)
       }
-      .background(.ultraThinMaterial)
     }
-    .frame(width: 720, height: 520)
-    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+    .frame(width: KeydexSettingsLayout.panelWidth, height: KeydexSettingsLayout.panelHeight)
+    .onExitCommand(perform: closeAction)
     .accessibilityIdentifier("keydex.settings.panel")
     .accessibilityLabel("Keydex settings")
   }
@@ -2898,6 +2953,32 @@ private struct SettingsDisplayModeRow: View {
   }
 }
 
+private struct SettingsCloseButton: View {
+  let action: () -> Void
+
+  var body: some View {
+    Button(action: action) {
+      ZStack {
+        Image(systemName: "xmark.circle.fill")
+          .font(.title3.weight(.semibold))
+          .symbolRenderingMode(.hierarchical)
+          .foregroundStyle(.secondary)
+
+        Text("Close settings")
+          .frame(width: 0, height: 0)
+          .opacity(0.01)
+      }
+      .frame(width: 32, height: 32)
+      .contentShape(Circle())
+    }
+    .buttonStyle(.plain)
+    .keyboardShortcut(.escape, modifiers: [])
+    .help("Close settings")
+    .accessibilityIdentifier("keydex.settings.close")
+    .accessibilityLabel("Close settings")
+  }
+}
+
 private struct SettingsStatusPill: View {
   let title: String
   let value: String
@@ -2908,17 +2989,16 @@ private struct SettingsStatusPill: View {
       Image(systemName: systemImage)
         .font(.caption.weight(.semibold))
       Text(title)
+        .lineLimit(1)
       Text(value)
         .foregroundStyle(.secondary)
+        .lineLimit(1)
     }
     .font(.caption.weight(.medium))
     .padding(.horizontal, 10)
     .padding(.vertical, 6)
-    .background(.thinMaterial, in: Capsule())
-    .overlay {
-      Capsule()
-        .stroke(.separator.opacity(0.5), lineWidth: 1)
-    }
+    .fixedSize(horizontal: true, vertical: false)
+    .keydexCapsuleGlass()
   }
 }
 
@@ -2952,11 +3032,7 @@ private struct SettingsGlassSection<Content: View>: View {
       }
       .padding(.horizontal, 12)
       .padding(.vertical, 6)
-      .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-      .overlay {
-        RoundedRectangle(cornerRadius: 8, style: .continuous)
-          .stroke(.separator.opacity(0.55), lineWidth: 1)
-      }
+      .keydexGroupedRowsSurface()
     }
   }
 }
@@ -3046,13 +3122,13 @@ private struct SettingsDivider: View {
 
 private enum KeydexGlassTone {
   static let sidebarSelectionFill = Color.primary.opacity(0.045)
-  static let contentPanelFill = Color.primary.opacity(0.020)
-  static let contentGlassTint = Color.white.opacity(0.06)
-  static let controlGlassTint = Color.white.opacity(0.10)
-  static let floatingTint = Color.white.opacity(0.20)
-  static let railFloatingStroke = Color(nsColor: .separatorColor).opacity(0.24)
+  static let contentPanelFill = Color.primary.opacity(0.018)
+  static let contentGlassTint = Color.white.opacity(0.035)
+  static let controlGlassTint = Color.white.opacity(0.055)
+  static let groupedRowsFill = Color.primary.opacity(0.018)
+  static let railFloatingStroke = Color(nsColor: .separatorColor).opacity(0.18)
   static let railControlFill = Color.primary.opacity(0.045)
-  static let panelStroke = Color(nsColor: .separatorColor).opacity(0.30)
+  static let panelStroke = Color(nsColor: .separatorColor).opacity(0.18)
   static let stateChipFillAlpha = 0.08
   static let stateChipStrokeAlpha = 0.24
   static let metadataChipFillAlpha = 0.07
@@ -3060,10 +3136,17 @@ private enum KeydexGlassTone {
   static let metadataChipFill = Color.primary.opacity(0.045)
   static let posterBadgeFill = Color.primary.opacity(0.045)
   static let posterBadgeStroke = Color(nsColor: .separatorColor).opacity(0.22)
+  static let settingsBackdropDimAlpha = 0.12
   static let artworkColorAlpha = 0.18
   static let posterSymbolAlpha = 0.50
-  static let posterWashHighAlpha = 0.03
-  static let posterHighlightAlpha = 0.06
+  static let posterWashHighAlpha = 0.045
+  static let posterHighlightAlpha = 0.055
+}
+
+private enum KeydexMotion {
+  static let contentTransition = Animation.snappy(duration: 0.24, extraBounce: 0.04)
+  static let controlHover = Animation.snappy(duration: 0.18, extraBounce: 0.08)
+  static let railStateChange = Animation.snappy(duration: 0.24, extraBounce: 0.12)
 }
 
 private enum KeydexRailLayout {
@@ -3073,7 +3156,7 @@ private enum KeydexRailLayout {
   static let footerBottomPadding: CGFloat = 16
   static let footerSeparatorAlpha = 0.08
   static let railHeight: CGFloat = 58
-  static let maxWidth: CGFloat = 760
+  static let maxWidth: CGFloat = 720
   static let cornerRadius: CGFloat = 29
   static let glassContainerSpacing: CGFloat = 12
 }
@@ -3123,8 +3206,12 @@ private enum KeydexSidebarLayout {
   static let searchHorizontalPadding: CGFloat = 12
 }
 
-private enum KeydexSidebarScrollAnchor {
-  static let top = "keydex.sidebar.top"
+private enum KeydexSettingsLayout {
+  static let panelWidth: CGFloat = 720
+  static let panelHeight: CGFloat = 520
+  static let panelCornerRadius: CGFloat = 14
+  static let groupedRowsCornerRadius: CGFloat = 10
+  static let glassContainerSpacing: CGFloat = 18
 }
 
 private struct KeydexGlassButtonModifier: ViewModifier {
@@ -3263,6 +3350,95 @@ private struct KeydexControlGlassPanelModifier: ViewModifier {
   }
 }
 
+private struct KeydexSheetGlassPanelModifier: ViewModifier {
+  var namespace: Namespace.ID?
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    let shape = RoundedRectangle(
+      cornerRadius: KeydexSettingsLayout.panelCornerRadius,
+      style: .continuous
+    )
+
+    #if compiler(>=6.2)
+      if #available(macOS 26.0, *) {
+        let glassContent =
+          content
+          .glassEffect(.clear.interactive(), in: shape)
+          .glassEffectTransition(.materialize)
+          .overlay {
+            shape.stroke(KeydexGlassTone.panelStroke, lineWidth: 1)
+          }
+
+        if let namespace {
+          glassContent
+            .glassEffectID("settings-sheet", in: namespace)
+        } else {
+          glassContent
+        }
+      } else {
+        fallback(content: content, in: shape)
+      }
+    #else
+      fallback(content: content, in: shape)
+    #endif
+  }
+
+  @ViewBuilder
+  private func fallback(content: Content, in shape: RoundedRectangle) -> some View {
+    content
+      .background(.ultraThinMaterial, in: shape)
+      .overlay {
+        shape.stroke(KeydexGlassTone.panelStroke, lineWidth: 1)
+      }
+  }
+}
+
+private struct KeydexGroupedRowsSurfaceModifier: ViewModifier {
+  func body(content: Content) -> some View {
+    let shape = RoundedRectangle(
+      cornerRadius: KeydexSettingsLayout.groupedRowsCornerRadius,
+      style: .continuous
+    )
+
+    content
+      .background(KeydexGlassTone.groupedRowsFill, in: shape)
+      .overlay {
+        shape.stroke(KeydexGlassTone.panelStroke, lineWidth: 1)
+      }
+  }
+}
+
+private struct KeydexCapsuleGlassModifier: ViewModifier {
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    let shape = Capsule()
+
+    #if compiler(>=6.2)
+      if #available(macOS 26.0, *) {
+        content
+          .glassEffect(.regular.interactive(), in: shape)
+          .overlay {
+            shape.stroke(KeydexGlassTone.panelStroke, lineWidth: 1)
+          }
+      } else {
+        fallback(content: content, in: shape)
+      }
+    #else
+      fallback(content: content, in: shape)
+    #endif
+  }
+
+  @ViewBuilder
+  private func fallback(content: Content, in shape: Capsule) -> some View {
+    content
+      .background(.thinMaterial, in: shape)
+      .overlay {
+        shape.stroke(KeydexGlassTone.panelStroke, lineWidth: 1)
+      }
+  }
+}
+
 private struct KeydexFloatingGlassPanelModifier: ViewModifier {
   let stroke: Color
 
@@ -3323,7 +3499,6 @@ private struct KeydexSidebarGlassModifier: ViewModifier {
         ZStack(alignment: .topLeading) {
           content
         }
-        .glassEffect(.regular, in: Rectangle())
         .background {
           KeydexSidebarMaterialView()
         }
@@ -3389,6 +3564,22 @@ extension View {
 
   fileprivate func keydexControlGlassPanel(cornerRadius: CGFloat) -> some View {
     modifier(KeydexControlGlassPanelModifier(cornerRadius: cornerRadius))
+  }
+
+  fileprivate func keydexSheetGlassPanel() -> some View {
+    modifier(KeydexSheetGlassPanelModifier(namespace: nil))
+  }
+
+  fileprivate func keydexSheetGlassPanel(namespace: Namespace.ID) -> some View {
+    modifier(KeydexSheetGlassPanelModifier(namespace: namespace))
+  }
+
+  fileprivate func keydexCapsuleGlass() -> some View {
+    modifier(KeydexCapsuleGlassModifier())
+  }
+
+  fileprivate func keydexGroupedRowsSurface() -> some View {
+    modifier(KeydexGroupedRowsSurfaceModifier())
   }
 
   fileprivate func keydexFloatingGlassPanel(stroke: Color) -> some View {

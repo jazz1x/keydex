@@ -81,6 +81,7 @@ for needle in \
   "footerTopPadding" \
   "footerBottomPadding" \
   "footerSeparatorAlpha = 0.08" \
+  "maxWidth: CGFloat = 720" \
   "GlassEffectContainer(spacing: KeydexRailLayout.glassContainerSpacing)" \
   "Color.clear" \
   "searchTopPadding: CGFloat = 12" \
@@ -89,8 +90,9 @@ for needle in \
   "posterHeight: CGFloat = 248" \
   "artworkColorAlpha = 0.18" \
   ".scrollContentBackground(.hidden)" \
-  "ScrollViewReader" \
-  "KeydexSidebarScrollAnchor" \
+  "KeydexMotion" \
+  "cardReturnAnchorID" \
+  "restoreScrollAnchorID" \
   "ZStack(alignment: .topLeading)" \
   "stateChipFillAlpha" \
   "posterSymbolAlpha" \
@@ -102,8 +104,13 @@ for needle in \
   "SettingsGlassSection" \
   "SettingsToggleRow" \
   "SettingsStatusPill" \
+  "SettingsCloseButton" \
   "SettingsDisplayModeRow" \
+  "KeydexSheetGlassPanelModifier" \
+  "KeydexGroupedRowsSurfaceModifier" \
+  "KeydexCapsuleGlassModifier" \
   ".labelsHidden()" \
+  ".keyboardShortcut(.escape, modifiers: [])" \
   ".frame(width: 54, alignment: .trailing)" \
   ".pickerStyle(.segmented)" \
   ".keydexGlassButton(" \
@@ -111,9 +118,12 @@ for needle in \
   ".keydexSidebarSearchRow()" \
   ".keydexControlGlassPanel(" \
   ".keydexContentPanel(" \
+  ".keydexGroupedRowsSurface()" \
   ".keydexFloatingGlassPanel(" \
   ".glassEffect(.clear.interactive(), in: shape)" \
+  ".glassEffect(.regular.interactive(), in: shape)" \
   ".glassEffectTransition(.materialize)" \
+  ".transition(.opacity.combined(with: .scale(scale: 0.985)))" \
   ".symbolEffect(.bounce" \
   ".sensoryFeedback(" \
   ".onHover" \
@@ -123,8 +133,7 @@ for needle in \
   ".backgroundExtensionEffect()" \
   "NSVisualEffectView" \
   "view.material = .sidebar" \
-  ".background(.regularMaterial" \
-  ".background(.ultraThinMaterial)" \
+  ".background(.ultraThinMaterial, in: shape)" \
   ".background(.thinMaterial" \
   ".help("; do
   expect_file_contains "$app_source" "$needle"
@@ -166,6 +175,7 @@ for needle in \
   "music-player-like repair rail" \
   "surface.footerRail" \
   "90 pt content reserve" \
+  "layout.footerRail.maxWidth" \
   "transparent footer lane" \
   "native clear interactive glass" \
   "macOS hover scale" \
@@ -175,7 +185,12 @@ for needle in \
   "native macOS sidebar visual effect" \
   "Sidebar scroll content hides its own background" \
   "Sidebar content sits directly on native material" \
-  "Sidebar navigation opens at its top anchor" \
+  "Sidebar navigation preserves user scroll position" \
+  "Card-to-detail and detail-to-card transitions use the content motion token" \
+  "Settings overlays must expose an icon-only close affordance" \
+  "Settings header status pills stay single-line" \
+  "Settings outer overlay and header controls use native Liquid Glass" \
+  "Inner grouped rows stay plain low-alpha surfaces" \
   "Music-like content cadence" \
   "semantic state-color media wash" \
   "Poster glyphs stay subdued" \
@@ -210,6 +225,8 @@ done
 
 reject_file_contains "$app_source" "CredentialMusicDetailSheet"
 reject_file_contains "$app_source" "cardDetailSheetBinding"
+reject_file_contains "$app_source" "KeydexSidebarScrollAnchor"
+reject_file_contains "$app_source" "scrollProxy.scrollTo(KeydexSidebarScrollAnchor.top"
 
 if awk '
   /private struct CredentialInventoryCard/ { in_card = 1 }

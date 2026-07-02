@@ -121,7 +121,7 @@ run_scenario() {
   local scenario="$1"
   shift
 
-  KEYDEX_APP_WINDOW_PRESET=default KEYDEX_APP_SCREEN_SCENARIO="$scenario" swift run KeydexApp &
+  KEYDEX_APP_WINDOW_PRESET=default KEYDEX_APP_SCREEN_SCENARIO="$scenario" "$app_binary" &
   app_pid="$!"
 
   local readiness_needle=""
@@ -145,6 +145,9 @@ ui_elements_enabled="$(osascript -e 'tell application "System Events" to get UI 
   fail "macOS accessibility UI scripting is disabled"
 
 swift build --product KeydexApp
+bin_dir="$(swift build --show-bin-path)"
+app_binary="$bin_dir/KeydexApp"
+test -x "$app_binary" || fail "missing built app binary: $app_binary"
 
 run_scenario inspector \
   "Credential scopes" \
@@ -158,7 +161,7 @@ run_scenario inspector \
 run_scenario settings \
   "Credential scopes" \
   "Credential inventory table" \
-  "Keydex settings" \
+  "Settings" \
   "Settings section" \
   "Keychain" \
   "Enabled for inventory scan runs" \
@@ -166,7 +169,7 @@ run_scenario settings \
   "Request runtime keychain prompt"
 
 run_scenario settings-appearance \
-  "Keydex settings" \
+  "Settings" \
   "Settings section" \
   "Appearance" \
   "Display mode" \

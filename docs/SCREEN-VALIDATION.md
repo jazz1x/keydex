@@ -81,8 +81,10 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Apple Music reference | Native sidebar material, poster cards, and the music-player-like footer rail are checked against Music for Mac's content/glass layering. |
 | Toolbar cluster | Sample and display mode controls are grouped into one glass cluster. |
 | Sidebar glass | Sidebar is the native glass slab with no color wash overlay; scroll content background is hidden and search opens as a plain 12/36/12 pt row on that material, not nested glass. |
-| Rail layering | The bottom Doctor rail is composited in a transparent footer lane with a top separator, 90 pt content reserve, and centered clear Liquid Glass rail, not as an opaque painted panel. |
+| Rail layering | The bottom Doctor rail is composited in a transparent footer lane with a top separator, 90 pt content reserve, and centered native clear Liquid Glass rail, not as an opaque painted panel. |
 | Rail feedback | Doctor rail state changes use native symbol, numeric, macOS hover scale, and sensory feedback. |
+| Scroll continuity | Sidebar selection and card detail transitions must not force the user back to the top of a scrolled list or shelf. |
+| Settings dismissal | Settings exposes an icon-only close button and Escape shortcut; header status pills remain single-line. |
 | Table rail inset | List/table mode keeps the 90 pt footer reserve so final rows remain reachable under the material rail. |
 | Table legibility | Repeated rows do not use heavy material effects. |
 | Card legibility | Inventory cards keep 8 pt radius, stable 248 pt poster height, title/caption text below the poster, and source previews. |
@@ -117,7 +119,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | UI5 | Duplicate credential | `default-window` | Screenshot with duplicate state and relationship evidence. |
 | UI6 | Inspector sources | `inspector` | Screenshot showing stored/observed source relationships. |
 | UI7 | Doctor queue | `default-window` | Screenshot with grouped cause/action findings. |
-| UI8 | Settings permissions, appearance, tags, and rules | `settings`, `settings-appearance`, `settings-sources`, `settings-paths`, `settings-tags`, `settings-rules` | Screenshots of Keychain access, appearance mode controls, scan sources, scan paths, user-owned tag metadata, ignored sources, and unmanaged sources. |
+| UI8 | Settings permissions, appearance, tags, and rules | `settings`, `settings-appearance`, `settings-sources`, `settings-paths`, `settings-tags`, `settings-rules` | Full app screenshots with the in-window Liquid Glass settings overlay above Keychain access, appearance mode controls, scan sources, scan paths, user-owned tag metadata, ignored sources, and unmanaged sources. |
 | UI9 | Search/filter | `search-filter` | Screenshot after graph projection filtering; compare with `default-window`. |
 | UI10 | Compact viewport | `compact-window` | Screenshot proving no overlap. |
 
@@ -139,8 +141,9 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Search shell | App source filters `CredentialProjection` rows | Search narrows graph projections without separate list truth. |
 | Settings shell | App source exposes `SettingsPanel` | Permission, scan path, and unmanaged source controls are reachable. |
 
-Settings evidence captures use a fixed 720 x 520 pt sheet. This prevents material-backed
-Settings sections from passing review while clipped or compressed.
+Settings evidence captures use the full fixed 1080 x 680 pt app window with the in-window
+overlay open. This proves the Liquid Glass sheet, dimmed backdrop, and surrounding app
+context compose together without clipping.
 | Empty shell | App source exposes empty `InventoryGraph` mode | Empty inventory is an honest graph projection state. |
 
 ## Screen Review Checklist

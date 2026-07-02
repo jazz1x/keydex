@@ -55,8 +55,11 @@ window_report() {
 }
 
 swift build --product KeydexApp
+bin_dir="$(swift build --show-bin-path)"
+app_binary="$bin_dir/KeydexApp"
+test -x "$app_binary" || fail "missing built app binary: $app_binary"
 
-KEYDEX_APP_WINDOW_PRESET=default swift run KeydexApp &
+KEYDEX_APP_WINDOW_PRESET=default "$app_binary" &
 app_pid="$!"
 trap 'kill "$app_pid" >/dev/null 2>&1 || true' EXIT
 
