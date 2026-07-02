@@ -8,7 +8,7 @@ prove its own contract will drift into wishful UI.
 | Gate | Command or Setting | Verifies |
 | --- | --- | --- |
 | Format | `swift-format lint --recursive --strict Package.swift Sources Tests Apps` | Swift style stays stable. |
-| Tests | `swift test` | Domain, graph, source parser, and doctor behavior. |
+| Tests | `swift test` | Domain, graph, source parser, doctor behavior, and app presentation stores. |
 | App Build | `swift build --product KeydexApp` | SwiftUI Mac app shell compiles against graph projections. |
 | App Window Smoke | `scripts/app-window-smoke.sh` | SwiftUI Mac app shell launches a stable default local window and reports its dimensions. |
 | App Screen Evidence Review | `scripts/app-screen-evidence-review.sh` | Local screenshot manifests and PNGs cover required screen scenarios for the current Git SHA and dirty state. |

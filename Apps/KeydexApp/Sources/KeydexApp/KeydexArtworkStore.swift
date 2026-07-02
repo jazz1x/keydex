@@ -19,7 +19,7 @@ struct CredentialArtworkLoadState {
   let issueMessage: String?
 }
 
-enum CredentialArtworkStoreError: LocalizedError {
+enum CredentialArtworkStoreError: LocalizedError, Equatable {
   case unsupportedImageType(String)
   case fileOperation(String)
 
@@ -34,16 +34,22 @@ enum CredentialArtworkStoreError: LocalizedError {
 }
 
 struct CredentialArtworkStore {
+  private let rootDirectoryURL: URL
   private let fileManager: FileManager
   private let decoder = JSONDecoder()
   private let encoder = JSONEncoder()
 
-  init(fileManager: FileManager = .default) {
+  init(fileManager: FileManager = .default, rootURL: URL? = nil) {
     self.fileManager = fileManager
+    rootDirectoryURL = rootURL ?? Self.defaultRootURL(fileManager: fileManager)
     encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
   }
 
   var rootURL: URL {
+    rootDirectoryURL
+  }
+
+  private static func defaultRootURL(fileManager: FileManager) -> URL {
     fileManager.homeDirectoryForCurrentUser
       .appendingPathComponent("Library", isDirectory: true)
       .appendingPathComponent("Application Support", isDirectory: true)
