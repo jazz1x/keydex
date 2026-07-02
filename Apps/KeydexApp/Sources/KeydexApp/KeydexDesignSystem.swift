@@ -148,6 +148,7 @@ private struct KeydexGlassButtonModifier: ViewModifier {
 private struct KeydexActionButtonModifier: ViewModifier {
   let prominent: Bool
   let compact: Bool
+  @FocusState private var isKeyboardFocused: Bool
 
   private var foreground: Color {
     prominent ? Color.accentColor : Color.primary
@@ -165,6 +166,18 @@ private struct KeydexActionButtonModifier: ViewModifier {
     prominent
       ? Color.accentColor.opacity(0.40)
       : Color(nsColor: .separatorColor).opacity(0.30)
+  }
+
+  private var currentStroke: Color {
+    isKeyboardFocused ? Color.primary.opacity(0.34) : stroke
+  }
+
+  private var currentStrokeWidth: CGFloat {
+    if isKeyboardFocused {
+      return 1.25
+    }
+
+    return prominent ? 1.2 : 1
   }
 
   private var actionFont: Font {
@@ -191,7 +204,7 @@ private struct KeydexActionButtonModifier: ViewModifier {
             shape.fill(fill)
           }
           .overlay {
-            shape.stroke(stroke, lineWidth: prominent ? 1.2 : 1)
+            shape.stroke(currentStroke, lineWidth: currentStrokeWidth)
           }
       } else {
         fallback(content: content, in: shape)
@@ -211,6 +224,8 @@ private struct KeydexActionButtonModifier: ViewModifier {
       .frame(height: height)
       .foregroundStyle(foreground)
       .contentShape(Capsule())
+      .focused($isKeyboardFocused)
+      .focusEffectDisabled()
       .accessibilityAddTraits(.isButton)
   }
 
@@ -221,7 +236,7 @@ private struct KeydexActionButtonModifier: ViewModifier {
         shape.fill(fill)
       }
       .overlay {
-        shape.stroke(stroke, lineWidth: prominent ? 1.2 : 1)
+        shape.stroke(currentStroke, lineWidth: currentStrokeWidth)
       }
   }
 }

@@ -10,6 +10,7 @@ command -v rg >/dev/null 2>&1 || fail "missing dependency: rg (ripgrep)"
 
 app_sources="Apps/KeydexApp/Sources/KeydexApp"
 inventory_source="$app_sources/KeydexInventoryViews.swift"
+design_source="$app_sources/KeydexDesignSystem.swift"
 settings_source="$app_sources/KeydexSettingsViews.swift"
 sidebar_source="$app_sources/KeydexSidebarViews.swift"
 doctor_source="$app_sources/KeydexDoctorViews.swift"
@@ -204,6 +205,18 @@ if awk '
   END { exit found ? 0 : 1 }
 ' "$inventory_source"; then
   fail "Credential cards must not remove keyboard focus to hide the blue focus ring"
+fi
+
+if ! awk '
+  /private struct KeydexActionButtonModifier/ { in_button = 1 }
+  /private struct KeydexContentPanelModifier/ { in_button = 0 }
+  in_button && /@FocusState private var isKeyboardFocused/ { state = 1 }
+  in_button && /\.focused\(\$isKeyboardFocused\)/ { focused = 1 }
+  in_button && /\.focusEffectDisabled\(\)/ { disabled = 1 }
+  in_button && /Color\.primary\.opacity\(0\.34\)/ { neutral = 1 }
+  END { exit(state && focused && disabled && neutral ? 0 : 1) }
+' "$design_source"; then
+  fail "Scoped action buttons must replace the default blue focus ring with neutral Keydex focus"
 fi
 
 if awk '
