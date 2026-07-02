@@ -110,6 +110,26 @@ if [[ "$app_scenarios" != "$expected_scenarios" ]]; then
 fi
 
 while IFS= read -r scenario; do
+  inventory_mode="$(keydex_evidence_inventory_mode "$scenario")" ||
+    fail "missing inventory mode for scenario: $scenario"
+  case "$inventory_mode" in
+    sample | empty)
+      ;;
+    *)
+      fail "unsupported inventory mode for scenario $scenario: $inventory_mode"
+      ;;
+  esac
+
+  window_preset="$(keydex_evidence_window_preset "$scenario")" ||
+    fail "missing window preset for scenario: $scenario"
+  case "$window_preset" in
+    default | compact)
+      ;;
+    *)
+      fail "unsupported window preset for scenario $scenario: $window_preset"
+      ;;
+  esac
+
   if ! rg --fixed-strings --quiet -- "$scenario" "$screen_doc"; then
     fail "$screen_doc is missing required evidence scenario: $scenario"
   fi
