@@ -43,8 +43,12 @@ If a pending evidence shell already exists for an older SHA, refresh it before f
 final results:
 
 ```bash
-make release-signing-evidence-template ARGS=--force
+make release-signing-evidence-template ARGS=--refresh-pending
 ```
+
+The pending refresh updates the manifest's Git SHA, dirty state, app path, and DMG path
+without overwriting the notes file. It refuses manifests that already contain non-pending
+signing result fields.
 
 ## Credential Setup
 
