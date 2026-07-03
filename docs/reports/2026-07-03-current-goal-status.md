@@ -1,12 +1,12 @@
 # Current Goal Status
 
 Date: 2026-07-03
-Evidence baseline SHA: `7e0f25b`
+Evidence baseline SHA: `b1c4645`
 Git dirty state: `clean`
 
 This report records the latest product and evidence baseline after the settings scroll
-inset merge. A report-only commit may have a later SHA without changing the evidence
-baseline.
+breathing-room merge and the script guardrail hardening merges. A report-only commit may
+have a later SHA without changing the evidence baseline.
 
 ## BLUF
 
@@ -33,6 +33,11 @@ The total goal is not complete. Two evidence classes remain outside the automate
 | #134 | `9f6ed36` | Guarded the loop contract against automation sprawl. |
 | #135 | `b01189d` | Clarified non-secret signing readiness scope. |
 | #136 | `7e0f25b` | Added settings scroll bottom inset for long settings sections. |
+| #137 | `0d18a76` | Updated the current goal status report. |
+| #138 | `a1b6432` | Forbid script-level `try!` in evidence and guard scripts. |
+| #139 | `12db468` | Parsed script Swift command arguments without force unwraps. |
+| #140 | `4f1b38b` | Failed explicitly when macOS window-list reads fail. |
+| #141 | `b1c4645` | Matched settings scroll reserve to the 56 pt UX contract. |
 
 ## Goal Matrix
 
@@ -63,12 +68,12 @@ The total goal is not complete. Two evidence classes remain outside the automate
 
 | Check | Current Result |
 | --- | --- |
-| `make evidence-status` | Pass on `7e0f25b`; screen evidence pass, manual accessibility pending, signing blocked, `needs_attention=0`. |
-| `make app-accessibility-evidence-status` | Pass on `7e0f25b`; 13 scenarios, 52 pending fields. |
-| `make app-screen-evidence-review` | Pass on `7e0f25b`; all 13 scenario PNGs and manifests current. |
-| `make release-smoke` | Pass on `7e0f25b`; release CLI/app build, ad-hoc app signing, archive, checksum, unsigned DMG, and DMG verification passed. |
-| `make app-accessibility-smoke` | Pass on `7e0f25b`; all 13 scenarios expose expected AX text and settings modal toolbar controls remain hidden from AX. |
-| PR CI | #136 merged after green `guard`, `quality`, `release-smoke`, `gitleaks`, and `trivy`. |
+| `make evidence-status` | Pass on `b1c4645`; screen evidence pass, manual accessibility pending, signing blocked, `needs_attention=0`. |
+| `make app-accessibility-evidence-status` | Pass on `b1c4645`; 13 scenarios, 52 pending fields. |
+| `make app-screen-evidence-review` | Pass on `b1c4645`; all 13 scenario PNGs and manifests current. |
+| `make release-smoke` | Pass on `b1c4645`; release CLI/app build, ad-hoc app signing, archive, checksum, unsigned DMG, and DMG verification passed. |
+| `make app-accessibility-smoke` | Pass on `b1c4645`; all 13 scenarios expose expected AX text and settings modal toolbar controls remain hidden from AX. |
+| PR CI | #141 merged after green `guard`, `quality`, `release-smoke`, `gitleaks`, and `trivy`. |
 
 ## Remaining Blockers
 
@@ -80,8 +85,9 @@ The total goal is not complete. Two evidence classes remain outside the automate
 
 ## Next Practical Step
 
-The next code-local improvement is small: keep increasing failure diagnosability and
-evidence fidelity without converting manual blockers into false passes.
+The next code-local improvement is small: keep increasing failure diagnosability,
+UI evidence fidelity, and contract precision without converting manual blockers into
+false passes.
 
 The next total-goal step is not code-local: either perform the manual accessibility review
 or provide Developer ID/notary credentials. Until then, Keydex should remain described as
