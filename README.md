@@ -38,8 +38,9 @@ First-run success means:
 - `swift run keydex reminders --metadata Tests/Fixtures/metadata.json --now 2026-07-01`
   reports the expired fixture reminder.
 - `make guard` passes format, tests, app build, and forbidden-pattern checks.
-- `make quality` passes command inventory, docs drift, loop contract, project contract, CLI smoke,
-  accessibility contract, and design contract checks.
+- `make quality` passes command inventory, docs drift, loop/project contracts, CLI smoke,
+  app accessibility/design/UX contracts, evidence scenario SSOT, accessibility/signing
+  evidence template contracts, and menubar smoke script checks.
 
 ---
 
@@ -226,7 +227,7 @@ Design rules live in docs and scripts rather than screenshots alone:
 | Gate | What it checks |
 | --- | --- |
 | `make guard` | Swift format, tests, app build, forbidden patterns. |
-| `make quality` | CLI inventory drift, state/docs drift, loop contract, project contract, CLI smoke, app accessibility/design/UX flow contracts, app evidence scenario SSOT, and menubar smoke script contract. |
+| `make quality` | CLI inventory drift, state/docs drift, loop/project contracts, CLI smoke, app accessibility/design/UX flow contracts, app evidence scenario SSOT, accessibility/signing evidence template contracts, and menubar smoke script contract. |
 | `make loop-contract` | Clean Architecture import boundaries, package dependency boundaries, and loop documentation wiring. |
 | `make release-smoke` | Release payload, CLI smoke artifact, ad-hoc app signing, archive, checksum, and DMG verification. |
 | `make release-signing-readiness` | Developer ID / notarization readiness evidence. |
