@@ -47,6 +47,32 @@ expect_notes_contains() {
     fail "$path is missing expected notes text: $needle"
 }
 
+expect_notes_context() {
+  local scenario="$1"
+  local notes_path="$2"
+  local focus
+  local inventory_mode
+  local window_preset
+  local target
+
+  focus="$(keydex_evidence_accessibility_focus "$scenario")" ||
+    fail "missing accessibility focus for scenario: $scenario"
+  inventory_mode="$(keydex_evidence_inventory_mode "$scenario")" ||
+    fail "missing inventory mode for scenario: $scenario"
+  window_preset="$(keydex_evidence_window_preset "$scenario")" ||
+    fail "missing window preset for scenario: $scenario"
+
+  expect_notes_contains "$notes_path" "## Scenario Focus"
+  expect_notes_contains "$notes_path" "Focus: $focus"
+  expect_notes_contains "$notes_path" "Inventory mode: $inventory_mode"
+  expect_notes_contains "$notes_path" "Window preset: $window_preset"
+  expect_notes_contains "$notes_path" "Review targets:"
+
+  while IFS= read -r target; do
+    expect_notes_contains "$notes_path" "$target"
+  done < <(keydex_evidence_accessibility_targets "$scenario")
+}
+
 review_field_state() {
   local manifest_path="$1"
   local key="$2"
@@ -99,6 +125,7 @@ for scenario in "${KEYDEX_EVIDENCE_SCENARIOS[@]}"; do
   expect_notes_contains "$notes_path" "State Not Color Only"
   expect_notes_contains "$notes_path" "Dynamic Type"
   expect_notes_contains "$notes_path" "Open Issues"
+  expect_notes_context "$scenario" "$notes_path"
 
   scenario_count=$((scenario_count + 1))
   scenario_pending_fields=0
