@@ -1,4 +1,4 @@
-.PHONY: guard format test app-build forbidden quality contract loop-contract cli-smoke app-window-smoke app-menubar-smoke app-accessibility-contract app-accessibility-smoke app-accessibility-evidence-template app-accessibility-evidence-status app-accessibility-evidence-review app-design-contract app-ux-flow-contract app-evidence-scenarios-contract app-screen-evidence app-screen-evidence-all app-screen-evidence-review release-smoke release-signing-readiness release-signing-evidence-template release-signing-evidence-review evidence-status
+.PHONY: guard format test app-build forbidden quality contract loop-contract cli-smoke app-window-smoke app-menubar-smoke app-accessibility-contract app-accessibility-smoke app-accessibility-evidence-template app-accessibility-evidence-status app-accessibility-evidence-review app-design-contract app-ux-flow-contract app-evidence-scenarios-contract app-screen-evidence app-screen-evidence-all app-screen-evidence-review release-smoke release-signing-readiness release-signing-evidence-template release-signing-evidence-template-contract release-signing-evidence-review evidence-status
 
 SWIFT_FORMAT ?= /Library/Developer/CommandLineTools/usr/bin/swift-format
 ARGS ?=
@@ -76,6 +76,9 @@ release-signing-readiness:
 
 release-signing-evidence-template:
 	./scripts/release-signing-evidence-template.sh $(ARGS)
+
+release-signing-evidence-template-contract:
+	./scripts/release-signing-evidence-template-contract.sh
 
 release-signing-evidence-review:
 	./scripts/release-signing-evidence-review.sh

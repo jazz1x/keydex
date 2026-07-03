@@ -51,6 +51,7 @@ expect_file scripts/app-design-contract.sh
 expect_file scripts/app-ux-flow-contract.sh
 expect_file scripts/release-signing-readiness.sh
 expect_file scripts/release-signing-evidence-template.sh
+expect_file scripts/release-signing-evidence-template-contract.sh
 expect_file scripts/release-signing-evidence-review.sh
 expect_file scripts/evidence-status.sh
 
@@ -248,6 +249,7 @@ expect_file_contains Makefile "release-smoke"
 expect_file_contains Makefile "release-signing-readiness"
 expect_file_contains Makefile "release-signing-evidence-template"
 expect_file_contains Makefile './scripts/release-signing-evidence-template.sh $(ARGS)'
+expect_file_contains Makefile "release-signing-evidence-template-contract"
 expect_file_contains Makefile "release-signing-evidence-review"
 expect_file_contains Makefile "evidence-status"
 expect_file_contains Makefile "loop-contract"
@@ -455,6 +457,9 @@ expect_file_contains scripts/release-signing-evidence-template.sh "stapler_valid
 expect_file_contains scripts/release-signing-evidence-template.sh "--refresh-pending"
 expect_file_contains scripts/release-signing-evidence-template.sh "release signing evidence refresh clean"
 expect_file_contains scripts/release-signing-evidence-template.sh "refusing to refresh pending signing evidence"
+expect_file_contains scripts/release-signing-evidence-template-contract.sh "Human-entered sentinel must survive refresh."
+expect_file_contains scripts/release-signing-evidence-template-contract.sh "non-pending signing evidence refresh unexpectedly passed"
+expect_file_contains scripts/quality.sh "scripts/release-signing-evidence-template-contract.sh"
 expect_file_contains scripts/release-signing-evidence-review.sh "expect_manifest_value \"\$manifest_path\" git_dirty"
 expect_file_contains scripts/release-signing-evidence-review.sh "expect_manifest_value \"\$manifest_path\" developer_id_identity pass"
 expect_file_contains scripts/release-signing-evidence-review.sh "expect_manifest_review_value"
@@ -470,6 +475,7 @@ expect_file_contains docs/RELEASE-READINESS.md "make release-signing-evidence-te
 expect_file_contains docs/RELEASE-READINESS.md "make release-signing-evidence-template ARGS=--refresh-pending"
 expect_file_contains docs/SIGNING-NOTARIZATION.md "make release-signing-evidence-template ARGS=--refresh-pending"
 expect_file_contains docs/VERIFICATION.md "pending-only manifests can refresh SHA/artifact paths without overwriting notes"
+expect_file_contains docs/VERIFICATION.md "Release Signing Evidence Template Contract"
 expect_file_contains docs/RELEASE-READINESS.md "make release-signing-evidence-review"
 expect_file_contains docs/RELEASE-READINESS.md "make app-screen-evidence-review"
 expect_file_contains docs/RELEASE-READINESS.md 'Trusted public Mac app completion claims must use `make evidence-status` output'
