@@ -62,7 +62,7 @@ window_size() {
   local window_pattern='width=([0-9]+) height=([0-9]+)'
 
   if ! window_line="$(
-    rg --line-regexp --only-matching 'window=[0-9]+ x=[0-9]+ y=[0-9]+ width=[0-9]+ height=[0-9]+' "$path"
+    rg --line-regexp --only-matching 'window=[0-9]+ x=-?[0-9]+ y=-?[0-9]+ width=[0-9]+ height=[0-9]+' "$path"
   )"; then
     fail "$path is missing exact window geometry"
   fi
