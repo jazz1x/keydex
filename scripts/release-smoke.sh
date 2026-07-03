@@ -155,9 +155,11 @@ if rg --quiet -- 'Tests|Fixtures|metadata\.json|credentials\.env' "$file_list_pa
   fail "archive contains fixture or metadata paths"
 fi
 
-if rg --text --fixed-strings --quiet -- "sk-test-secret" "$payload_dir"; then
-  fail "release payload contains fake secret sentinel"
-fi
+for sentinel in sk-test-secret bb-secret; do
+  if rg --text --fixed-strings --quiet -- "$sentinel" "$payload_dir"; then
+    fail "release payload contains fake secret sentinel: $sentinel"
+  fi
+done
 
 printf 'payload=%s\n' "$payload_dir"
 printf 'archive=%s\n' "$archive_path"
