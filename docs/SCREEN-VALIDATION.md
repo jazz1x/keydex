@@ -46,7 +46,8 @@ before permissioned screenshot or VoiceOver evidence is attached.
 
 The first runtime accessibility smoke is `scripts/app-accessibility-smoke.sh`. It launches
 the app locally, reads the macOS accessibility tree with `AXUIElement`, and proves core
-surface names are visible from the running app. It requires macOS accessibility trust for
+surface names for card library, card detail, table, inspector, and settings are visible
+from the running app. It requires macOS accessibility trust for
 the host process and is not a substitute for VoiceOver review notes. Runtime accessibility
 smoke scenarios must remain members of `scripts/app-evidence-scenarios.sh`, so renamed
 or removed screen states fail the shared scenario contract instead of silently drifting.
