@@ -129,6 +129,10 @@ for needle in \
   "KeydexSettingsLayout.tagColorSwatchSize" \
   "KeydexSettingsLayout.tagColorSwatchSpacing" \
   "KeydexSettingsLayout.scrollBottomInset" \
+  "persistenceID: \"keychain\"" \
+  "persistenceID: \"shell-profiles\"" \
+  "persistenceID: \"environment-variables\"" \
+  "persistenceID: \"config-files\"" \
   "KeydexSettingsModalToolbarBlocker" \
   "KeydexSettingsModalContentBlocker" \
   ".keydexContentDisabledBehindSettings(isShowingSettings)" \

@@ -44,8 +44,11 @@ struct ShellSettingsStore {
 
     do {
       let data = try Data(contentsOf: manifestURL)
-      let config = try decoder.decode(ShellSettingsConfig.self, from: data)
-      return ShellSettingsLoadState(config: config, issueMessage: nil)
+      let document = try decoder.decode(ShellSettingsDocument.self, from: data)
+      return ShellSettingsLoadState(
+        config: document.config(applyingTo: defaults),
+        issueMessage: nil
+      )
     } catch {
       return ShellSettingsLoadState(
         config: defaults,
@@ -57,7 +60,7 @@ struct ShellSettingsStore {
   func save(_ config: ShellSettingsConfig) -> Result<Void, ShellSettingsStoreError> {
     do {
       try fileManager.createDirectory(at: rootURL, withIntermediateDirectories: true)
-      let data = try encoder.encode(config)
+      let data = try encoder.encode(ShellSettingsDocument(config: config))
       try data.write(to: manifestURL, options: [.atomic])
       return .success(())
     } catch {
@@ -71,5 +74,53 @@ struct ShellSettingsStore {
 
   private var manifestURL: URL {
     rootURL.appendingPathComponent("settings.json", isDirectory: false)
+  }
+}
+
+private struct ShellSettingsDocument: Codable, Equatable {
+  let keychainAccess: Bool
+  let requestPrompt: Bool
+  let displayMode: InventoryDisplayMode
+  let keychainReferences: [EditableSettingsRow]
+  let scanSourceEnabledByID: [String: Bool]
+  let scanPaths: [EditableSettingsRow]
+  let tags: [CredentialTagRow]
+  let ignoredSources: [EditableSettingsRow]
+  let unmanagedSources: [EditableSettingsRow]
+
+  init(config: ShellSettingsConfig) {
+    keychainAccess = config.keychainAccess
+    requestPrompt = config.requestPrompt
+    displayMode = config.displayMode
+    keychainReferences = config.keychainReferences
+    var scanSourceEnabledByID: [String: Bool] = [:]
+    for source in config.scanSources {
+      scanSourceEnabledByID[source.persistenceID] = source.enabled
+    }
+    self.scanSourceEnabledByID = scanSourceEnabledByID
+    scanPaths = config.scanPaths
+    tags = config.tags
+    ignoredSources = config.ignoredSources
+    unmanagedSources = config.unmanagedSources
+  }
+
+  func config(applyingTo defaults: ShellSettingsConfig) -> ShellSettingsConfig {
+    var config = defaults
+    config.keychainAccess = keychainAccess
+    config.requestPrompt = requestPrompt
+    config.displayMode = displayMode
+    config.keychainReferences = keychainReferences
+    config.scanSources = defaults.scanSources.map { source in
+      var source = source
+      if let enabled = scanSourceEnabledByID[source.persistenceID] {
+        source.enabled = enabled
+      }
+      return source
+    }
+    config.scanPaths = scanPaths
+    config.tags = tags
+    config.ignoredSources = ignoredSources
+    config.unmanagedSources = unmanagedSources
+    return config
   }
 }
