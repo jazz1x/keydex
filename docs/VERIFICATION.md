@@ -26,7 +26,7 @@ prove its own contract will drift into wishful UI.
 | CLI Smoke | `scripts/cli-smoke.sh` | Fixture-backed `list`, `where`, `doctor`, `reminders`, and `scan config` outputs, including status symbols and scope labels. |
 | Release Smoke | `scripts/release-smoke.sh` | Release-mode artifacts bundle locally, ad-hoc sign cleanly, create unsigned DMG smoke evidence, checksum cleanly, and omit fixture metadata. |
 | Release Signing Readiness | `scripts/release-signing-readiness.sh` | Local Developer ID Application identity and Apple notarization tools exist before public app signing. |
-| Release Signing Evidence Template | `scripts/release-signing-evidence-template.sh` | Pending local evidence can be generated for Developer ID signing and notarization without falsely passing review. |
+| Release Signing Evidence Template | `scripts/release-signing-evidence-template.sh` | Pending local evidence can be generated for Developer ID signing and notarization, or pending-only manifests can refresh SHA/artifact paths without overwriting notes or falsely passing review. |
 | Release Signing Evidence Review | `scripts/release-signing-evidence-review.sh` | Signed app, notarized/stapled DMG, checksum, release-candidate evidence, non-template reviewer, and UTC ISO-8601 review timestamp are verified for the current Git SHA and dirty state. |
 | Evidence Status | `scripts/evidence-status.sh` | Current local evidence is summarized without replacing review gates: automatic evidence must be current, manual evidence can remain `pending`, and external signing prerequisites plus dependent signing evidence are reported as `blocked` until readiness passes. |
 | Security | GitHub Actions `gitleaks` and `trivy` | Secret leaks, high-risk dependency and config findings. |
