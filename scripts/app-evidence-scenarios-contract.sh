@@ -203,6 +203,13 @@ while IFS= read -r scenario; do
       fail "unsupported settings scroll target for scenario $scenario: $settings_scroll_target"
       ;;
   esac
+  if [[ "$scenario" == "settings-rules" ]]; then
+    [[ "$settings_scroll_target" == "bottom" ]] ||
+      fail "settings-rules must capture the scrolled end of Settings"
+  else
+    [[ "$settings_scroll_target" == "top" ]] ||
+      fail "$scenario must keep Settings at the top unless it explicitly verifies scroll-end spacing"
+  fi
 
   if ! rg --fixed-strings --quiet -- "$scenario" "$screen_doc"; then
     fail "$screen_doc is missing required evidence scenario: $scenario"
