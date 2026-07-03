@@ -33,6 +33,7 @@ CLI, app, and release evidence.
 | Keychain reconciliation | Registered, missing, and orphan states are derived from metadata-Keychain relationships. |
 | Expiry reminders | `expiresAt` and `notifyBeforeDays` create deterministic scheduled/due/expired reminder evidence. |
 | Presentation metadata | Custom artwork state is stored outside secret metadata and can fall back visibly. |
+| App settings metadata | Settings state is stored outside secret metadata and can fall back visibly. |
 
 ## Test Data Rules
 
@@ -72,6 +73,7 @@ The first CLI smoke gate is `scripts/cli-smoke.sh`. It uses tracked fixtures in
 | Doctor panel | Findings show cause and action. |
 | Settings | Scan path and permission controls render. |
 | Artwork store | Imported artwork copies into the app support store, manifest state loads, reset removes files, and unreadable manifests surface an issue. |
+| Settings store | Settings metadata saves and loads, missing files use defaults, unreadable files surface an issue, and screen evidence scenarios ignore personal local settings. |
 
 The first Doctor panel shell must read `CredentialDoctor().inspect(graph)` so repair
 queue rows stay graph-derived.

@@ -66,6 +66,8 @@ uncertainty to the next concrete action without making them decode implementatio
   not a tag.
 - Custom artwork rendering uses the Shell-owned artwork root. Views must not recreate a
   default artwork store while resolving image files.
+- Settings edits persist as local metadata for normal app runs, while screen evidence
+  scenarios use deterministic sample settings so personal state cannot change screenshots.
 - Accessibility labels must preserve the same workflow vocabulary: inventory, search
   results, credential detail, manage Keychain reference, manage tags, settings, and repair.
 
@@ -81,7 +83,7 @@ uncertainty to the next concrete action without making them decode implementatio
 | Detail and return | `CredentialMusicDetailView`, `keydex.card-detail.back`. |
 | Explicit actions | `keydexActionButton`, `keydex.inspector.manage-keychain`, `keydex.inspector.manage-tags`, `keydex.card-detail.manage-keychain`, `keydex.card-detail.manage-tags`. |
 | Repair queue | `DoctorPanel`, `keydex.doctor.review-next`, `reviewDoctorIssue`, `Cause:`, `Action:`. |
-| Settings workflow | `SettingsToggleRow`, `SettingsDisplayModeRow`, `SettingsIconActionButton`, `CredentialTagColorSwatchPicker`, `EditableSettingsListSection`, `EditableTagListSection`, `Close settings`, Escape shortcut. |
+| Settings workflow | `SettingsToggleRow`, `SettingsDisplayModeRow`, `SettingsIconActionButton`, `CredentialTagColorSwatchPicker`, `EditableSettingsListSection`, `EditableTagListSection`, `ShellSettingsStore`, `Close settings`, Escape shortcut. |
 
 ## Review Questions
 

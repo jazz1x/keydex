@@ -18,7 +18,7 @@ enum InventoryMode: String, CaseIterable, Identifiable {
   }
 }
 
-enum InventoryDisplayMode: String, CaseIterable, Identifiable, Hashable {
+enum InventoryDisplayMode: String, CaseIterable, Codable, Identifiable, Hashable {
   case list
   case cards
 
@@ -701,7 +701,7 @@ func sampleCredentialGraph() -> InventoryGraph {
   }
 }
 
-struct ScanSourceRow: Identifiable {
+struct ScanSourceRow: Codable, Equatable, Identifiable {
   let id: UUID
   var title: String
   var detail: String
@@ -736,7 +736,7 @@ struct ScanSourceRow: Identifiable {
   }
 }
 
-struct EditableSettingsRow: Identifiable {
+struct EditableSettingsRow: Codable, Equatable, Identifiable {
   let id: UUID
   var value: String
 
@@ -746,7 +746,7 @@ struct EditableSettingsRow: Identifiable {
   }
 }
 
-struct CredentialTagRow: Identifiable, Hashable {
+struct CredentialTagRow: Codable, Identifiable, Hashable {
   let id: UUID
   var name: String
   var assignments: String
@@ -778,7 +778,7 @@ struct CredentialTagRow: Identifiable, Hashable {
   }
 }
 
-enum CredentialTagColor: String, CaseIterable, Identifiable, Hashable {
+enum CredentialTagColor: String, CaseIterable, Codable, Identifiable, Hashable {
   case accent
   case red
   case orange
@@ -833,7 +833,7 @@ enum CredentialTagColor: String, CaseIterable, Identifiable, Hashable {
   }
 }
 
-struct ShellSettingsConfig {
+struct ShellSettingsConfig: Codable, Equatable {
   var keychainAccess: Bool
   var requestPrompt: Bool
   var displayMode: InventoryDisplayMode
