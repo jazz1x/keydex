@@ -24,8 +24,13 @@ window_report() {
       exit(2)
     }
 
-    let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID)
-      as? [[String: Any]] ?? []
+    guard let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID)
+      as? [[String: Any]]
+    else {
+      fputs("app window smoke: unable to read on-screen window list\n", stderr)
+      exit(2)
+    }
+
     var selectedReport: String?
     var selectedArea = 0
 

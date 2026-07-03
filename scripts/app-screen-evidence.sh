@@ -99,8 +99,12 @@ window_report() {
 
     let selector = CommandLine.arguments[2]
     let widthMode = CommandLine.arguments[3]
-    let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID)
-      as? [[String: Any]] ?? []
+    guard let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID)
+      as? [[String: Any]]
+    else {
+      fputs("app screen evidence: unable to read on-screen window list\n", stderr)
+      exit(2)
+    }
 
     func matchesPreset(width: Int, height: Int) -> Bool {
       guard height == expectedHeight else {
