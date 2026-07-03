@@ -140,6 +140,7 @@ for needle in \
   "KeydexSettingsModalToolbarBlocker" \
   "KeydexSettingsModalContentBlocker" \
   "KEYDEX_APP_SETTINGS_SCROLL_TARGET" \
+  "Unsupported KEYDEX_APP_SETTINGS_SCROLL_TARGET" \
   ".keydexContentDisabledBehindSettings(isShowingSettings)" \
   ".keydexDisabledBehindSettings(isShowingSettings)" \
   ".allowsHitTesting(!isShowingSettings)" \
@@ -237,6 +238,10 @@ if ! awk '
   END { exit(store && flag && load && save && scenario && deterministic ? 0 : 1) }
 ' "$app_shell_source"; then
   fail "Settings persistence must save normal app edits while keeping screen evidence deterministic"
+fi
+
+if rg --quiet --fixed-strings '["KEYDEX_APP_SETTINGS_SCROLL_TARGET"] == "bottom"' "$app_shell_source"; then
+  fail "Settings scroll target environment parsing must not silently coerce unknown values to top"
 fi
 
 if ! awk '
