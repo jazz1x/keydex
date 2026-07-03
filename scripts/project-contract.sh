@@ -43,6 +43,7 @@ expect_file .pre-commit-config.yaml
 expect_file scripts/app-accessibility-smoke.sh
 expect_file scripts/app-evidence-scenarios.sh
 expect_file scripts/app-evidence-scenarios-contract.sh
+expect_file scripts/app-screen-evidence-all.sh
 expect_file scripts/app-accessibility-evidence-template.sh
 expect_file scripts/app-accessibility-evidence-review.sh
 expect_file scripts/app-design-contract.sh
@@ -175,10 +176,12 @@ expect_file_contains docs/SCREEN-VALIDATION.md "AXUIElement"
 expect_file_contains docs/SCREEN-VALIDATION.md "git_dirty=<clean|dirty>"
 expect_file_contains docs/SCREEN-VALIDATION.md "window geometry as the stability signal"
 expect_file_contains docs/SCREEN-VALIDATION.md "signed screen coordinates"
+expect_file_contains docs/SCREEN-VALIDATION.md "window candidate scan"
 expect_file_contains scripts/app-screen-evidence.sh "window_geometry()"
 expect_file_contains scripts/app-screen-evidence.sh "window_stability_geometry()"
 expect_file_contains scripts/app-screen-evidence.sh "window_matches_expected_preset()"
 expect_file_contains scripts/app-screen-evidence.sh "expected_window_description()"
+expect_file_contains scripts/app-screen-evidence.sh "matchesPreset(width: width, height: height, preset: preset)"
 expect_file_contains scripts/app-screen-evidence.sh "width>=900 height=620"
 expect_file_contains scripts/app-screen-evidence.sh "current_geometry"
 expect_file_contains scripts/app-screen-evidence.sh "previous_geometry"
@@ -229,6 +232,7 @@ expect_file_contains Makefile "app-design-contract"
 expect_file_contains Makefile "app-ux-flow-contract"
 expect_file_contains Makefile "app-evidence-scenarios-contract"
 expect_file_contains Makefile "app-screen-evidence"
+expect_file_contains Makefile "app-screen-evidence-all"
 expect_file_contains Makefile "app-screen-evidence-review"
 expect_file_contains scripts/app-screen-evidence-review.sh "expect_manifest_value"
 expect_file_contains Makefile "release-smoke"
@@ -315,6 +319,9 @@ expect_file_contains scripts/app-screen-evidence.sh "screencapture"
 expect_file_contains scripts/app-screen-evidence.sh "missing dependency: sips"
 expect_file_contains scripts/app-screen-evidence.sh "--list"
 expect_file_contains scripts/app-screen-evidence.sh "source \"\$script_dir/app-evidence-scenarios.sh\""
+expect_file_contains scripts/app-screen-evidence-all.sh "source \"\$script_dir/app-evidence-scenarios.sh\""
+expect_file_contains scripts/app-screen-evidence-all.sh 'for scenario in "${KEYDEX_EVIDENCE_SCENARIOS[@]}"'
+expect_file_contains scripts/app-screen-evidence-all.sh '"$script_dir/app-screen-evidence.sh" "$scenario"'
 expect_file_contains scripts/app-screen-evidence-review.sh "source \"\$script_dir/app-evidence-scenarios.sh\""
 expect_file_contains scripts/app-accessibility-evidence-template.sh "source \"\$script_dir/app-evidence-scenarios.sh\""
 expect_file_contains scripts/app-accessibility-evidence-review.sh "source \"\$script_dir/app-evidence-scenarios.sh\""
@@ -330,6 +337,8 @@ expect_file_contains scripts/app-evidence-scenarios-contract.sh "docs/SCREEN-VAL
 expect_file_contains scripts/app-evidence-scenarios-contract.sh "docs/VALIDATION-SCENARIOS.md"
 expect_file_contains scripts/app-evidence-scenarios-contract.sh "must not name a partial first scenario set"
 expect_file_contains docs/SCREEN-VALIDATION.md "make app-evidence-scenarios-contract"
+expect_file_contains docs/SCREEN-VALIDATION.md "make app-screen-evidence-all"
+expect_file_contains docs/VALIDATION-SCENARIOS.md "failed capture stops the run"
 expect_file_contains scripts/quality.sh "scripts/app-evidence-scenarios-contract.sh"
 expect_file_contains scripts/app-screen-evidence.sh "KEYDEX_APP_INVENTORY_MODE"
 expect_file_contains scripts/app-screen-evidence.sh "KEYDEX_APP_SCREEN_SCENARIO"

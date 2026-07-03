@@ -98,8 +98,9 @@ The supported screen and accessibility scenario list is owned by
 `scripts/app-screen-evidence.sh --list`.
 Manual local screen evidence capture is done with `scripts/app-screen-evidence.sh`, which
 requires local Screen Recording permission on macOS and writes PNG output plus manifest files
-to `tmp/screen-evidence`. This command is not CI-required and does not replace the required
-screen review evidence flow.
+to `tmp/screen-evidence`. Use `make app-screen-evidence-all` for the full scenario set so
+a failed capture stops the run instead of being hidden by a hand-written shell loop.
+This command is not CI-required and does not replace the required screen review evidence flow.
 `make app-evidence-scenarios-contract` keeps the scenario SSOT aligned with the SwiftUI app
 and evidence scripts. Functional release cannot be called complete until every required
 scenario has current screenshot and accessibility evidence.
