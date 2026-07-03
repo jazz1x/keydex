@@ -97,8 +97,8 @@ and honest about risk.
 - Toolbar mode controls stay in one glass cluster instead of separate floating islands.
 - Settings uses a material header plus grouped list sections; repeated rows stay plain
   and editable. Tags are user-owned metadata managed beside sources, not graph truth.
-- Settings scroll views use a 160 pt bottom scroll-content margin so long
-  preference sections keep breathing room at the scrolled end without a doubled inset.
+- Settings scroll views use a 192 pt bottom scroll-end spacer so long
+  preference sections keep breathing room at the scrolled end with one explicit target.
 - Settings outer overlay and header controls use native Liquid Glass on macOS 26+.
   Inner grouped rows stay plain low-alpha surfaces so nested cards do not flatten
   the sheet into an opaque gray panel.
