@@ -72,7 +72,7 @@ The first CLI smoke gate is `scripts/cli-smoke.sh`. It uses tracked fixtures in
 | Inspector | Selection shows relationships. |
 | Doctor panel | Findings show cause and action. |
 | Settings | Scan path and permission controls render. |
-| Artwork store | Imported artwork copies into the app support store, manifest state loads, reset removes files, and unreadable manifests surface an issue. |
+| Artwork store | Imported artwork copies into the app support store, manifest state loads, reset removes files, filename collisions are prevented, replacements clean old files, and unreadable manifests surface an issue. |
 | Settings store | Settings metadata saves and loads, missing files use defaults, unreadable files surface an issue, and screen evidence scenarios ignore personal local settings. |
 
 The first Doctor panel shell must read `CredentialDoctor().inspect(graph)` so repair
