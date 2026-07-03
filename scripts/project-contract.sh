@@ -45,6 +45,7 @@ expect_file scripts/app-evidence-scenarios.sh
 expect_file scripts/app-evidence-scenarios-contract.sh
 expect_file scripts/app-screen-evidence-all.sh
 expect_file scripts/app-accessibility-evidence-template.sh
+expect_file scripts/app-accessibility-evidence-template-contract.sh
 expect_file scripts/app-accessibility-evidence-status.sh
 expect_file scripts/app-accessibility-evidence-review.sh
 expect_file scripts/app-design-contract.sh
@@ -236,6 +237,7 @@ expect_file_contains Makefile "app-accessibility-contract"
 expect_file_contains Makefile "app-accessibility-smoke"
 expect_file_contains Makefile "app-accessibility-evidence-template"
 expect_file_contains Makefile './scripts/app-accessibility-evidence-template.sh $(ARGS)'
+expect_file_contains Makefile "app-accessibility-evidence-template-contract"
 expect_file_contains Makefile "app-accessibility-evidence-status"
 expect_file_contains Makefile "app-accessibility-evidence-review"
 expect_file_contains Makefile "app-design-contract"
@@ -317,6 +319,11 @@ expect_file_contains scripts/app-accessibility-evidence-template.sh "--upgrade-p
 expect_file_contains docs/SCREEN-VALIDATION.md "make app-accessibility-evidence-template ARGS=--refresh-pending"
 expect_file_contains docs/SCREEN-VALIDATION.md "make app-accessibility-evidence-template ARGS=--upgrade-pending-notes"
 expect_file_contains scripts/app-accessibility-evidence-template.sh "write_notes_context"
+expect_file_contains scripts/app-accessibility-evidence-template-contract.sh "Human-entered accessibility sentinel must survive refresh."
+expect_file_contains scripts/app-accessibility-evidence-template-contract.sh "non-pending accessibility evidence refresh unexpectedly passed"
+expect_file_contains scripts/app-accessibility-evidence-template-contract.sh "Legacy note sentinel must survive upgrade."
+expect_file_contains scripts/quality.sh "scripts/app-accessibility-evidence-template-contract.sh"
+expect_file_contains docs/VERIFICATION.md "App Accessibility Evidence Template Contract"
 expect_file_contains scripts/app-evidence-scenarios.sh "keydex_evidence_accessibility_focus"
 expect_file_contains scripts/app-evidence-scenarios.sh "keydex_evidence_accessibility_targets"
 expect_file_contains scripts/app-evidence-scenarios-contract.sh "missing accessibility focus for scenario"
