@@ -35,6 +35,8 @@ After capturing all required scenarios, run `make app-screen-evidence-review`.
 It verifies that each required manifest and PNG exists, points at the current Git
 SHA plus dirty state, records the local window dimensions used for review, and
 matches the manifest against the actual PNG pixel dimensions.
+Window positions are recorded as signed screen coordinates because multi-display
+macOS sessions can place a valid capture on a negative `x` or `y` origin.
 
 The first source-level accessibility contract is `scripts/app-accessibility-contract.sh`.
 It proves required SwiftUI surfaces expose stable accessibility labels and identifiers
