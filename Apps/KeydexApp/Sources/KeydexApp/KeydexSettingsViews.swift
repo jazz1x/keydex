@@ -216,12 +216,12 @@ struct SettingsPanel: View {
               }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 24)
-            .padding(.top, 24)
-            .padding(.bottom, KeydexSettingsLayout.scrollBottomInset)
+            .padding(.horizontal, KeydexSettingsLayout.scrollContentHorizontalPadding)
+            .padding(.top, KeydexSettingsLayout.scrollContentTopPadding)
+            .padding(.bottom, KeydexSettingsLayout.scrollContentBottomPadding)
 
             Color.clear
-              .frame(height: KeydexSettingsLayout.scrollEndAnchorHeight)
+              .frame(height: KeydexSettingsLayout.scrollEndSpacerHeight)
               .id(KeydexSettingsLayout.scrollEndAnchorID)
               .accessibilityHidden(true)
           }
@@ -674,8 +674,8 @@ private struct SettingsGlassSection<Content: View>: View {
       VStack(spacing: 0) {
         content
       }
-      .padding(.horizontal, 12)
-      .padding(.vertical, 6)
+      .padding(.horizontal, KeydexSettingsLayout.groupedRowsHorizontalPadding)
+      .padding(.vertical, KeydexSettingsLayout.groupedRowsVerticalPadding)
       .keydexGroupedRowsSurface()
     }
   }
