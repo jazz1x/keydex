@@ -83,6 +83,7 @@ private struct ShellSettingsDocument: Codable, Equatable {
   let displayMode: InventoryDisplayMode
   let keychainReferences: [EditableSettingsRow]
   let scanSourceEnabledByID: [String: Bool]
+  let legacyScanSourceEnabledStates: [Bool]?
   let scanPaths: [EditableSettingsRow]
   let tags: [CredentialTagRow]
   let ignoredSources: [EditableSettingsRow]
@@ -98,10 +99,55 @@ private struct ShellSettingsDocument: Codable, Equatable {
       scanSourceEnabledByID[source.persistenceID] = source.enabled
     }
     self.scanSourceEnabledByID = scanSourceEnabledByID
+    legacyScanSourceEnabledStates = nil
     scanPaths = config.scanPaths
     tags = config.tags
     ignoredSources = config.ignoredSources
     unmanagedSources = config.unmanagedSources
+  }
+
+  init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    keychainAccess = try container.decode(Bool.self, forKey: .keychainAccess)
+    requestPrompt = try container.decode(Bool.self, forKey: .requestPrompt)
+    displayMode = try container.decode(InventoryDisplayMode.self, forKey: .displayMode)
+    keychainReferences = try container.decode(
+      [EditableSettingsRow].self,
+      forKey: .keychainReferences
+    )
+
+    if let scanSourceEnabledByID = try container.decodeIfPresent(
+      [String: Bool].self,
+      forKey: .scanSourceEnabledByID
+    ) {
+      self.scanSourceEnabledByID = scanSourceEnabledByID
+      legacyScanSourceEnabledStates = nil
+    } else {
+      let legacyScanSources = try container.decode(
+        [LegacyScanSourceDocument].self,
+        forKey: .scanSources
+      )
+      scanSourceEnabledByID = [:]
+      legacyScanSourceEnabledStates = legacyScanSources.map(\.enabled)
+    }
+
+    scanPaths = try container.decode([EditableSettingsRow].self, forKey: .scanPaths)
+    tags = try container.decode([CredentialTagRow].self, forKey: .tags)
+    ignoredSources = try container.decode([EditableSettingsRow].self, forKey: .ignoredSources)
+    unmanagedSources = try container.decode([EditableSettingsRow].self, forKey: .unmanagedSources)
+  }
+
+  func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try container.encode(keychainAccess, forKey: .keychainAccess)
+    try container.encode(requestPrompt, forKey: .requestPrompt)
+    try container.encode(displayMode, forKey: .displayMode)
+    try container.encode(keychainReferences, forKey: .keychainReferences)
+    try container.encode(scanSourceEnabledByID, forKey: .scanSourceEnabledByID)
+    try container.encode(scanPaths, forKey: .scanPaths)
+    try container.encode(tags, forKey: .tags)
+    try container.encode(ignoredSources, forKey: .ignoredSources)
+    try container.encode(unmanagedSources, forKey: .unmanagedSources)
   }
 
   func config(applyingTo defaults: ShellSettingsConfig) -> ShellSettingsConfig {
@@ -110,10 +156,14 @@ private struct ShellSettingsDocument: Codable, Equatable {
     config.requestPrompt = requestPrompt
     config.displayMode = displayMode
     config.keychainReferences = keychainReferences
-    config.scanSources = defaults.scanSources.map { source in
+    config.scanSources = defaults.scanSources.enumerated().map { index, source in
       var source = source
       if let enabled = scanSourceEnabledByID[source.persistenceID] {
         source.enabled = enabled
+      } else if let legacyScanSourceEnabledStates,
+        legacyScanSourceEnabledStates.indices.contains(index)
+      {
+        source.enabled = legacyScanSourceEnabledStates[index]
       }
       return source
     }
@@ -123,4 +173,21 @@ private struct ShellSettingsDocument: Codable, Equatable {
     config.unmanagedSources = unmanagedSources
     return config
   }
+
+  private enum CodingKeys: String, CodingKey {
+    case keychainAccess
+    case requestPrompt
+    case displayMode
+    case keychainReferences
+    case scanSourceEnabledByID
+    case scanSources
+    case scanPaths
+    case tags
+    case ignoredSources
+    case unmanagedSources
+  }
+}
+
+private struct LegacyScanSourceDocument: Decodable, Equatable {
+  let enabled: Bool
 }
