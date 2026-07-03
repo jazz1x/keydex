@@ -121,7 +121,8 @@ enum KeydexSettingsLayout {
   static let tagColorPickerWidth: CGFloat = 184
   static let iconActionButtonSize: CGFloat = 28
   static let iconActionColumnWidth: CGFloat = 28
-  static let scrollBottomInset: CGFloat = 96
+  static let scrollBottomInset: CGFloat = 128
+  static let scrollEndAnchorHeight: CGFloat = 1
   static let scrollEndAnchorID = "keydex.settings.scroll-end"
 }
 
