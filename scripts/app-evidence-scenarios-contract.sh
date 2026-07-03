@@ -80,7 +80,7 @@ func trimmed(_ value: Substring) -> String {
   value.trimmingCharacters(in: .whitespacesAndNewlines)
 }
 
-func rawValue(from segment: Substring) -> String? {
+func rawValue(from segment: Substring) throws -> String? {
   let parts = segment.split(separator: "=", maxSplits: 1)
   guard let identifier = parts.first?.split(whereSeparator: { $0.isWhitespace }).first else {
     return nil
@@ -92,7 +92,7 @@ func rawValue(from segment: Substring) -> String? {
 
   let rhs = String(parts[1])
   let pattern = #""([^"]+)""#
-  let regex = try! NSRegularExpression(pattern: pattern)
+  let regex = try NSRegularExpression(pattern: pattern)
   let range = NSRange(rhs.startIndex..<rhs.endIndex, in: rhs)
   guard let match = regex.firstMatch(in: rhs, range: range),
     let rawRange = Range(match.range(at: 1), in: rhs)
@@ -125,7 +125,7 @@ for line in source.split(separator: "\n", omittingEmptySubsequences: false) {
 
   let cases = text.dropFirst("case ".count).split(separator: ",")
   for caseSegment in cases {
-    if let value = rawValue(from: caseSegment) {
+    if let value = try rawValue(from: caseSegment) {
       rawValues.append(value)
     }
   }
