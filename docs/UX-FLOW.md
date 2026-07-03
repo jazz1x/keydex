@@ -50,6 +50,9 @@ uncertainty to the next concrete action without making them decode implementatio
 - Tag chips keep color in a small swatch inside a neutral shell, so opening card detail
   does not create a blue focus-ring look around label metadata.
 - Escape and an icon close affordance must dismiss settings.
+- While settings is open, toolbar controls behind it are visible context, not active
+  controls; users should not be able to click register, settings, or display mode
+  through the sheet.
 - The Doctor rail is a repair queue, not a warning decoration. It must show severity,
   count, cause, action, and a Review next entry point into the first issue.
 - The global Register Keychain action stays in the toolbar. The Doctor rail must not

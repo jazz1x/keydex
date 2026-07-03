@@ -104,6 +104,9 @@ and honest about risk.
   paths for older macOS.
 - Settings overlays must expose an icon-only close affordance in the header and bind
   Escape to the same dismiss action.
+- Settings overlays are modal for interaction: toolbar controls behind the glass stay
+  visible as spatial context, but are disabled, not hit-testable, and hidden from
+  accessibility until the settings sheet is dismissed.
 - Settings header status pills stay single-line; controls may compress surrounding
   spacing, but labels must not wrap.
 - Settings toggle rows keep label copy left-aligned and place the switch control on
