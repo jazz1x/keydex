@@ -1,8 +1,11 @@
 # Current Goal Status
 
 Date: 2026-07-03
-Main SHA: `0cb2f4f`
+Evidence baseline SHA: `0cb2f4f`
 Git dirty state: `clean`
+
+This report records the latest product and evidence baseline before the report-only merge.
+The report commit itself may have a later SHA without changing the evidence baseline.
 
 ## BLUF
 
