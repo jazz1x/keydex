@@ -79,3 +79,101 @@ keydex_evidence_window_preset() {
       ;;
   esac
 }
+
+keydex_evidence_window_width_mode() {
+  local preset="$1"
+
+  case "$preset" in
+    default)
+      printf 'exact'
+      ;;
+    compact)
+      printf 'minimum'
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+keydex_evidence_window_width() {
+  local preset="$1"
+
+  case "$preset" in
+    default)
+      printf '1080'
+      ;;
+    compact)
+      printf '900'
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+keydex_evidence_window_height() {
+  local preset="$1"
+
+  case "$preset" in
+    default)
+      printf '680'
+      ;;
+    compact)
+      printf '620'
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+keydex_evidence_window_description() {
+  local preset="$1"
+  local mode
+  local width
+  local height
+
+  mode="$(keydex_evidence_window_width_mode "$preset")" || return 1
+  width="$(keydex_evidence_window_width "$preset")" || return 1
+  height="$(keydex_evidence_window_height "$preset")" || return 1
+
+  case "$mode" in
+    exact)
+      printf 'width=%s height=%s' "$width" "$height"
+      ;;
+    minimum)
+      printf 'width>=%s height=%s' "$width" "$height"
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+keydex_evidence_window_matches_size() {
+  local preset="$1"
+  local width="$2"
+  local height="$3"
+  local mode
+  local expected_width
+  local expected_height
+
+  mode="$(keydex_evidence_window_width_mode "$preset")" || return 1
+  expected_width="$(keydex_evidence_window_width "$preset")" || return 1
+  expected_height="$(keydex_evidence_window_height "$preset")" || return 1
+
+  [[ "$height" == "$expected_height" ]] || return 1
+
+  case "$mode" in
+    exact)
+      [[ "$width" == "$expected_width" ]]
+      ;;
+    minimum)
+      [[ "$width" -ge "$expected_width" ]]
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}

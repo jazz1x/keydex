@@ -96,6 +96,7 @@ Screen validation details live in `SCREEN-VALIDATION.md`.
 The supported screen and accessibility scenario list is owned by
 `scripts/app-evidence-scenarios.sh`; inspect it with
 `scripts/app-screen-evidence.sh --list`.
+That same helper owns window preset geometry for capture and review.
 Manual local screen evidence capture is done with `scripts/app-screen-evidence.sh`, which
 requires local Screen Recording permission on macOS and writes PNG output plus manifest files
 to `tmp/screen-evidence`. Use `make app-screen-evidence-all` for the full scenario set so

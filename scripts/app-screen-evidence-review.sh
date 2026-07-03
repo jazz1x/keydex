@@ -92,6 +92,21 @@ review_screenshot_geometry() {
     fail "$screenshot_path pixel height $pixel_height is smaller than manifest window height $window_height"
 }
 
+review_window_preset_geometry() {
+  local manifest_path="$1"
+  local window_preset="$2"
+  local window_width
+  local window_height
+  local expected_geometry
+
+  read -r window_width window_height < <(window_size "$manifest_path")
+  expected_geometry="$(keydex_evidence_window_description "$window_preset")" ||
+    fail "unknown window preset for screen evidence review: $window_preset"
+
+  keydex_evidence_window_matches_size "$window_preset" "$window_width" "$window_height" ||
+    fail "$manifest_path window geometry width=$window_width height=$window_height does not match $expected_geometry"
+}
+
 review_scenario() {
   local scenario="$1"
   local inventory_mode="$2"
@@ -113,15 +128,7 @@ review_scenario() {
   expect_manifest_value "$manifest_path" screenshot "$screenshot_path"
   expect_manifest_key "$manifest_path" captured_at
   review_screenshot_geometry "$manifest_path" "$screenshot_path"
-
-  case "$window_preset" in
-    default)
-      expect_file_contains "$manifest_path" "width=1080 height=680"
-      ;;
-    compact)
-      expect_file_contains "$manifest_path" "height=620"
-      ;;
-  esac
+  review_window_preset_geometry "$manifest_path" "$window_preset"
 
   printf 'reviewed=%s\n' "$scenario"
 }

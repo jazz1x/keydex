@@ -13,11 +13,13 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$script_dir/app-evidence-scenarios.sh"
 
 app_source="Apps/KeydexApp/Sources/KeydexApp/KeydexPresentationModel.swift"
+app_bootstrap_source="Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift"
 accessibility_smoke_script="scripts/app-accessibility-smoke.sh"
 screen_doc="docs/SCREEN-VALIDATION.md"
 validation_doc="docs/VALIDATION-SCENARIOS.md"
 release_candidate_doc="docs/RELEASE-CANDIDATE.md"
 test -f "$app_source" || fail "missing app presentation model: $app_source"
+test -f "$app_bootstrap_source" || fail "missing app bootstrap: $app_bootstrap_source"
 test -f "$accessibility_smoke_script" || fail "missing accessibility smoke script: $accessibility_smoke_script"
 test -f "$screen_doc" || fail "missing screen validation doc: $screen_doc"
 test -f "$validation_doc" || fail "missing validation scenarios doc: $validation_doc"
@@ -41,6 +43,29 @@ fi
 if keydex_evidence_window_preset "missing-scenario" >/dev/null; then
   fail "unknown evidence scenario must not resolve to a window preset"
 fi
+
+if keydex_evidence_window_description "missing-preset" >/dev/null; then
+  fail "unknown window preset must not resolve to a geometry contract"
+fi
+
+for preset in default compact; do
+  expected_width="$(keydex_evidence_window_width "$preset")" ||
+    fail "missing window width contract for preset: $preset"
+  expected_height="$(keydex_evidence_window_height "$preset")" ||
+    fail "missing window height contract for preset: $preset"
+  keydex_evidence_window_width_mode "$preset" >/dev/null ||
+    fail "missing window width mode contract for preset: $preset"
+  keydex_evidence_window_description "$preset" >/dev/null ||
+    fail "missing window description contract for preset: $preset"
+
+  if ! rg --fixed-strings --quiet -- "case \"$preset\":" "$app_bootstrap_source"; then
+    fail "$app_bootstrap_source is missing window preset case: $preset"
+  fi
+
+  if ! rg --fixed-strings --quiet -- "CGSize(width: $expected_width, height: $expected_height)" "$app_bootstrap_source"; then
+    fail "$app_bootstrap_source window size drifted from scenario helper for preset: $preset"
+  fi
+done
 
 app_scenarios_path="$(mktemp "${TMPDIR:-/tmp}/keydex-app-scenarios.XXXXXX")"
 swift - "$app_source" >"$app_scenarios_path" <<'SWIFT'
@@ -149,6 +174,8 @@ while IFS= read -r scenario; do
 
   window_preset="$(keydex_evidence_window_preset "$scenario")" ||
     fail "missing window preset for scenario: $scenario"
+  keydex_evidence_window_description "$window_preset" >/dev/null ||
+    fail "missing window geometry contract for scenario $scenario preset: $window_preset"
   case "$window_preset" in
     default | compact)
       ;;
