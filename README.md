@@ -248,6 +248,7 @@ Keydex follows one rule first: **state must not lie**.
 - [GOALS.md](docs/GOALS.md) - product goals, non-goals, milestones, completion gates
 - [PRODUCT-PLAN.md](docs/PRODUCT-PLAN.md) - total goal answers and milestone evidence
 - [FEATURE-SPEC.md](docs/FEATURE-SPEC.md) - feature behavior and acceptance criteria
+- [SWIFT-STYLE.md](docs/SWIFT-STYLE.md) - Swift conventions, typed failures, and boundary rules
 - [CLI-INTERFACE.md](docs/CLI-INTERFACE.md) - status symbols, scope labels, and color rules
 - [VALIDATION-SCENARIOS.md](docs/VALIDATION-SCENARIOS.md) - functional validation scenarios
 - [SCREEN-VALIDATION.md](docs/SCREEN-VALIDATION.md) - screenshot and accessibility evidence
