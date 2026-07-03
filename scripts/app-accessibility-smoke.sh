@@ -9,6 +9,9 @@ fail() {
 command -v rg >/dev/null 2>&1 || fail "missing dependency: rg (ripgrep)"
 command -v swift >/dev/null 2>&1 || fail "missing dependency: swift"
 
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$script_dir/app-evidence-scenarios.sh"
+
 app_pid=""
 
 cleanup() {
@@ -131,6 +134,8 @@ print(finalDump)
 run_scenario() {
   local scenario="$1"
   shift
+  local inventory_mode
+  local window_preset
   local -a expected_needles=()
   local -a hidden_needles=()
   local hidden_mode=false
@@ -151,7 +156,15 @@ run_scenario() {
     shift
   done
 
-  KEYDEX_APP_WINDOW_PRESET=default KEYDEX_APP_SCREEN_SCENARIO="$scenario" "$app_binary" &
+  inventory_mode="$(keydex_evidence_inventory_mode "$scenario")" ||
+    fail "missing inventory mode for scenario: $scenario"
+  window_preset="$(keydex_evidence_window_preset "$scenario")" ||
+    fail "missing window preset for scenario: $scenario"
+
+  KEYDEX_APP_INVENTORY_MODE="$inventory_mode" \
+    KEYDEX_APP_WINDOW_PRESET="$window_preset" \
+    KEYDEX_APP_SCREEN_SCENARIO="$scenario" \
+    "$app_binary" &
   app_pid="$!"
 
   local readiness_needle=""
@@ -188,6 +201,14 @@ bin_dir="$(swift build --show-bin-path)"
 app_binary="$bin_dir/KeydexApp"
 test -x "$app_binary" || fail "missing built app binary: $app_binary"
 
+run_scenario default-window \
+  "Credential scopes" \
+  "Credential inventory cards" \
+  "Credential Library" \
+  "github" \
+  "missing-keychain-item" \
+  "Credential repair queue"
+
 run_scenario card-view \
   "Credential scopes" \
   "Credential inventory cards" \
@@ -206,6 +227,20 @@ run_scenario card-detail \
   "Choose custom artwork" \
   "Sources" \
   "AWS_ACCESS_KEY_ID"
+
+run_scenario empty-inventory \
+  "Credential scopes" \
+  "Credential inventory table" \
+  "Empty credential inventory state"
+
+run_scenario search-filter \
+  "Credential scopes" \
+  "Search credentials" \
+  "Search results for github" \
+  "1 results" \
+  "github" \
+  "plaintext-fallback" \
+  "Credential inventory table"
 
 run_scenario inspector \
   "Credential scopes" \
@@ -241,5 +276,64 @@ run_scenario settings-appearance \
   "Register Keychain reference" \
   "Open settings" \
   "Inventory and display controls"
+
+run_scenario settings-sources \
+  "Settings" \
+  "Settings section" \
+  "Sources" \
+  "Scan Sources" \
+  "Shell profiles" \
+  "Environment variables" \
+  "Config files" \
+  --not \
+  "Register Keychain reference" \
+  "Open settings" \
+  "Inventory and display controls"
+
+run_scenario settings-paths \
+  "Settings" \
+  "Settings section" \
+  "Paths" \
+  "Scan Paths" \
+  "/Users/example/.zshrc" \
+  "/Users/example/.aws/credentials" \
+  "Add scan path" \
+  --not \
+  "Register Keychain reference" \
+  "Open settings" \
+  "Inventory and display controls"
+
+run_scenario settings-tags \
+  "Settings" \
+  "Settings section" \
+  "Tags" \
+  "Credential Tags" \
+  "Rotates Soon" \
+  "Tag color" \
+  "Add tag" \
+  --not \
+  "Register Keychain reference" \
+  "Open settings" \
+  "Inventory and display controls"
+
+run_scenario settings-rules \
+  "Settings" \
+  "Settings section" \
+  "Rules" \
+  "Ignored Sources" \
+  "Unmanaged Sources" \
+  "~/Downloads/keys/legacy.env" \
+  "process:local-session-secret" \
+  --not \
+  "Register Keychain reference" \
+  "Open settings" \
+  "Inventory and display controls"
+
+run_scenario compact-window \
+  "Credential scopes" \
+  "Credential inventory table" \
+  "Credential repair queue" \
+  "aws" \
+  "missing-keychain-item"
 
 echo "app accessibility smoke clean"

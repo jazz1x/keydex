@@ -156,6 +156,12 @@ if [[ -z "$accessibility_smoke_scenarios" ]]; then
   fail "$accessibility_smoke_script does not declare any run_scenario checks"
 fi
 
+if [[ "$accessibility_smoke_scenarios" != "$expected_scenarios" ]]; then
+  printf 'expected scenarios:\n%s\n' "$expected_scenarios" >&2
+  printf 'accessibility smoke scenarios:\n%s\n' "$accessibility_smoke_scenarios" >&2
+  fail "$accessibility_smoke_script scenarios drifted from KEYDEX_EVIDENCE_SCENARIOS"
+fi
+
 while IFS= read -r scenario; do
   keydex_is_evidence_scenario "$scenario" ||
     fail "$accessibility_smoke_script references unsupported evidence scenario: $scenario"
