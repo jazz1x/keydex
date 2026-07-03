@@ -198,10 +198,10 @@ if ! awk '
   /private struct EditableSettingsListSection/ { in_panel = 0 }
   in_panel && /ScrollViewReader/ { reader = 1 }
   in_panel && /scrollProxy\.scrollTo\(KeydexSettingsLayout\.scrollEndAnchorID, anchor: \.bottom\)/ { scroll_to = 1 }
-  in_panel && /\.contentMargins\(\.bottom, KeydexSettingsLayout\.scrollBottomInset, for: \.scrollContent\)/ { margin = 1 }
-  END { exit(reader && scroll_to && margin ? 0 : 1) }
+  in_panel && /\.frame\(height: KeydexSettingsLayout\.scrollBottomInset\)/ { spacer = 1 }
+  END { exit(reader && scroll_to && spacer ? 0 : 1) }
 ' "$settings_source"; then
-  fail "Settings scroll bottom reserve must be applied as a scroll content margin"
+  fail "Settings scroll bottom reserve must be applied as a visible scroll-end spacer"
 fi
 
 if ! awk '
