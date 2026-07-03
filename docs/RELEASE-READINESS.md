@@ -52,7 +52,9 @@ for the signing runbook and final evidence, not a repository-stored prerequisite
 
 After signing and notarization, use `make release-signing-evidence-template` to create the
 local evidence shell, fill the notes and manifest with the actual commands/results, then
-run `make release-signing-evidence-review`. The review gate checks exact manifest
+run `make release-signing-evidence-review`. If a pending signing evidence shell already
+exists for an older SHA, refresh it with `make release-signing-evidence-template ARGS=--force`
+before filling final evidence. The review gate checks exact manifest
 key-value lines for the current Git SHA, dirty state, expected app and DMG paths,
 Developer ID app signing, stapled notarization validation, signed DMG checksum,
 non-template reviewer, and UTC ISO-8601 review timestamp.
