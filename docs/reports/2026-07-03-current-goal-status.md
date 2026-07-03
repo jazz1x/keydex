@@ -1,11 +1,12 @@
 # Current Goal Status
 
 Date: 2026-07-03
-Evidence baseline SHA: `0cb2f4f`
+Evidence baseline SHA: `7e0f25b`
 Git dirty state: `clean`
 
-This report records the latest product and evidence baseline before the report-only merge.
-The report commit itself may have a later SHA without changing the evidence baseline.
+This report records the latest product and evidence baseline after the settings scroll
+inset merge. A report-only commit may have a later SHA without changing the evidence
+baseline.
 
 ## BLUF
 
@@ -24,14 +25,14 @@ The total goal is not complete. Two evidence classes remain outside the automate
 
 | PR | Main SHA | Result |
 | --- | --- | --- |
-| #122 | `7c11d4b` | Refreshed pending accessibility evidence after screen scenario updates. |
-| #123 | `2406b50` | Aligned settings tag add/remove controls and captured UX evidence. |
-| #124 | `6e90fd1` | Blocked toolbar/header controls behind the settings modal. |
-| #125 | `959324d` | Added accessibility evidence status reporting. |
-| #126 | `c1c6c1b` | Added AX negative assertions for settings modal toolbar hiding. |
-| #127 | `c620fa0` | Expanded runtime AX smoke to all 13 supported app scenarios. |
-| #128 | `b010f62` | Added scenario-specific manual accessibility review guidance. |
 | #129 | `0cb2f4f` | Added per-scenario diagnostics to runtime AX smoke output. |
+| #130 | `040ff8c` | Updated the current goal status report. |
+| #131 | `2da2bac` | Clarified the goal report baseline semantics. |
+| #132 | `56adf75` | Blocked settings modal background hits and toolbar activation. |
+| #133 | `816fe85` | Classified missing signing identity/tool prerequisites as blocked evidence. |
+| #134 | `9f6ed36` | Guarded the loop contract against automation sprawl. |
+| #135 | `b01189d` | Clarified non-secret signing readiness scope. |
+| #136 | `7e0f25b` | Added settings scroll bottom inset for long settings sections. |
 
 ## Goal Matrix
 
@@ -62,12 +63,12 @@ The total goal is not complete. Two evidence classes remain outside the automate
 
 | Check | Current Result |
 | --- | --- |
-| `make evidence-status` | Pass on `0cb2f4f`; screen evidence pass, manual accessibility pending, signing blocked, `needs_attention=0`. |
-| `make app-accessibility-evidence-status` | Pass on `0cb2f4f`; 13 scenarios, 52 pending fields. |
-| `make app-screen-evidence-review` | Pass on `0cb2f4f`; all 13 scenario PNGs and manifests current. |
-| `make release-smoke` | Pass on `0cb2f4f`; release CLI/app build, ad-hoc app signing, archive, checksum, unsigned DMG, and DMG verification passed. |
-| `make app-accessibility-smoke` | Pass on `0cb2f4f`; all 13 scenarios expose expected AX text and settings modal toolbar controls remain hidden from AX. |
-| PR CI | #129 merged after green `guard`, `quality`, `release-smoke`, `gitleaks`, and `trivy`. |
+| `make evidence-status` | Pass on `7e0f25b`; screen evidence pass, manual accessibility pending, signing blocked, `needs_attention=0`. |
+| `make app-accessibility-evidence-status` | Pass on `7e0f25b`; 13 scenarios, 52 pending fields. |
+| `make app-screen-evidence-review` | Pass on `7e0f25b`; all 13 scenario PNGs and manifests current. |
+| `make release-smoke` | Pass on `7e0f25b`; release CLI/app build, ad-hoc app signing, archive, checksum, unsigned DMG, and DMG verification passed. |
+| `make app-accessibility-smoke` | Pass on `7e0f25b`; all 13 scenarios expose expected AX text and settings modal toolbar controls remain hidden from AX. |
+| PR CI | #136 merged after green `guard`, `quality`, `release-smoke`, `gitleaks`, and `trivy`. |
 
 ## Remaining Blockers
 
