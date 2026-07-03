@@ -71,6 +71,30 @@ expect_manifest_key() {
     fail "$path is missing expected manifest key: $key"
 }
 
+manifest_value() {
+  local path="$1"
+  local key="$2"
+  local line
+
+  line="$(rg --line-regexp --only-matching "${key}=.*" "$path" || true)"
+  [[ -n "$line" ]] || return 1
+  printf '%s' "${line#*=}"
+}
+
+expect_manifest_review_value() {
+  local path="$1"
+  local key="$2"
+  local template_value="$3"
+  local value
+
+  value="$(manifest_value "$path" "$key")" ||
+    fail "$path is missing expected manifest key: $key"
+  [[ -n "$value" ]] ||
+    fail "$path has empty review audit value: $key"
+  [[ "$value" != "$template_value" ]] ||
+    fail "$path still has template review audit value: $key=$template_value"
+}
+
 review_scenario() {
   local scenario="$1"
   local manifest_path="$evidence_dir/$scenario.manifest"
@@ -87,8 +111,8 @@ review_scenario() {
   expect_manifest_value "$manifest_path" state_not_color_only pass
   expect_manifest_value "$manifest_path" dynamic_type pass
   expect_manifest_value "$manifest_path" notes "$notes_path"
-  expect_manifest_key "$manifest_path" reviewed_at
-  expect_manifest_key "$manifest_path" reviewer
+  expect_manifest_review_value "$manifest_path" reviewed_at "<ISO-8601 timestamp>"
+  expect_manifest_review_value "$manifest_path" reviewer "<name or handle>"
 
   expect_file_contains "$notes_path" "# Accessibility Evidence: $scenario"
   expect_file_contains "$notes_path" "VoiceOver"
