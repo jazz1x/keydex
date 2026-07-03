@@ -51,7 +51,13 @@ dump_accessibility_tree() {
 import ApplicationServices
 import Foundation
 
-let pid = pid_t(CommandLine.arguments[1])!
+guard CommandLine.arguments.count >= 3,
+  let pid = pid_t(CommandLine.arguments[1])
+else {
+  fputs("app accessibility smoke: invalid pid argument\n", stderr)
+  exit(2)
+}
+
 let readinessNeedle = CommandLine.arguments[2]
 let app = AXUIElementCreateApplication(pid)
 let maxAXReadinessAttempts = 40
