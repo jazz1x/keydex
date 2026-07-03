@@ -50,6 +50,8 @@ uncertainty to the next concrete action without making them decode implementatio
 - Tag chips keep color in a small swatch inside a neutral shell, so opening card detail
   does not create a blue focus-ring look around label metadata.
 - Escape and an icon close affordance must dismiss settings.
+- Settings scroll content keeps a 56 pt bottom reserve so the last editable row never
+  sits against the rounded sheet edge while scrolling.
 - While settings is open, toolbar controls behind it are visible context, not active
   controls; users should not be able to click register, settings, or display mode
   through the sheet.

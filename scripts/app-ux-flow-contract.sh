@@ -51,12 +51,13 @@ for needle in \
   "Doctor rail" \
   "action-button contract" \
   "Review next entry point" \
-	  "global Register Keychain action stays in the toolbar" \
-	  "Custom artwork import only ships with a persisted asset store" \
-	  "Artwork actions stay near credential identity" \
-	  "Custom artwork rendering uses the Shell-owned artwork root" \
-	  "Tag and label color management uses swatches" \
-	  "Tag chips keep color in a small swatch inside a neutral shell" \
+  "global Register Keychain action stays in the toolbar" \
+  "Custom artwork import only ships with a persisted asset store" \
+  "Artwork actions stay near credential identity" \
+  "Custom artwork rendering uses the Shell-owned artwork root" \
+  "Tag and label color management uses swatches" \
+  "Tag chips keep color in a small swatch inside a neutral shell" \
+  "56 pt bottom reserve" \
   "Settings overlay" \
   "labels on the left and controls on the right" \
   "toolbar controls behind it are visible context" \
@@ -125,6 +126,7 @@ for needle in \
   "KeydexSettingsLayout.tagColorPickerWidth" \
   "KeydexSettingsLayout.tagColorSwatchSize" \
   "KeydexSettingsLayout.tagColorSwatchSpacing" \
+  "KeydexSettingsLayout.scrollBottomInset" \
   "KeydexSettingsModalToolbarBlocker" \
   "KeydexSettingsModalContentBlocker" \
   ".keydexContentDisabledBehindSettings(isShowingSettings)" \
@@ -165,6 +167,10 @@ if ! awk '
   END { exit(leading && toggle && hidden && trailing ? 0 : 1) }
 ' "$settings_source"; then
   fail "SettingsToggleRow must keep left text and right-aligned hidden-label toggle controls"
+fi
+
+if ! rg --quiet --fixed-strings "static let scrollBottomInset: CGFloat = 32" "$design_source"; then
+  fail "Settings scroll content must reserve bottom breathing room"
 fi
 
 if ! awk '
