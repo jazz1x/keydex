@@ -215,7 +215,11 @@ run_review() {
       fi
       ;;
     release_signing_readiness)
-      if contains_any "$output" "missing Developer ID Application signing identity"; then
+      if contains_any \
+        "$output" \
+        "missing Developer ID Application signing identity" \
+        "missing Apple notarytool" \
+        "missing Apple stapler"; then
         print_review_result "$label" blocked "$reason"
         return 0
       fi
