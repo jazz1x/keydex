@@ -130,6 +130,25 @@ accessibility_evidence_is_current_pending() {
   [[ "$pending_found" == true ]]
 }
 
+accessibility_pending_summary() {
+  local output
+  local pending_scenarios
+  local pending_fields
+
+  output="$("$script_dir/app-accessibility-evidence-status.sh")" || return 1
+  pending_scenarios="$(
+    printf '%s\n' "$output" |
+      awk -F= '$1 == "pending_scenarios" { print $2; found = 1 } END { exit(found ? 0 : 1) }'
+  )" || return 1
+  pending_fields="$(
+    printf '%s\n' "$output" |
+      awk -F= '$1 == "pending_fields" { print $2; found = 1 } END { exit(found ? 0 : 1) }'
+  )" || return 1
+
+  printf 'app_accessibility_manual_pending_scenarios=%s\n' "$pending_scenarios"
+  printf 'app_accessibility_manual_pending_fields=%s\n' "$pending_fields"
+}
+
 release_signing_evidence_is_current_pending() {
   local evidence_dir="${KEYDEX_RELEASE_SIGNING_EVIDENCE_DIR:-tmp/release-signing-evidence}"
   local payload_dir="tmp/release-smoke/keydex-$head_sha-Darwin-arm64"
@@ -205,6 +224,7 @@ run_review() {
     app_accessibility_manual)
       if accessibility_evidence_is_current_pending; then
         print_review_result "$label" "$pending_state" "$reason"
+        accessibility_pending_summary
         return 0
       fi
       ;;
