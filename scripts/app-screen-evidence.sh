@@ -59,39 +59,30 @@ window_matches_expected_preset() {
   width="${BASH_REMATCH[1]}"
   height="${BASH_REMATCH[2]}"
 
-  case "$preset" in
-    default)
-      [[ "$width" == "1080" && "$height" == "680" ]]
-      ;;
-    compact)
-      [[ "$width" -ge 900 && "$height" == "620" ]]
-      ;;
-    *)
-      fail "unknown window preset for screen evidence: $preset"
-      ;;
-  esac
+  keydex_evidence_window_matches_size "$preset" "$width" "$height"
 }
 
 expected_window_description() {
   local preset="$1"
 
-  case "$preset" in
-    default)
-      printf 'width=1080 height=680'
-      ;;
-    compact)
-      printf 'width>=900 height=620'
-      ;;
-    *)
-      fail "unknown window preset for screen evidence: $preset"
-      ;;
-  esac
+  keydex_evidence_window_description "$preset" ||
+    fail "unknown window preset for screen evidence: $preset"
 }
 
 window_report() {
   local pid="$1"
   local selector="$2"
   local preset="$3"
+  local width_mode
+  local expected_width
+  local expected_height
+
+  width_mode="$(keydex_evidence_window_width_mode "$preset")" ||
+    fail "unknown window preset for screen evidence: $preset"
+  expected_width="$(keydex_evidence_window_width "$preset")" ||
+    fail "unknown window preset for screen evidence: $preset"
+  expected_height="$(keydex_evidence_window_height "$preset")" ||
+    fail "unknown window preset for screen evidence: $preset"
 
   swift -e '
     import CoreGraphics
@@ -99,16 +90,22 @@ window_report() {
 
     let pid = Int(CommandLine.arguments[1])!
     let selector = CommandLine.arguments[2]
-    let preset = CommandLine.arguments[3]
+    let widthMode = CommandLine.arguments[3]
+    let expectedWidth = Int(CommandLine.arguments[4])!
+    let expectedHeight = Int(CommandLine.arguments[5])!
     let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID)
       as? [[String: Any]] ?? []
 
-    func matchesPreset(width: Int, height: Int, preset: String) -> Bool {
-      switch preset {
-      case "default":
-        return width == 1080 && height == 680
-      case "compact":
-        return width >= 900 && height == 620
+    func matchesPreset(width: Int, height: Int) -> Bool {
+      guard height == expectedHeight else {
+        return false
+      }
+
+      switch widthMode {
+      case "exact":
+        return width == expectedWidth
+      case "minimum":
+        return width >= expectedWidth
       default:
         return false
       }
@@ -139,7 +136,7 @@ window_report() {
       let report = "window=\(number) x=\(x) y=\(y) width=\(width) height=\(height)"
       let area = width * height
 
-      guard matchesPreset(width: width, height: height, preset: preset) else {
+      guard matchesPreset(width: width, height: height) else {
         continue
       }
 
@@ -160,7 +157,7 @@ window_report() {
     }
 
     exit(2)
-  ' "$pid" "$selector" "$preset"
+  ' "$pid" "$selector" "$width_mode" "$expected_width" "$expected_height"
 }
 
 list_scenarios() {

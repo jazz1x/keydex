@@ -33,8 +33,8 @@ scenarios. Use `make app-screen-evidence SCENARIO=<name>` to capture a specific
 scenario, and use `make app-screen-evidence-all` to capture the full supported
 scenario set with fail-fast propagation.
 The supported scenario list is owned by `scripts/app-evidence-scenarios.sh` and
-is consumed by screen and accessibility evidence scripts so local review coverage
-does not drift across capture, template, and review paths.
+is consumed by screen and accessibility evidence scripts. The same helper owns
+window preset geometry so capture, review, and SwiftUI launch sizing do not drift.
 `make app-evidence-scenarios-contract` keeps that shared list aligned with the
 SwiftUI app's `AppScreenScenario` raw values.
 
