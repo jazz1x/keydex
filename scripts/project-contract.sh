@@ -204,12 +204,16 @@ expect_file_contains docs/VERIFICATION.md "SWIFT-STYLE.md"
 expect_file_contains docs/VERIFICATION.md "Loop Contract"
 expect_file_contains docs/VERIFICATION.md "app accessibility/design/UX flow contracts"
 expect_file_contains docs/VERIFICATION.md "accessibility/signing evidence template contracts"
+expect_file_contains docs/VERIFICATION.md "PR checks"
+expect_file_contains docs/VERIFICATION.md '`guard`, `quality`, `release-smoke`, `gitleaks`, and `trivy` pass'
 expect_file_contains CONTRIBUTING.md "app accessibility/design/UX flow contracts"
 expect_file_contains README.md "app evidence scenario SSOT"
 expect_file_contains README.md "accessibility/signing evidence template contracts"
 expect_file_contains CONTRIBUTING.md "app evidence scenario SSOT"
 expect_file_contains CONTRIBUTING.md "accessibility/signing evidence template contracts"
 expect_file_contains docs/ENFORCEMENT.md "keydex-guard"
+expect_file_contains docs/ENFORCEMENT.md 'GitHub Actions jobs are named `guard`, `quality`, `release-smoke`, `gitleaks`, and'
+expect_file_contains docs/ENFORCEMENT.md '`trivy`. The `main` Branch Protection requires all five'
 expect_file_contains docs/ENFORCEMENT.md "No fake secret literals in production source"
 expect_file_contains docs/VERIFICATION.md "fake secret literals in production source"
 expect_file_contains scripts/forbidden-patterns.sh "fake secret literal in production source"
