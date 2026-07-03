@@ -211,6 +211,7 @@ struct SettingsPanel: View {
           }
         }
         .padding(24)
+        .padding(.bottom, KeydexSettingsLayout.scrollBottomInset)
       }
     }
     .frame(width: KeydexSettingsLayout.panelWidth, height: KeydexSettingsLayout.panelHeight)
