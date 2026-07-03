@@ -13,6 +13,7 @@ Keydex uses three enforcement layers.
 | Formatting | `swift-format lint --strict` |
 | Tests | `swift test` |
 | No silent `try?` | `scripts/forbidden-patterns.sh` |
+| No forced `try!` in scripts | `scripts/forbidden-patterns.sh` |
 | No empty `catch` | `scripts/forbidden-patterns.sh` |
 | No obvious secret-value columns | `scripts/forbidden-patterns.sh` |
 | Clean Architecture boundaries | `scripts/loop-contract.sh` |
