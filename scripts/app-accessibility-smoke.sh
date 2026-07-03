@@ -161,11 +161,17 @@ run_scenario() {
   window_preset="$(keydex_evidence_window_preset "$scenario")" ||
     fail "missing window preset for scenario: $scenario"
 
+  printf 'accessibility_smoke_start=%s inventory_mode=%s window_preset=%s\n' \
+    "$scenario" \
+    "$inventory_mode" \
+    "$window_preset"
+
   KEYDEX_APP_INVENTORY_MODE="$inventory_mode" \
     KEYDEX_APP_WINDOW_PRESET="$window_preset" \
     KEYDEX_APP_SCREEN_SCENARIO="$scenario" \
     "$app_binary" &
   app_pid="$!"
+  printf 'accessibility_smoke_pid=%s scenario=%s\n' "$app_pid" "$scenario"
 
   local readiness_needle=""
   if ((${#expected_needles[@]})); then
@@ -177,6 +183,10 @@ run_scenario() {
   local ax_dump
   ax_dump="$(dump_accessibility_tree "$app_pid" "$readiness_needle")"
   cleanup
+  printf 'accessibility_smoke_checked=%s expected=%s hidden=%s\n' \
+    "$scenario" \
+    "${#expected_needles[@]}" \
+    "${#hidden_needles[@]}"
 
   if ((${#expected_needles[@]})); then
     for needle in "${expected_needles[@]}"; do
