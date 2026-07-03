@@ -22,6 +22,7 @@ check() {
 check 'silent try?' 'try\?' Sources Tests Apps
 check 'script Swift force try' 'try[[:space:]]*!' scripts
 check 'script command argument force unwrap' 'CommandLine\.arguments\[[^]]+\]\)!|CommandLine\.arguments\[[^]]+\]!' scripts
+check 'script silent window-list fallback' 'as\? \[\[String: Any\]\][[:space:]]*\?\? \[\]' scripts
 check 'empty catch' 'catch[[:space:]]*\{[[:space:]]*\}' Sources Tests Apps
 check 'force unwrap' '![[:space:]]*(\.|,|\)|$)' Sources Tests Apps
 check 'secret column name' '(secret_value|password_value|token_value)' Sources Tests Apps docs
