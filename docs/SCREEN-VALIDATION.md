@@ -21,6 +21,9 @@ outside CI. The command writes a screenshot PNG plus a manifest into
 The capture harness treats window geometry as the stability signal and uses the latest
 window id for `screencapture`, so AppKit window-number churn does not masquerade as a
 screen regression.
+The stability comparison waits for the expected preset window size before accepting a
+stable report, while the manifest still records signed screen coordinates for review
+on multi-display sessions.
 It also waits for the launched app process during cleanup so repeated local capture
 loops do not leave stale windows racing the next scenario.
 
