@@ -56,6 +56,8 @@ from the running app. It requires macOS accessibility trust for
 the host process and is not a substitute for VoiceOver review notes. Runtime accessibility
 smoke scenarios must remain members of `scripts/app-evidence-scenarios.sh`, so renamed
 or removed screen states fail the shared scenario contract instead of silently drifting.
+When settings is open, the same smoke asserts toolbar controls behind the modal sheet
+are not exposed in the accessibility tree.
 AX window publication is asynchronous after app launch, so the smoke uses bounded polling
 only to wait for the first readable window tree; missing windows still fail.
 
@@ -165,7 +167,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Local screen evidence | `scripts/app-screen-evidence.sh --list` and `make app-screen-evidence SCENARIO=<name>` | Captures local screenshot and manifest for manual screen review evidence in `tmp/screen-evidence` (not CI required). |
 | Local screen review | `make app-screen-evidence-review` | Verifies the local screenshot and manifest set for all required script scenarios with exact manifest key-value matching for SHA, dirty state, scenario, mode, preset, screenshot path, and actual PNG pixel dimensions. |
 | Accessibility contract | `scripts/app-accessibility-contract.sh` | Required app surfaces expose stable labels and identifiers. |
-| Runtime accessibility smoke | `make app-accessibility-smoke` | Running app exposes expected sidebar, table, doctor, inspector, settings, and state names through AX. |
+| Runtime accessibility smoke | `make app-accessibility-smoke` | Running app exposes expected sidebar, table, doctor, inspector, settings, and state names through AX, while settings hides toolbar controls behind the modal sheet from AX. |
 | Accessibility evidence template | `make app-accessibility-evidence-template` | Creates pending local manifest and notes files for every required scenario. |
 | Accessibility evidence status | `make app-accessibility-evidence-status` | Lists per-scenario pending/pass fields for current local accessibility evidence without turning pending evidence into pass. |
 | Accessibility evidence review | `make app-accessibility-evidence-review` | Verifies local VoiceOver, keyboard, state-label, and dynamic type notes for required scenarios with exact manifest key-value matching for SHA, dirty state, scenario, pass fields, and notes path. |
