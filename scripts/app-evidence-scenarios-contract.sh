@@ -193,6 +193,15 @@ while IFS= read -r scenario; do
   if ! rg --fixed-strings --quiet -- "$scenario" "$screen_doc"; then
     fail "$screen_doc is missing required evidence scenario: $scenario"
   fi
+
+  accessibility_focus="$(keydex_evidence_accessibility_focus "$scenario")" ||
+    fail "missing accessibility focus for scenario: $scenario"
+  [[ -n "$accessibility_focus" ]] ||
+    fail "empty accessibility focus for scenario: $scenario"
+  accessibility_targets="$(keydex_evidence_accessibility_targets "$scenario")" ||
+    fail "missing accessibility targets for scenario: $scenario"
+  [[ -n "$accessibility_targets" ]] ||
+    fail "empty accessibility targets for scenario: $scenario"
 done <<<"$expected_scenarios"
 
 for needle in \

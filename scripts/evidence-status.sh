@@ -69,6 +69,29 @@ file_contains() {
   rg --fixed-strings --quiet -- "$needle" "$path"
 }
 
+accessibility_notes_have_context() {
+  local scenario="$1"
+  local notes_path="$2"
+  local focus
+  local inventory_mode
+  local window_preset
+  local target
+
+  focus="$(keydex_evidence_accessibility_focus "$scenario")" || return 1
+  inventory_mode="$(keydex_evidence_inventory_mode "$scenario")" || return 1
+  window_preset="$(keydex_evidence_window_preset "$scenario")" || return 1
+
+  file_contains "$notes_path" "## Scenario Focus" || return 1
+  file_contains "$notes_path" "Focus: $focus" || return 1
+  file_contains "$notes_path" "Inventory mode: $inventory_mode" || return 1
+  file_contains "$notes_path" "Window preset: $window_preset" || return 1
+  file_contains "$notes_path" "Review targets:" || return 1
+
+  while IFS= read -r target; do
+    file_contains "$notes_path" "$target" || return 1
+  done < <(keydex_evidence_accessibility_targets "$scenario")
+}
+
 accessibility_evidence_is_current_pending() {
   local evidence_dir="${KEYDEX_ACCESSIBILITY_EVIDENCE_DIR:-tmp/accessibility-evidence}"
   local scenario
@@ -101,6 +124,7 @@ accessibility_evidence_is_current_pending() {
     file_contains "$notes_path" "State Not Color Only" || return 1
     file_contains "$notes_path" "Dynamic Type" || return 1
     file_contains "$notes_path" "Open Issues" || return 1
+    accessibility_notes_have_context "$scenario" "$notes_path" || return 1
   done
 
   [[ "$pending_found" == true ]]

@@ -69,12 +69,18 @@ not a CI gate because VoiceOver, keyboard traversal, dynamic type, and contrast 
 must be reviewed on a permissioned Mac session.
 
 Use `make app-accessibility-evidence-template` to create pending local evidence files for
-all required scenarios. The generated manifests intentionally use `pending` values; change
-them to `pass` only after reviewing the paired notes on the current Git SHA plus dirty state.
+all required scenarios. The generated notes include a scenario focus, inventory mode,
+window preset, and scenario-specific review targets from `scripts/app-evidence-scenarios.sh`.
+The generated manifests intentionally use `pending` values; change them to `pass` only
+after reviewing the paired notes on the current Git SHA plus dirty state.
 If a pending-only evidence set becomes stale after a new commit, run
 `scripts/app-accessibility-evidence-template.sh --refresh-pending` to update only
 `git_sha` and `git_dirty` while preserving notes. The refresh refuses any scenario that
 already contains reviewed non-pending result values.
+If a pending-only notes set was created before scenario focus sections existed, run
+`scripts/app-accessibility-evidence-template.sh --upgrade-pending-notes`; it refreshes the
+pending manifest SHA and inserts missing scenario focus guidance without touching reviewed
+pass evidence.
 Use `make app-accessibility-evidence-status` to list each scenario's VoiceOver,
 keyboard, state-not-color-only, and dynamic type review state before starting manual
 review.
@@ -209,7 +215,9 @@ For each required script scenario, create
 - `reviewer=<name or handle>`
 
 The paired notes file must start with `# Accessibility Evidence: <scenario>` and cover
-VoiceOver, Keyboard, State Not Color Only, Dynamic Type, and Open Issues.
+Scenario Focus, VoiceOver, Keyboard, State Not Color Only, Dynamic Type, and Open Issues.
+Scenario Focus includes the expected inventory mode, window preset, and review targets
+owned by `scripts/app-evidence-scenarios.sh`.
 Pending-only manifests may be refreshed for a new SHA without overwriting the notes; pass
 manifests must be reviewed again rather than silently refreshed.
 

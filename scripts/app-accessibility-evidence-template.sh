@@ -16,8 +16,12 @@ case "${1:-}" in
   --refresh-pending)
     mode=refresh-pending
     ;;
+  --upgrade-pending-notes)
+    mode=upgrade-pending-notes
+    ;;
   *)
-    fail "unsupported argument: $1. Expected no arguments, --force, or --refresh-pending"
+    fail \
+      "unsupported argument: $1. Expected no arguments, --force, --refresh-pending, or --upgrade-pending-notes"
     ;;
 esac
 
@@ -71,6 +75,43 @@ rewrite_manifest_value() {
   mv "$tmp_path" "$path"
 }
 
+expect_pending_review_fields() {
+  local manifest_path="$1"
+  local key
+
+  for key in voiceover keyboard state_not_color_only dynamic_type; do
+    manifest_has_value "$manifest_path" "$key" pending ||
+      fail "$manifest_path has non-pending $key; refusing to update pending evidence"
+  done
+}
+
+write_notes_context() {
+  local scenario="$1"
+  local focus
+  local inventory_mode
+  local window_preset
+  local target
+
+  focus="$(keydex_evidence_accessibility_focus "$scenario")" ||
+    fail "missing accessibility focus for scenario: $scenario"
+  inventory_mode="$(keydex_evidence_inventory_mode "$scenario")" ||
+    fail "missing inventory mode for scenario: $scenario"
+  window_preset="$(keydex_evidence_window_preset "$scenario")" ||
+    fail "missing window preset for scenario: $scenario"
+
+  printf '## Scenario Focus\n\n'
+  printf -- '- Focus: %s\n' "$focus"
+  printf -- '- Inventory mode: %s\n' "$inventory_mode"
+  printf -- '- Window preset: %s\n' "$window_preset"
+  printf -- '- Review targets:\n'
+
+  while IFS= read -r target; do
+    printf '  - %s\n' "$target"
+  done < <(keydex_evidence_accessibility_targets "$scenario")
+
+  printf '\n'
+}
+
 refresh_pending_scenario() {
   local scenario="$1"
   local manifest_path="$evidence_dir/$scenario.manifest"
@@ -88,14 +129,45 @@ refresh_pending_scenario() {
   manifest_has_key "$manifest_path" git_dirty ||
     fail "$manifest_path is missing git_dirty for pending refresh"
 
-  for key in voiceover keyboard state_not_color_only dynamic_type; do
-    manifest_has_value "$manifest_path" "$key" pending ||
-      fail "$manifest_path has non-pending $key; refusing to refresh reviewed evidence"
-  done
+  expect_pending_review_fields "$manifest_path"
 
   rewrite_manifest_value "$manifest_path" git_sha "$head_sha"
   rewrite_manifest_value "$manifest_path" git_dirty "$head_dirty"
   printf 'refreshed=%s\n' "$scenario"
+}
+
+upgrade_pending_notes_scenario() {
+  local scenario="$1"
+  local manifest_path="$evidence_dir/$scenario.manifest"
+  local notes_path="$evidence_dir/$scenario.md"
+  local first_line
+  local tmp_path
+
+  refresh_pending_scenario "$scenario" >/dev/null
+
+  manifest_has_value "$manifest_path" notes "$notes_path" ||
+    fail "$manifest_path has unexpected notes path for pending notes upgrade"
+  expect_pending_review_fields "$manifest_path"
+
+  IFS= read -r first_line <"$notes_path" ||
+    fail "missing notes title for pending notes upgrade: $notes_path"
+  [[ "$first_line" == "# Accessibility Evidence: $scenario" ]] ||
+    fail "$notes_path has unexpected notes title for pending notes upgrade"
+
+  if rg --fixed-strings --quiet -- "## Scenario Focus" "$notes_path"; then
+    printf 'notes-current=%s\n' "$scenario"
+    return
+  fi
+
+  tmp_path="$(mktemp "${TMPDIR:-/tmp}/keydex-accessibility-notes.XXXXXX")"
+  {
+    printf '%s\n\n' "$first_line"
+    write_notes_context "$scenario"
+    awk 'NR > 1 { print }' "$notes_path"
+  } >"$tmp_path"
+  mv "$tmp_path" "$notes_path"
+
+  printf 'upgraded=%s\n' "$scenario"
 }
 
 write_scenario_template() {
@@ -124,6 +196,7 @@ MANIFEST
   cat >"$notes_path" <<NOTES
 # Accessibility Evidence: $scenario
 
+$(write_notes_context "$scenario")
 ## VoiceOver
 
 - Result: pending
@@ -155,15 +228,27 @@ NOTES
 mkdir -p "$evidence_dir"
 
 for scenario in "${KEYDEX_EVIDENCE_SCENARIOS[@]}"; do
-  if [[ "$mode" == refresh-pending ]]; then
-    refresh_pending_scenario "$scenario"
-  else
-    write_scenario_template "$scenario"
-  fi
+  case "$mode" in
+    refresh-pending)
+      refresh_pending_scenario "$scenario"
+      ;;
+    upgrade-pending-notes)
+      upgrade_pending_notes_scenario "$scenario"
+      ;;
+    *)
+      write_scenario_template "$scenario"
+      ;;
+  esac
 done
 
-if [[ "$mode" == refresh-pending ]]; then
-  echo "app accessibility evidence refresh clean"
-else
-  echo "app accessibility evidence template clean"
-fi
+case "$mode" in
+  refresh-pending)
+    echo "app accessibility evidence refresh clean"
+    ;;
+  upgrade-pending-notes)
+    echo "app accessibility evidence notes upgrade clean"
+    ;;
+  *)
+    echo "app accessibility evidence template clean"
+    ;;
+esac

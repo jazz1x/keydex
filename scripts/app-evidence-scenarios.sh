@@ -177,3 +177,144 @@ keydex_evidence_window_matches_size() {
       ;;
   esac
 }
+
+keydex_evidence_accessibility_focus() {
+  local scenario="$1"
+
+  keydex_is_evidence_scenario "$scenario" || return 1
+
+  case "$scenario" in
+    default-window)
+      printf 'Default card inventory surface with sidebar scopes, card grid, and repair queue visible.'
+      ;;
+    card-view)
+      printf 'Card browsing surface with credential cards, state names, and repair queue visible.'
+      ;;
+    card-detail)
+      printf 'Credential detail surface opened from the aws ci card with scoped actions and sources visible.'
+      ;;
+    empty-inventory)
+      printf 'Empty inventory surface that explains the intentional empty dataset and next action.'
+      ;;
+    search-filter)
+      printf 'Filtered plaintext scope with github search results and clear search affordance visible.'
+      ;;
+    inspector)
+      printf 'List and inspector surface for the hashicorp vault infra credential with findings visible.'
+      ;;
+    settings)
+      printf 'Settings permissions modal with keychain access and runtime prompt controls visible.'
+      ;;
+    settings-appearance)
+      printf 'Settings appearance modal with display mode and system light or dark contract visible.'
+      ;;
+    settings-sources)
+      printf 'Settings sources modal with scan source toggles and disabled-source state visible.'
+      ;;
+    settings-paths)
+      printf 'Settings paths modal with editable scan paths and add or remove controls visible.'
+      ;;
+    settings-tags)
+      printf 'Settings tags modal with editable label names, assignments, color swatches, and actions visible.'
+      ;;
+    settings-rules)
+      printf 'Settings rules modal with ignored and unmanaged source lists visible.'
+      ;;
+    compact-window)
+      printf 'Compact window list surface at the minimum-width preset with repair queue still reachable.'
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+keydex_evidence_accessibility_targets() {
+  local scenario="$1"
+
+  keydex_is_evidence_scenario "$scenario" || return 1
+
+  case "$scenario" in
+    default-window)
+      printf '%s\n' \
+        "Credential scopes sidebar" \
+        "Credential inventory cards" \
+        "Credential repair queue"
+      ;;
+    card-view)
+      printf '%s\n' \
+        "Credential Library card grid" \
+        "Credential state names" \
+        "Doctor repair queue"
+      ;;
+    card-detail)
+      printf '%s\n' \
+        "Credential card detail" \
+        "Manage Keychain reference action" \
+        "Sources list"
+      ;;
+    empty-inventory)
+      printf '%s\n' \
+        "Empty credential inventory state" \
+        "No credential copy" \
+        "Next-action copy"
+      ;;
+    search-filter)
+      printf '%s\n' \
+        "Search credentials field" \
+        "Search results for github" \
+        "Plaintext fallback state"
+      ;;
+    inspector)
+      printf '%s\n' \
+        "Credential inventory table" \
+        "Credential inspector" \
+        "Finding state labels"
+      ;;
+    settings)
+      printf '%s\n' \
+        "Keychain Permission section" \
+        "Enable keychain access toggle" \
+        "Request runtime keychain prompt toggle"
+      ;;
+    settings-appearance)
+      printf '%s\n' \
+        "Appearance section" \
+        "Display mode segmented control" \
+        "System light or dark copy"
+      ;;
+    settings-sources)
+      printf '%s\n' \
+        "Scan Sources section" \
+        "Shell profiles toggle" \
+        "Environment variables disabled state"
+      ;;
+    settings-paths)
+      printf '%s\n' \
+        "Scan Paths section" \
+        "Existing path fields" \
+        "Add scan path action"
+      ;;
+    settings-tags)
+      printf '%s\n' \
+        "Credential Tags section" \
+        "Tag color swatches" \
+        "Add and remove tag actions"
+      ;;
+    settings-rules)
+      printf '%s\n' \
+        "Ignored Sources section" \
+        "Unmanaged Sources section" \
+        "Source add and remove actions"
+      ;;
+    compact-window)
+      printf '%s\n' \
+        "Compact window geometry" \
+        "Credential inventory table" \
+        "Credential repair queue"
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
