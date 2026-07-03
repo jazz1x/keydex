@@ -183,7 +183,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Accessibility contract | `scripts/app-accessibility-contract.sh` | Required app surfaces expose stable labels and identifiers. |
 | Runtime accessibility smoke | `make app-accessibility-smoke` | Running app exposes every supported scenario through AX, including card, list, settings, and compact-window surfaces, while settings hides toolbar controls behind the modal sheet from AX. |
 | Accessibility evidence template | `make app-accessibility-evidence-template` | Creates pending local manifest and notes files for every required scenario. |
-| Accessibility evidence status | `make app-accessibility-evidence-status` | Lists per-scenario pending/pass fields for current local accessibility evidence without turning pending evidence into pass. |
+| Accessibility evidence status | `make app-accessibility-evidence-status` | Lists per-scenario pending/pass fields for current local accessibility evidence while requiring notes plus `reviewed_at` and `reviewer` audit keys without turning pending evidence into pass. |
 | Accessibility evidence review | `make app-accessibility-evidence-review` | Verifies local VoiceOver, keyboard, state-label, and dynamic type notes for required scenarios with exact manifest key-value matching for SHA, dirty state, scenario, pass fields, and notes path. |
 | App design contract | `scripts/app-design-contract.sh` | Native Mac utility structure, graph repair surfaces, and anti-theater rules remain wired. |
 | Doctor shell | App source uses `CredentialDoctor().inspect(graph)` | The repair queue surface is graph-derived. |

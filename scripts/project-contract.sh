@@ -317,6 +317,8 @@ expect_file_contains scripts/app-evidence-scenarios-contract.sh "missing accessi
 expect_file_contains scripts/app-accessibility-evidence-template.sh "refusing to update pending evidence"
 expect_file_contains scripts/app-accessibility-evidence-template.sh "app accessibility evidence refresh clean"
 expect_file_contains scripts/app-accessibility-evidence-status.sh "pending_fields"
+expect_file_contains scripts/app-accessibility-evidence-status.sh "reviewed_at"
+expect_file_contains scripts/app-accessibility-evidence-status.sh "reviewer"
 expect_file_contains scripts/app-accessibility-evidence-status.sh "expect_notes_context"
 expect_file_contains scripts/app-accessibility-evidence-review.sh "expect_notes_context"
 expect_file_contains scripts/evidence-status.sh "accessibility_notes_have_context"

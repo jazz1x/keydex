@@ -39,6 +39,14 @@ expect_manifest_value() {
     fail "$path is missing expected manifest value: $key=$value"
 }
 
+expect_manifest_key() {
+  local path="$1"
+  local key="$2"
+
+  rg --quiet "^${key}=" "$path" ||
+    fail "$path is missing expected manifest key: $key"
+}
+
 expect_notes_contains() {
   local path="$1"
   local needle="$2"
@@ -113,6 +121,8 @@ for scenario in "${KEYDEX_EVIDENCE_SCENARIOS[@]}"; do
   expect_manifest_value "$manifest_path" git_sha "$head_sha"
   expect_manifest_value "$manifest_path" git_dirty "$head_dirty"
   expect_manifest_value "$manifest_path" notes "$notes_path"
+  expect_manifest_key "$manifest_path" reviewed_at
+  expect_manifest_key "$manifest_path" reviewer
 
   voiceover_state="$(review_field_state "$manifest_path" voiceover)"
   keyboard_state="$(review_field_state "$manifest_path" keyboard)"
