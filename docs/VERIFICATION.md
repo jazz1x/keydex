@@ -15,6 +15,7 @@ prove its own contract will drift into wishful UI.
 | App Screen Evidence Review | `scripts/app-screen-evidence-review.sh` | Local screenshot manifests and PNGs cover required screen scenarios for the current Git SHA and dirty state. |
 | App Accessibility Smoke | `scripts/app-accessibility-smoke.sh` | Running app exposes core sidebar, card library, card detail, table, doctor, inspector, settings, and state names through the macOS `AXUIElement` tree. |
 | App Accessibility Evidence Template | `scripts/app-accessibility-evidence-template.sh` | Pending local evidence files can be generated or pending-only manifests can refresh SHA/dirty state without overwriting notes or falsely passing review. |
+| App Accessibility Evidence Status | `scripts/app-accessibility-evidence-status.sh` | Current local accessibility evidence is listed per scenario and field so manual review work remains visible. |
 | App Accessibility Evidence Review | `scripts/app-accessibility-evidence-review.sh` | Local VoiceOver, keyboard, state-label, and dynamic type evidence covers required screen scenarios for the current Git SHA and dirty state. |
 | App Design Contract | `scripts/app-design-contract.sh` | Native Mac utility structure, graph-derived repair surfaces, and anti-theater visual rules remain wired. |
 | App UX Flow Contract | `scripts/app-ux-flow-contract.sh` | Daily Mac utility flow remains intact: orient, narrow, inspect, act, and configure without hiding manual blockers. |
