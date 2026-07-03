@@ -68,6 +68,10 @@ must be reviewed on a permissioned Mac session.
 Use `make app-accessibility-evidence-template` to create pending local evidence files for
 all required scenarios. The generated manifests intentionally use `pending` values; change
 them to `pass` only after reviewing the paired notes on the current Git SHA plus dirty state.
+If a pending-only evidence set becomes stale after a new commit, run
+`scripts/app-accessibility-evidence-template.sh --refresh-pending` to update only
+`git_sha` and `git_dirty` while preserving notes. The refresh refuses any scenario that
+already contains reviewed non-pending result values.
 
 The first source-level HIG and Liquid Glass contract is `scripts/app-design-contract.sh`.
 It proves the app keeps native Mac utility structure, graph-derived repair surfaces,
@@ -199,6 +203,8 @@ For each required script scenario, create
 
 The paired notes file must start with `# Accessibility Evidence: <scenario>` and cover
 VoiceOver, Keyboard, State Not Color Only, Dynamic Type, and Open Issues.
+Pending-only manifests may be refreshed for a new SHA without overwriting the notes; pass
+manifests must be reviewed again rather than silently refreshed.
 
 ## Completion Rule
 
