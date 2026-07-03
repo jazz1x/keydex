@@ -120,6 +120,9 @@ for needle in \
   "keydex.settings.tag.color" \
   "keydex.settings.tag.draft-color" \
   "KeydexSettingsLayout.iconActionColumnWidth" \
+  "KeydexSettingsLayout.tagColorPickerWidth" \
+  "KeydexSettingsLayout.tagColorSwatchSize" \
+  "KeydexSettingsLayout.tagColorSwatchSpacing" \
   "keydex.settings.close" \
   "Close settings" \
   ".keyboardShortcut(.escape, modifiers: [])" \
@@ -153,6 +156,61 @@ if ! awk '
   END { exit(leading && toggle && hidden && trailing ? 0 : 1) }
 ' "$settings_source"; then
   fail "SettingsToggleRow must keep left text and right-aligned hidden-label toggle controls"
+fi
+
+if ! awk '
+  /private struct EditableSettingsListSection/ { in_editable_list = 1 }
+  /private struct EditableTagListSection/ { in_editable_list = 0 }
+  in_editable_list && /TextField\(textFieldLabel, text: \$draftValue\)/ { draft = 1 }
+  in_editable_list && /\.frame\(maxWidth: \.infinity, alignment: \.leading\)/ { draft_flex = 1 }
+  in_editable_list && /SettingsIconActionButton/ { draft_action = 1 }
+  /private struct SettingsEditableRow/ { in_editable_row = 1 }
+  in_editable_row && /TextField\(textFieldLabel, text: \$text\)/ { row = 1 }
+  in_editable_row && /\.frame\(maxWidth: \.infinity, alignment: \.leading\)/ { row_flex = 1 }
+  in_editable_row && /SettingsIconActionButton/ { row_action = 1 }
+  END { exit(draft && draft_flex && draft_action && row && row_flex && row_action ? 0 : 1) }
+' "$settings_source"; then
+  fail "Settings editable rows must let text fields flex while add/remove actions stay in the shared trailing column"
+fi
+
+if ! awk '
+  /private struct EditableTagListSection/ { in_draft_tag = 1 }
+  /private struct CredentialTagColorSwatchPicker/ { in_draft_tag = 0 }
+  in_draft_tag && /TextField\("Tag name", text: \$draftName\)/ { draft_name = 1 }
+  in_draft_tag && /\.frame\(maxWidth: \.infinity, alignment: \.leading\)/ { draft_flex = 1 }
+  in_draft_tag && /CredentialTagColorSwatchPicker/ { draft_picker = 1 }
+  in_draft_tag && /SettingsIconActionButton/ { draft_action = 1 }
+  /private struct SettingsTagEditableRow/ { in_tag_row = 1 }
+  in_tag_row && /TextField\("Tag name", text: \$tag.name\)/ { row_name = 1 }
+  in_tag_row && /\.frame\(maxWidth: \.infinity, alignment: \.leading\)/ { row_flex = 1 }
+  in_tag_row && /CredentialTagColorSwatchPicker/ { row_picker = 1 }
+  in_tag_row && /SettingsIconActionButton/ { row_action = 1 }
+  END { exit(draft_name && draft_flex && draft_picker && draft_action && row_name && row_flex && row_picker && row_action ? 0 : 1) }
+' "$settings_source"; then
+  fail "Tag add/remove rows must use a flexible name column, fixed color swatch lane, and shared action column"
+fi
+
+if ! awk '
+  /private struct CredentialTagColorSwatchPicker/ { in_picker = 1 }
+  /private struct SettingsIconActionButton/ { in_picker = 0 }
+  in_picker && /HStack\(spacing: KeydexSettingsLayout\.tagColorSwatchSpacing\)/ { spacing = 1 }
+  in_picker && /width: KeydexSettingsLayout\.tagColorSwatchSize/ { size = 1 }
+  in_picker && /\.padding\(\.horizontal, KeydexSettingsLayout\.tagColorPickerHorizontalPadding\)/ { padding = 1 }
+  in_picker && /\.frame\(width: KeydexSettingsLayout\.tagColorPickerWidth, alignment: \.trailing\)/ { lane = 1 }
+  END { exit(spacing && size && padding && lane ? 0 : 1) }
+' "$settings_source"; then
+  fail "Tag color swatches must stay in a fixed-width trailing lane for pixel-delta alignment"
+fi
+
+if ! awk '
+  /private struct SettingsIconActionButton/ { in_action = 1 }
+  /private struct SettingsTagEditableRow/ { in_action = 0 }
+  in_action && /width: KeydexSettingsLayout\.iconActionButtonSize/ { button_width = 1 }
+  in_action && /height: KeydexSettingsLayout\.iconActionButtonSize/ { button_height = 1 }
+  in_action && /\.frame\(width: KeydexSettingsLayout\.iconActionColumnWidth, alignment: \.center\)/ { column = 1 }
+  END { exit(button_width && button_height && column ? 0 : 1) }
+' "$settings_source"; then
+  fail "Settings icon action buttons must keep a fixed 28 pt hit area inside the shared action column"
 fi
 
 if ! awk '

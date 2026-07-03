@@ -115,6 +115,10 @@ enum KeydexSettingsLayout {
   static let glassContainerSpacing: CGFloat = 18
   static let rowIconWidth: CGFloat = 24
   static let rowControlSpacing: CGFloat = 10
+  static let tagColorSwatchSize: CGFloat = 18
+  static let tagColorSwatchSpacing: CGFloat = 5
+  static let tagColorPickerHorizontalPadding: CGFloat = 2
+  static let tagColorPickerWidth: CGFloat = 184
   static let iconActionButtonSize: CGFloat = 28
   static let iconActionColumnWidth: CGFloat = 28
 }

@@ -111,6 +111,9 @@ and honest about risk.
 - Settings editable rows use a 24 pt leading icon column, 10 pt control gap, and
   shared 28 pt action column, so add and remove controls keep the same hit area,
   baseline, and trailing alignment.
+- Tag editing rows add one fixed 184 pt color-swatch lane before that action column;
+  the tag name field flexes to fill remaining width so add and remove buttons keep
+  0 pt trailing-edge delta across draft and existing label rows.
 - Native glass buttons use `.glass` or `.glassProminent` when available, with system
   button styles on older macOS versions.
 - Inventory cards are content-layer tiles. On macOS 26+, only the credential poster
