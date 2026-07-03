@@ -68,6 +68,7 @@ echo "2) planning pack contract..."
 for document in \
   PRODUCT-PLAN.md \
   FEATURE-SPEC.md \
+  SWIFT-STYLE.md \
   VALIDATION-SCENARIOS.md \
   SCREEN-VALIDATION.md \
   RELEASE-READINESS.md \
