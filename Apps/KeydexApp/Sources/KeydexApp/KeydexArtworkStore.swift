@@ -111,6 +111,13 @@ struct CredentialArtworkStore {
         }
         try fileManager.copyItem(at: sourceURL, to: destinationURL)
       }
+      if let previousURL = existingOverrides[credentialID]?.fileURL(rootURL: rootURL)
+        .standardizedFileURL,
+        previousURL != destinationURL.standardizedFileURL,
+        fileManager.fileExists(atPath: previousURL.path)
+      {
+        try fileManager.removeItem(at: previousURL)
+      }
 
       let override = CredentialArtworkOverride(
         credentialID: credentialID,
@@ -162,10 +169,22 @@ struct CredentialArtworkStore {
     let scalars = credentialID.unicodeScalars.map { scalar in
       allowed.contains(scalar) ? Character(scalar) : "-"
     }
-    let stem = String(scalars)
-      .replacingOccurrences(of: "--", with: "-")
-      .trimmingCharacters(in: CharacterSet(charactersIn: "-"))
-    return stem.isEmpty ? "credential-artwork" : stem
+    let readableStem = String(scalars)
+      .split(separator: "-", omittingEmptySubsequences: true)
+      .joined(separator: "-")
+    let identitySuffix = hexEncodedCredentialID(credentialID)
+
+    if readableStem.isEmpty {
+      return identitySuffix.isEmpty ? "credential-artwork" : "credential-artwork-\(identitySuffix)"
+    }
+    return "\(readableStem)-\(identitySuffix)"
+  }
+
+  private func hexEncodedCredentialID(_ credentialID: CredentialArtworkID) -> String {
+    credentialID.utf8.map { byte in
+      let text = String(byte, radix: 16)
+      return byte < 16 ? "0\(text)" : text
+    }.joined()
   }
 
   private func writeManifest(_ overrides: [CredentialArtworkID: CredentialArtworkOverride]) throws {

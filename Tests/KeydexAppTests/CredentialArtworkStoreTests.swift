@@ -18,7 +18,7 @@ func credentialArtworkStoreImportsAndLoadsManifest() throws {
   let loaded = CredentialArtworkStore(rootURL: rootURL).loadOverrides()
 
   #expect(override.credentialID == "aws/ci")
-  #expect(override.fileName == "aws-ci.png")
+  #expect(override.fileName == "aws-ci-6177732f6369.png")
   #expect(FileManager.default.fileExists(atPath: override.fileURL(rootURL: rootURL).path))
   #expect(loaded.issueMessage == nil)
   #expect(loaded.overrides["aws/ci"] == override)
@@ -36,6 +36,69 @@ func credentialArtworkStoreRejectsUnsupportedImageTypes() throws {
 
   #expect(result == .failure(.unsupportedImageType("txt")))
   #expect(FileManager.default.fileExists(atPath: rootURL.path) == false)
+}
+
+@Test
+func credentialArtworkStoreKeepsSimilarCredentialIDsInDistinctFiles() throws {
+  let rootURL = temporaryArtworkRoot()
+  let sourceURL = try writeArtworkFixture(named: "keydex-card.png")
+  let store = CredentialArtworkStore(rootURL: rootURL)
+
+  let slashOverride = try requireSuccess(
+    store.importArtwork(
+      from: sourceURL,
+      credentialID: "aws/ci",
+      existingOverrides: [:]
+    )
+  )
+  let dashOverride = try requireSuccess(
+    store.importArtwork(
+      from: sourceURL,
+      credentialID: "aws-ci",
+      existingOverrides: ["aws/ci": slashOverride]
+    )
+  )
+  let loaded = store.loadOverrides()
+
+  #expect(slashOverride.fileName == "aws-ci-6177732f6369.png")
+  #expect(dashOverride.fileName == "aws-ci-6177732d6369.png")
+  #expect(slashOverride.fileName != dashOverride.fileName)
+  #expect(FileManager.default.fileExists(atPath: slashOverride.fileURL(rootURL: rootURL).path))
+  #expect(FileManager.default.fileExists(atPath: dashOverride.fileURL(rootURL: rootURL).path))
+  #expect(loaded.overrides["aws/ci"] == slashOverride)
+  #expect(loaded.overrides["aws-ci"] == dashOverride)
+}
+
+@Test
+func credentialArtworkStoreRemovesPreviousFileWhenReplacingArtwork() throws {
+  let rootURL = temporaryArtworkRoot()
+  let firstSourceURL = try writeArtworkFixture(named: "first.png")
+  let secondSourceURL = try writeArtworkFixture(named: "second.jpeg")
+  let store = CredentialArtworkStore(rootURL: rootURL)
+  let firstOverride = try requireSuccess(
+    store.importArtwork(
+      from: firstSourceURL,
+      credentialID: "github/work",
+      existingOverrides: [:]
+    )
+  )
+
+  let secondOverride = try requireSuccess(
+    store.importArtwork(
+      from: secondSourceURL,
+      credentialID: "github/work",
+      existingOverrides: ["github/work": firstOverride]
+    )
+  )
+  let loaded = store.loadOverrides()
+
+  #expect(firstOverride.fileName == "github-work-6769746875622f776f726b.png")
+  #expect(secondOverride.fileName == "github-work-6769746875622f776f726b.jpeg")
+  #expect(
+    FileManager.default.fileExists(atPath: firstOverride.fileURL(rootURL: rootURL).path) == false
+  )
+  #expect(FileManager.default.fileExists(atPath: secondOverride.fileURL(rootURL: rootURL).path))
+  #expect(loaded.overrides["github/work"] == secondOverride)
 }
 
 @Test

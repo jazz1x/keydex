@@ -167,6 +167,7 @@ and honest about risk.
   fall back to the credential's default preset artwork.
 - Custom artwork image resolution uses the Shell-owned artwork root, not a default
   store recreated inside the artwork view.
+- Custom artwork filenames include a stable credential identity suffix so filename collisions are prevented when similar credential IDs differ only by punctuation.
 - The repair queue uses a centered music-player-like repair rail inside a
   transparent footer lane instead of a hard split panel or opaque painted overlay.
   The lane has a 0.08 alpha top separator, and scrollable content keeps a 90 pt

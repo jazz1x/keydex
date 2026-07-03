@@ -237,6 +237,7 @@ for needle in \
   "artwork.custom.override" \
   "Custom artwork controls live beside credential identity actions" \
   "Custom artwork image resolution uses the Shell-owned artwork root" \
+  "filename collisions are prevented" \
   "semantic state-color media wash" \
   "Poster glyphs stay subdued" \
   "flat semantic fills and strokes" \
@@ -308,6 +309,11 @@ if awk '
 ' "$inventory_source"; then
   fail "CredentialArtworkPanel must keep service/account text below the poster"
 fi
+
+expect_file_contains "$app_sources/KeydexArtworkStore.swift" "hexEncodedCredentialID"
+expect_file_contains "$app_sources/KeydexArtworkStore.swift" "previousURL != destinationURL.standardizedFileURL"
+expect_file_contains "Tests/KeydexAppTests/CredentialArtworkStoreTests.swift" \
+  "credentialArtworkStoreKeepsSimilarCredentialIDsInDistinctFiles"
 
 if awk '
   /struct DoctorPanel/ { in_doctor = 1 }
