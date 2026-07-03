@@ -213,6 +213,11 @@ struct SettingsPanel: View {
         .padding(24)
         .padding(.bottom, KeydexSettingsLayout.scrollBottomInset)
       }
+      .safeAreaInset(edge: .bottom, spacing: 0) {
+        Color.clear
+          .frame(height: KeydexSettingsLayout.scrollBottomInset)
+          .accessibilityHidden(true)
+      }
     }
     .frame(width: KeydexSettingsLayout.panelWidth, height: KeydexSettingsLayout.panelHeight)
     .onExitCommand(perform: closeAction)
