@@ -112,12 +112,14 @@ for needle in \
   "SettingsDisplayModeRow" \
   "EditableSettingsListSection" \
   "EditableTagListSection" \
+  "SettingsIconActionButton" \
   "keydex.settings.keychain-access" \
   "keydex.settings.add-scan-path" \
   "keydex.settings.add-tag" \
   "CredentialTagColorSwatchPicker" \
   "keydex.settings.tag.color" \
   "keydex.settings.tag.draft-color" \
+  "KeydexSettingsLayout.iconActionColumnWidth" \
   "keydex.settings.close" \
   "Close settings" \
   ".keyboardShortcut(.escape, modifiers: [])" \

@@ -43,6 +43,8 @@ uncertainty to the next concrete action without making them decode implementatio
   as disabled glass decorations.
 - Settings rows keep labels on the left and controls on the right so scanning and toggling
   do not fight each other.
+- Settings add/remove controls share one icon action column so repeated label
+  editing does not shift.
 - Tag and label color management uses swatches, not text-only color menus.
 - Tag chips keep color in a small swatch inside a neutral shell, so opening card detail
   does not create a blue focus-ring look around label metadata.
@@ -73,7 +75,7 @@ uncertainty to the next concrete action without making them decode implementatio
 | Detail and return | `CredentialMusicDetailView`, `keydex.card-detail.back`. |
 | Explicit actions | `keydexActionButton`, `keydex.inspector.manage-keychain`, `keydex.inspector.manage-tags`, `keydex.card-detail.manage-keychain`, `keydex.card-detail.manage-tags`. |
 | Repair queue | `DoctorPanel`, `keydex.doctor.review-next`, `reviewDoctorIssue`, `Cause:`, `Action:`. |
-| Settings workflow | `SettingsToggleRow`, `SettingsDisplayModeRow`, `CredentialTagColorSwatchPicker`, `EditableSettingsListSection`, `EditableTagListSection`, `Close settings`, Escape shortcut. |
+| Settings workflow | `SettingsToggleRow`, `SettingsDisplayModeRow`, `SettingsIconActionButton`, `CredentialTagColorSwatchPicker`, `EditableSettingsListSection`, `EditableTagListSection`, `Close settings`, Escape shortcut. |
 
 ## Review Questions
 

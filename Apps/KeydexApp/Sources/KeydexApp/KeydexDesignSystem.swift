@@ -113,6 +113,10 @@ enum KeydexSettingsLayout {
   static let panelCornerRadius: CGFloat = 14
   static let groupedRowsCornerRadius: CGFloat = 10
   static let glassContainerSpacing: CGFloat = 18
+  static let rowIconWidth: CGFloat = 24
+  static let rowControlSpacing: CGFloat = 10
+  static let iconActionButtonSize: CGFloat = 28
+  static let iconActionColumnWidth: CGFloat = 28
 }
 
 private struct KeydexGlassButtonModifier: ViewModifier {

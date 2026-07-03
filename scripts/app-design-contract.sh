@@ -131,6 +131,7 @@ for needle in \
   "SettingsToggleRow" \
   "SettingsStatusPill" \
   "SettingsCloseButton" \
+  "SettingsIconActionButton" \
   "SettingsDisplayModeRow" \
   "KeydexSheetGlassPanelModifier" \
   "KeydexGroupedRowsSurfaceModifier" \
@@ -142,6 +143,10 @@ for needle in \
   "settingsActiveBackdropDimAlpha = 0.020" \
   "settingsInactiveBackdropDimAlpha = 0.11" \
   "settingsPanelWash(appearsActive:" \
+  "rowIconWidth" \
+  "iconActionButtonSize" \
+  "iconActionColumnWidth" \
+  "rowControlSpacing" \
   "@Environment(\\.appearsActive)" \
   "KeydexCapsuleGlassModifier" \
   ".labelsHidden()" \
