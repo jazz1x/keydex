@@ -23,7 +23,7 @@ prove its own contract will drift into wishful UI.
 | Forbidden Patterns | `scripts/forbidden-patterns.sh` | No silent `try?`, script-level `try!`, script command argument force unwraps, script window-list fallbacks, empty `catch`, or obvious secret-value metadata. |
 | Loop Contract | `scripts/loop-contract.sh` | Clean Architecture import boundaries, package dependency boundaries, and loop documentation wiring remain aligned. |
 | Project Contract | `scripts/project-contract.sh` | Goals, planning pack, design system, graph workflow, verification docs, and README links stay aligned. |
-| Quality | `make quality` | CLI docs, state taxonomy, workflow wiring, project contract, loop contract, CLI smoke, app accessibility/design/UX flow contracts, app evidence scenario SSOT, and menubar smoke script contract. |
+| Quality | `make quality` | CLI docs, state taxonomy, workflow wiring, project contract, loop contract, CLI smoke, app accessibility/design/UX flow contracts, app evidence scenario SSOT, accessibility/signing evidence template contracts, and menubar smoke script contract. |
 | CLI Smoke | `scripts/cli-smoke.sh` | Fixture-backed `list`, `where`, `doctor`, `reminders`, and `scan config` outputs, including status symbols and scope labels. |
 | Release Smoke | `scripts/release-smoke.sh` | Release-mode artifacts bundle locally, ad-hoc sign cleanly, create unsigned DMG smoke evidence, checksum cleanly, and omit fixture metadata. |
 | Release Signing Readiness | `scripts/release-signing-readiness.sh` | Local Developer ID Application identity and Apple notarization tools exist before public app signing. |
