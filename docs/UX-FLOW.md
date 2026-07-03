@@ -50,7 +50,7 @@ uncertainty to the next concrete action without making them decode implementatio
 - Tag chips keep color in a small swatch inside a neutral shell, so opening card detail
   does not create a blue focus-ring look around label metadata.
 - Escape and an icon close affordance must dismiss settings.
-- Settings uses a 720 x 580 pt sheet with a 160 pt bottom scroll margin so the
+- Settings uses a 720 x 580 pt sheet with a 192 pt bottom scroll margin so the
   last editable row never sits against the rounded sheet edge while scrolling.
 - While settings is open, toolbar controls behind it are visible context, not active
   controls; users should not be able to click register, settings, or display mode

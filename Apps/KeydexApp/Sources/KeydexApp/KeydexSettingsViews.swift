@@ -218,10 +218,9 @@ struct SettingsPanel: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, KeydexSettingsLayout.scrollContentHorizontalPadding)
             .padding(.top, KeydexSettingsLayout.scrollContentTopPadding)
-            .padding(.bottom, KeydexSettingsLayout.scrollBottomInset)
 
             Color.clear
-              .frame(height: KeydexSettingsLayout.scrollEndAnchorHeight)
+              .frame(height: KeydexSettingsLayout.scrollBottomInset)
               .id(KeydexSettingsLayout.scrollEndAnchorID)
               .accessibilityHidden(true)
           }
