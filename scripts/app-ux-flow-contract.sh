@@ -16,6 +16,7 @@ settings_source="$app_sources/KeydexSettingsViews.swift"
 sidebar_source="$app_sources/KeydexSidebarViews.swift"
 doctor_source="$app_sources/KeydexDoctorViews.swift"
 model_source="$app_sources/KeydexPresentationModel.swift"
+settings_store_tests="Tests/KeydexAppTests/ShellSettingsStoreTests.swift"
 ux_doc="docs/UX-FLOW.md"
 
 expect_file_contains() {
@@ -122,6 +123,7 @@ for needle in \
   "keydex.settings.keychain-access" \
   "keydex.settings.add-scan-path" \
   "keydex.settings.add-tag" \
+  "LegacyScanSourceDocument" \
   "CredentialTagColorSwatchPicker" \
   "keydex.settings.tag.color" \
   "keydex.settings.tag.draft-color" \
@@ -148,6 +150,9 @@ for needle in \
   ".frame(width: 54, alignment: .trailing)"; do
   expect_app_contains "$needle"
 done
+
+expect_file_contains "$settings_store_tests" "shellSettingsStoreLoadsLegacyFullConfigManifest"
+expect_file_contains "$settings_store_tests" "legacyFullConfigManifest"
 
 echo "5) repair queue usability anchors..."
 for needle in \
