@@ -126,8 +126,12 @@ for needle in \
   "KeydexSettingsLayout.tagColorSwatchSize" \
   "KeydexSettingsLayout.tagColorSwatchSpacing" \
   "KeydexSettingsModalToolbarBlocker" \
+  "KeydexSettingsModalContentBlocker" \
+  ".keydexContentDisabledBehindSettings(isShowingSettings)" \
   ".keydexDisabledBehindSettings(isShowingSettings)" \
   ".allowsHitTesting(!isShowingSettings)" \
+  "presentSettings(section:" \
+  "dismissSettings()" \
   "keydex.settings.close" \
   "Close settings" \
   ".keyboardShortcut(.escape, modifiers: [])" \
@@ -172,6 +176,32 @@ if ! awk '
   END { exit(count >= 3 && blocker && disabled && hit_test && accessibility ? 0 : 1) }
 ' "$app_shell_source"; then
   fail "Settings modal must disable toolbar/header controls behind the visible overlay"
+fi
+
+if ! awk '
+  /\.keydexContentDisabledBehindSettings\(isShowingSettings\)/ { use = 1 }
+  /private struct KeydexSettingsModalContentBlocker/ { blocker = 1 }
+  /private struct KeydexSettingsModalToolbarBlocker/ { in_content = 0 }
+  /private struct KeydexSettingsModalContentBlocker/ { in_content = 1 }
+  /extension View/ { in_content = 0 }
+  in_content && /\.disabled\(isShowingSettings\)/ { disabled = 1 }
+  in_content && /\.allowsHitTesting\(!isShowingSettings\)/ { hit_test = 1 }
+  END { exit(use && blocker && disabled && hit_test ? 0 : 1) }
+' "$app_shell_source"; then
+  fail "Settings modal must keep background content visible while blocking pointer interaction"
+fi
+
+if ! awk '
+  /private func presentSettings\(section:/ { in_present = 1 }
+  /private func dismissSettings/ { in_present = 0; in_dismiss = 1 }
+  /private func importArtwork/ { in_dismiss = 0 }
+  in_present && /if !isShowingSettings/ { gated = 1 }
+  in_present && /selectedSettingsSection = section/ { section = 1 }
+  in_present && /isShowingSettings = true/ { show = 1 }
+  in_dismiss && /isShowingSettings = false/ { dismiss = 1 }
+  END { exit(gated && section && show && dismiss ? 0 : 1) }
+' "$app_shell_source"; then
+  fail "Settings presentation commands must be gated while the modal is already visible"
 fi
 
 if ! awk '
