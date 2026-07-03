@@ -26,5 +26,6 @@ check 'script silent window-list fallback' 'as\? \[\[String: Any\]\][[:space:]]*
 check 'empty catch' 'catch[[:space:]]*\{[[:space:]]*\}' Sources Tests Apps
 check 'force unwrap' '![[:space:]]*(\.|,|\)|$)' Sources Tests Apps
 check 'secret column name' '(secret_value|password_value|token_value)' Sources Tests Apps docs
+check 'fake secret literal in production source' '(sk-test-secret|bb-secret)' Sources Apps
 
 exit "$status"
