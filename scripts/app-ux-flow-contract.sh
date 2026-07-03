@@ -169,8 +169,18 @@ if ! awk '
   fail "SettingsToggleRow must keep left text and right-aligned hidden-label toggle controls"
 fi
 
-if ! rg --quiet --fixed-strings "static let scrollBottomInset: CGFloat = 32" "$design_source"; then
+if ! rg --quiet --fixed-strings "static let scrollBottomInset: CGFloat = 56" "$design_source"; then
   fail "Settings scroll content must reserve bottom breathing room"
+fi
+
+if ! awk '
+  /struct SettingsPanel: View/ { in_panel = 1 }
+  /private struct EditableSettingsListSection/ { in_panel = 0 }
+  in_panel && /\.safeAreaInset\(edge: \.bottom, spacing: 0\)/ { safe_area = 1 }
+  in_panel && /\.frame\(height: KeydexSettingsLayout\.scrollBottomInset\)/ { height = 1 }
+  END { exit(safe_area && height ? 0 : 1) }
+' "$settings_source"; then
+  fail "Settings scroll bottom reserve must be applied as visible scroll inset"
 fi
 
 if ! awk '
