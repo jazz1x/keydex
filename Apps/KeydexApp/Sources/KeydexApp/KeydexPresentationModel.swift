@@ -158,6 +158,31 @@ enum AppScreenScenario: String, CaseIterable {
       .permissions
     }
   }
+
+  func settingsData(displayMode: InventoryDisplayMode) -> ShellSettingsConfig {
+    var settings = sampleSettingsData(displayMode: displayMode)
+
+    if self == .settingsRules {
+      settings.ignoredSources.append(
+        contentsOf: [
+          EditableSettingsRow("~/Library/Application Support/legacy/keys.json"),
+          EditableSettingsRow("~/Projects/old-client/.env.archive"),
+          EditableSettingsRow("shell-history:temporary-credential"),
+          EditableSettingsRow("clipboard:manual-credential-export"),
+        ]
+      )
+      settings.unmanagedSources.append(
+        contentsOf: [
+          EditableSettingsRow("process:agent-session-credential"),
+          EditableSettingsRow("binary:third-party-login-helper"),
+          EditableSettingsRow("browser-extension:local-oauth-cache"),
+          EditableSettingsRow("launch-agent:legacy-sync-helper"),
+        ]
+      )
+    }
+
+    return settings
+  }
 }
 
 enum SidebarSelection: Hashable {
@@ -884,6 +909,11 @@ enum SettingsSection: String, CaseIterable, Identifiable {
       "Rules"
     }
   }
+}
+
+enum SettingsScrollTarget {
+  case top
+  case bottom
 }
 
 func sampleSettingsData(displayMode: InventoryDisplayMode = .cards) -> ShellSettingsConfig {

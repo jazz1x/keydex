@@ -80,6 +80,21 @@ keydex_evidence_window_preset() {
   esac
 }
 
+keydex_evidence_settings_scroll_target() {
+  local scenario="$1"
+
+  keydex_is_evidence_scenario "$scenario" || return 1
+
+  case "$scenario" in
+    settings-rules)
+      printf 'bottom'
+      ;;
+    *)
+      printf 'top'
+      ;;
+  esac
+}
+
 keydex_evidence_window_width_mode() {
   local preset="$1"
 

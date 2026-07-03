@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsPanel: View {
   @Binding var settings: ShellSettingsConfig
   @Binding var selectedSection: SettingsSection
+  let scrollTarget: SettingsScrollTarget
   let closeAction: () -> Void
   @Namespace private var settingsGlassNamespace
 
@@ -86,137 +87,146 @@ struct SettingsPanel: View {
           .frame(height: 1)
       }
 
-      ScrollView {
-        VStack(alignment: .leading, spacing: 16) {
-          switch selectedSection {
-          case .permissions:
-            SettingsGlassSection(
-              title: "Keychain Permission",
-              subtitle: keychainPermissionStatus,
-              systemImage: "key.fill"
-            ) {
-              SettingsToggleRow(
-                title: "Enable keychain access",
-                subtitle: "Include Keychain references in local inventory scans",
-                systemImage: "lock.open",
-                isOn: $settings.keychainAccess,
-                accessibilityIdentifier: "keydex.settings.keychain-access"
-              )
+      ScrollViewReader { scrollProxy in
+        ScrollView {
+          VStack(alignment: .leading, spacing: 16) {
+            Group {
+              switch selectedSection {
+              case .permissions:
+                SettingsGlassSection(
+                  title: "Keychain Permission",
+                  subtitle: keychainPermissionStatus,
+                  systemImage: "key.fill"
+                ) {
+                  SettingsToggleRow(
+                    title: "Enable keychain access",
+                    subtitle: "Include Keychain references in local inventory scans",
+                    systemImage: "lock.open",
+                    isOn: $settings.keychainAccess,
+                    accessibilityIdentifier: "keydex.settings.keychain-access"
+                  )
 
-              SettingsDivider()
+                  SettingsDivider()
 
-              SettingsToggleRow(
-                title: "Request runtime keychain prompt",
-                subtitle: "Ask before a scan reads Keychain item references",
-                systemImage: "hand.raised",
-                isOn: $settings.requestPrompt,
-                accessibilityIdentifier: "keydex.settings.request-prompt"
-              )
-            }
+                  SettingsToggleRow(
+                    title: "Request runtime keychain prompt",
+                    subtitle: "Ask before a scan reads Keychain item references",
+                    systemImage: "hand.raised",
+                    isOn: $settings.requestPrompt,
+                    accessibilityIdentifier: "keydex.settings.request-prompt"
+                  )
+                }
 
-            EditableSettingsListSection(
-              title: "Keychain References",
-              subtitle: "\(settings.keychainReferences.count) tracked",
-              systemImage: "key.fill",
-              textFieldLabel: "service/account",
-              addLabel: "Add keychain reference",
-              removeLabel: "Remove keychain reference",
-              rows: $settings.keychainReferences,
-              monospace: true,
-              valueFieldIdentifier: "keydex.settings.keychain-reference.value",
-              draftFieldIdentifier: "keydex.settings.keychain-reference.draft",
-              addButtonIdentifier: "keydex.settings.add-keychain-reference",
-              removeButtonIdentifier: "keydex.settings.remove-keychain-reference"
-            )
-
-          case .appearance:
-            SettingsGlassSection(
-              title: "Appearance",
-              subtitle: "\(settings.displayMode.title) · System light/dark",
-              systemImage: "sparkles"
-            ) {
-              SettingsDisplayModeRow(selection: $settings.displayMode)
-            }
-
-          case .sources:
-            SettingsGlassSection(
-              title: "Scan Sources",
-              subtitle: "\(enabledSourceCount) enabled",
-              systemImage: "checklist"
-            ) {
-              ForEach($settings.scanSources) { $source in
-                SettingsToggleRow(
-                  title: source.title,
-                  subtitle: source.detail,
-                  systemImage: source.systemImage,
-                  isOn: $source.enabled,
-                  accessibilityIdentifier:
-                    "keydex.settings.scan-source.\(source.accessibilitySuffix)"
+                EditableSettingsListSection(
+                  title: "Keychain References",
+                  subtitle: "\(settings.keychainReferences.count) tracked",
+                  systemImage: "key.fill",
+                  textFieldLabel: "service/account",
+                  addLabel: "Add keychain reference",
+                  removeLabel: "Remove keychain reference",
+                  rows: $settings.keychainReferences,
+                  monospace: true,
+                  valueFieldIdentifier: "keydex.settings.keychain-reference.value",
+                  draftFieldIdentifier: "keydex.settings.keychain-reference.draft",
+                  addButtonIdentifier: "keydex.settings.add-keychain-reference",
+                  removeButtonIdentifier: "keydex.settings.remove-keychain-reference"
                 )
 
-                if source.id != settings.scanSources.last?.id {
-                  SettingsDivider()
+              case .appearance:
+                SettingsGlassSection(
+                  title: "Appearance",
+                  subtitle: "\(settings.displayMode.title) · System light/dark",
+                  systemImage: "sparkles"
+                ) {
+                  SettingsDisplayModeRow(selection: $settings.displayMode)
                 }
+
+              case .sources:
+                SettingsGlassSection(
+                  title: "Scan Sources",
+                  subtitle: "\(enabledSourceCount) enabled",
+                  systemImage: "checklist"
+                ) {
+                  ForEach($settings.scanSources) { $source in
+                    SettingsToggleRow(
+                      title: source.title,
+                      subtitle: source.detail,
+                      systemImage: source.systemImage,
+                      isOn: $source.enabled,
+                      accessibilityIdentifier:
+                        "keydex.settings.scan-source.\(source.accessibilitySuffix)"
+                    )
+
+                    if source.id != settings.scanSources.last?.id {
+                      SettingsDivider()
+                    }
+                  }
+                }
+
+              case .paths:
+                EditableSettingsListSection(
+                  title: "Scan Paths",
+                  subtitle: "\(settings.scanPaths.count) paths",
+                  systemImage: "folder",
+                  textFieldLabel: "Path",
+                  addLabel: "Add scan path",
+                  removeLabel: "Remove scan path",
+                  rows: $settings.scanPaths,
+                  monospace: true,
+                  valueFieldIdentifier: "keydex.settings.scan-path.value",
+                  draftFieldIdentifier: "keydex.settings.scan-path.draft",
+                  addButtonIdentifier: "keydex.settings.add-scan-path",
+                  removeButtonIdentifier: "keydex.settings.remove-scan-path"
+                )
+
+              case .tags:
+                EditableTagListSection(tags: $settings.tags)
+
+              case .rules:
+                EditableSettingsListSection(
+                  title: "Ignored Sources",
+                  subtitle: "\(settings.ignoredSources.count) ignored",
+                  systemImage: "eye.slash",
+                  textFieldLabel: "Source",
+                  addLabel: "Add ignored source",
+                  removeLabel: "Remove ignored source",
+                  rows: $settings.ignoredSources,
+                  monospace: false,
+                  valueFieldIdentifier: "keydex.settings.ignored-source.value",
+                  draftFieldIdentifier: "keydex.settings.ignored-source.draft",
+                  addButtonIdentifier: "keydex.settings.add-ignored-source",
+                  removeButtonIdentifier: "keydex.settings.remove-ignored-source"
+                )
+                EditableSettingsListSection(
+                  title: "Unmanaged Sources",
+                  subtitle: "\(settings.unmanagedSources.count) unmanaged",
+                  systemImage: "tray",
+                  textFieldLabel: "Source",
+                  addLabel: "Add unmanaged source",
+                  removeLabel: "Remove unmanaged source",
+                  rows: $settings.unmanagedSources,
+                  monospace: false,
+                  valueFieldIdentifier: "keydex.settings.unmanaged-source.value",
+                  draftFieldIdentifier: "keydex.settings.unmanaged-source.draft",
+                  addButtonIdentifier: "keydex.settings.add-unmanaged-source",
+                  removeButtonIdentifier: "keydex.settings.remove-unmanaged-source"
+                )
               }
             }
 
-          case .paths:
-            EditableSettingsListSection(
-              title: "Scan Paths",
-              subtitle: "\(settings.scanPaths.count) paths",
-              systemImage: "folder",
-              textFieldLabel: "Path",
-              addLabel: "Add scan path",
-              removeLabel: "Remove scan path",
-              rows: $settings.scanPaths,
-              monospace: true,
-              valueFieldIdentifier: "keydex.settings.scan-path.value",
-              draftFieldIdentifier: "keydex.settings.scan-path.draft",
-              addButtonIdentifier: "keydex.settings.add-scan-path",
-              removeButtonIdentifier: "keydex.settings.remove-scan-path"
-            )
-
-          case .tags:
-            EditableTagListSection(tags: $settings.tags)
-
-          case .rules:
-            EditableSettingsListSection(
-              title: "Ignored Sources",
-              subtitle: "\(settings.ignoredSources.count) ignored",
-              systemImage: "eye.slash",
-              textFieldLabel: "Source",
-              addLabel: "Add ignored source",
-              removeLabel: "Remove ignored source",
-              rows: $settings.ignoredSources,
-              monospace: false,
-              valueFieldIdentifier: "keydex.settings.ignored-source.value",
-              draftFieldIdentifier: "keydex.settings.ignored-source.draft",
-              addButtonIdentifier: "keydex.settings.add-ignored-source",
-              removeButtonIdentifier: "keydex.settings.remove-ignored-source"
-            )
-            EditableSettingsListSection(
-              title: "Unmanaged Sources",
-              subtitle: "\(settings.unmanagedSources.count) unmanaged",
-              systemImage: "tray",
-              textFieldLabel: "Source",
-              addLabel: "Add unmanaged source",
-              removeLabel: "Remove unmanaged source",
-              rows: $settings.unmanagedSources,
-              monospace: false,
-              valueFieldIdentifier: "keydex.settings.unmanaged-source.value",
-              draftFieldIdentifier: "keydex.settings.unmanaged-source.draft",
-              addButtonIdentifier: "keydex.settings.add-unmanaged-source",
-              removeButtonIdentifier: "keydex.settings.remove-unmanaged-source"
-            )
+            Color.clear
+              .frame(height: 1)
+              .id(KeydexSettingsLayout.scrollEndAnchorID)
+              .accessibilityHidden(true)
+          }
+          .padding(24)
+        }
+        .contentMargins(.bottom, KeydexSettingsLayout.scrollBottomInset, for: .scrollContent)
+        .onAppear {
+          if scrollTarget == .bottom {
+            scrollProxy.scrollTo(KeydexSettingsLayout.scrollEndAnchorID, anchor: .bottom)
           }
         }
-        .padding(24)
-        .padding(.bottom, KeydexSettingsLayout.scrollBottomInset)
-      }
-      .safeAreaInset(edge: .bottom, spacing: 0) {
-        Color.clear
-          .frame(height: KeydexSettingsLayout.scrollBottomInset)
-          .accessibilityHidden(true)
       }
     }
     .frame(width: KeydexSettingsLayout.panelWidth, height: KeydexSettingsLayout.panelHeight)
