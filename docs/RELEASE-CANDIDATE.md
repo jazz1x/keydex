@@ -53,8 +53,8 @@ values.
 - DMG is unsigned.
 - Developer ID signing is not complete.
 - Notarization is not complete.
-- Local signing readiness is blocked when no `Developer ID Application` identity exists
-  in Keychain.
+- Local signing readiness is blocked when the `Developer ID Application` identity,
+  `notarytool`, or `stapler` prerequisite is unavailable.
 - Screen evidence remains local and manual, but the required manifest and screenshot set
   is review-gated.
 - Homebrew distribution is out of scope for the first release.

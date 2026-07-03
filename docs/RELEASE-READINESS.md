@@ -45,8 +45,10 @@ signing or notarization.
 
 Developer ID signing readiness is checked separately by
 `scripts/release-signing-readiness.sh`. It must fail when the local Keychain does not
-contain a `Developer ID Application` identity; that failure is the correct blocker before
-public Mac app distribution.
+contain a `Developer ID Application` identity or when Apple `notarytool`/`stapler`
+commands are unavailable; those failures are correct blockers before public Mac app
+distribution. The `keydex-notary` credential profile remains a secret-bearing setup item
+for the signing runbook and final evidence, not a repository-stored prerequisite.
 
 After signing and notarization, use `make release-signing-evidence-template` to create the
 local evidence shell, fill the notes and manifest with the actual commands/results, then
