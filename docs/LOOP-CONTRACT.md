@@ -17,6 +17,8 @@ before.
    wider gate before review or release.
 5. **Reflection** - If a failure required a new guardrail, encode that guardrail in
    docs, tests, scripts, or UI evidence before closing the loop.
+   New automation must replace a repeated, observable failure that existing gates cannot
+   express; otherwise update the existing contract or leave a manual review note.
 
 ## Architecture Boundaries
 
@@ -66,6 +68,8 @@ source import text.
   stay in their owned files.
 - A boundary exception needs an explicit root-cause note in the PR and a follow-up
   guardrail when the exception would otherwise repeat.
+- A guardrail that needs its own mini-framework is suspect until the repeated failure is
+  proven. Prefer one narrow contract line over a new harness.
 
 ## Verification Ladder
 
