@@ -237,6 +237,10 @@ run_review() {
     release_signing_readiness)
       if contains_any \
         "$output" \
+        "missing release signing prerequisites" \
+        "developer_id_identity=missing" \
+        "notarytool=missing" \
+        "stapler=missing" \
         "missing Developer ID Application signing identity" \
         "missing Apple notarytool" \
         "missing Apple stapler"; then

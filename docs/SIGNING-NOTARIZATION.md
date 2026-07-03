@@ -29,9 +29,11 @@ make release-signing-readiness
 ```
 
 This command checks only non-secret local prerequisites: a Developer ID Application
-identity plus the Apple `notarytool` and `stapler` commands. It does not submit
-artifacts, validate the `keydex-notary` credential profile, read secret values, or replace
-the signing and notarization evidence below.
+identity plus the Apple `notarytool` and `stapler` commands. It reports each
+prerequisite as `present` or `missing` before failing, so the full local blocker set is
+visible in one run. It does not submit artifacts, validate the `keydex-notary`
+credential profile, read secret values, or replace the signing and notarization evidence
+below.
 
 Create a local evidence shell before filling final release evidence:
 
