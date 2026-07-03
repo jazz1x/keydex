@@ -201,47 +201,11 @@ struct CredentialInventoryShellView: View {
   }
 
   var body: some View {
-    Group {
-      if isCardLibrarySurface {
-        NavigationSplitView {
-          sidebarPane
-        } detail: {
-          inventoryPane
-        }
-      } else {
-        NavigationSplitView {
-          sidebarPane
-        } content: {
-          inventoryPane
-            .navigationSplitViewColumnWidth(min: 480, ideal: 540, max: 640)
-        } detail: {
-          inspectorPane
-        }
-      }
-    }
-    .overlay {
-      if isShowingSettings {
-        ZStack {
-          Color.black.opacity(settingsBackdropDimAlpha)
-            .ignoresSafeArea()
-            .contentShape(Rectangle())
-            .onTapGesture {}
-            .transition(.opacity)
-            .accessibilityHidden(true)
+    ZStack {
+      inventoryShell
+        .keydexContentDisabledBehindSettings(isShowingSettings)
 
-          SettingsPanel(
-            settings: $settingsConfig,
-            selectedSection: $selectedSettingsSection
-          ) {
-            withAnimation(KeydexMotion.contentTransition) {
-              isShowingSettings = false
-            }
-          }
-          .transition(.opacity.combined(with: .scale(scale: 0.985)))
-        }
-        .animation(KeydexMotion.contentTransition, value: isShowingSettings)
-        .accessibilityIdentifier("keydex.settings.overlay")
-      }
+      settingsOverlay
     }
     .alert("Artwork could not be updated", isPresented: artworkIssueBinding) {
       Button("OK", role: .cancel) {
@@ -261,8 +225,7 @@ struct CredentialInventoryShellView: View {
 
       ToolbarItem(placement: .primaryAction) {
         Button {
-          selectedSettingsSection = .permissions
-          isShowingSettings = true
+          presentSettings(section: .permissions)
         } label: {
           Label("Register Keychain", systemImage: "key.fill")
         }
@@ -275,7 +238,7 @@ struct CredentialInventoryShellView: View {
 
       ToolbarItem(placement: .primaryAction) {
         Button {
-          isShowingSettings = true
+          presentSettings()
         } label: {
           Label("Settings", systemImage: "gearshape.fill")
         }
@@ -288,6 +251,52 @@ struct CredentialInventoryShellView: View {
     }
     .onChange(of: inventoryMode) { _, _ in
       selectedCredentialID = nil
+    }
+  }
+
+  private var inventoryShell: some View {
+    Group {
+      if isCardLibrarySurface {
+        NavigationSplitView {
+          sidebarPane
+        } detail: {
+          inventoryPane
+        }
+      } else {
+        NavigationSplitView {
+          sidebarPane
+        } content: {
+          inventoryPane
+            .navigationSplitViewColumnWidth(min: 480, ideal: 540, max: 640)
+        } detail: {
+          inspectorPane
+        }
+      }
+    }
+  }
+
+  @ViewBuilder
+  private var settingsOverlay: some View {
+    if isShowingSettings {
+      ZStack {
+        Color.black.opacity(settingsBackdropDimAlpha)
+          .ignoresSafeArea()
+          .contentShape(Rectangle())
+          .onTapGesture {}
+          .transition(.opacity)
+          .accessibilityHidden(true)
+
+        SettingsPanel(
+          settings: $settingsConfig,
+          selectedSection: $selectedSettingsSection
+        ) {
+          dismissSettings()
+        }
+        .transition(.opacity.combined(with: .scale(scale: 0.985)))
+      }
+      .zIndex(1)
+      .animation(KeydexMotion.contentTransition, value: isShowingSettings)
+      .accessibilityIdentifier("keydex.settings.overlay")
     }
   }
 
@@ -319,11 +328,9 @@ struct CredentialInventoryShellView: View {
         footerReserveHeight: KeydexRailLayout.footerLaneHeight,
         artworkRootURL: artworkStore.rootURL
       ) {
-        selectedSettingsSection = .permissions
-        isShowingSettings = true
+        presentSettings(section: .permissions)
       } manageTagsAction: {
-        selectedSettingsSection = .tags
-        isShowingSettings = true
+        presentSettings(section: .tags)
       } importArtworkAction: { sourceURL, row in
         importArtwork(from: sourceURL, for: row)
       } resetArtworkAction: { row in
@@ -351,11 +358,9 @@ struct CredentialInventoryShellView: View {
           row: row,
           artworkRootURL: artworkStore.rootURL
         ) {
-          selectedSettingsSection = .permissions
-          isShowingSettings = true
+          presentSettings(section: .permissions)
         } manageTagsAction: {
-          selectedSettingsSection = .tags
-          isShowingSettings = true
+          presentSettings(section: .tags)
         } importArtworkAction: { sourceURL, row in
           importArtwork(from: sourceURL, for: row)
         } resetArtworkAction: { row in
@@ -432,6 +437,24 @@ struct CredentialInventoryShellView: View {
     )
   }
 
+  private func presentSettings(section: SettingsSection? = nil) {
+    if !isShowingSettings {
+      if let section {
+        selectedSettingsSection = section
+      }
+
+      withAnimation(KeydexMotion.contentTransition) {
+        isShowingSettings = true
+      }
+    }
+  }
+
+  private func dismissSettings() {
+    withAnimation(KeydexMotion.contentTransition) {
+      isShowingSettings = false
+    }
+  }
+
   private func importArtwork(from sourceURL: URL, for row: CredentialRow) {
     let result = artworkStore.importArtwork(
       from: sourceURL,
@@ -480,8 +503,22 @@ private struct KeydexSettingsModalToolbarBlocker: ViewModifier {
   }
 }
 
+private struct KeydexSettingsModalContentBlocker: ViewModifier {
+  let isShowingSettings: Bool
+
+  func body(content: Content) -> some View {
+    content
+      .disabled(isShowingSettings)
+      .allowsHitTesting(!isShowingSettings)
+  }
+}
+
 extension View {
   fileprivate func keydexDisabledBehindSettings(_ isShowingSettings: Bool) -> some View {
     modifier(KeydexSettingsModalToolbarBlocker(isShowingSettings: isShowingSettings))
+  }
+
+  fileprivate func keydexContentDisabledBehindSettings(_ isShowingSettings: Bool) -> some View {
+    modifier(KeydexSettingsModalContentBlocker(isShowingSettings: isShowingSettings))
   }
 }
