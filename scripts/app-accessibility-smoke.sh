@@ -142,6 +142,7 @@ run_scenario() {
   shift
   local inventory_mode
   local window_preset
+  local settings_scroll_target
   local -a expected_needles=()
   local -a hidden_needles=()
   local hidden_mode=false
@@ -166,14 +167,18 @@ run_scenario() {
     fail "missing inventory mode for scenario: $scenario"
   window_preset="$(keydex_evidence_window_preset "$scenario")" ||
     fail "missing window preset for scenario: $scenario"
+  settings_scroll_target="$(keydex_evidence_settings_scroll_target "$scenario")" ||
+    fail "missing settings scroll target for scenario: $scenario"
 
-  printf 'accessibility_smoke_start=%s inventory_mode=%s window_preset=%s\n' \
+  printf 'accessibility_smoke_start=%s inventory_mode=%s window_preset=%s settings_scroll_target=%s\n' \
     "$scenario" \
     "$inventory_mode" \
-    "$window_preset"
+    "$window_preset" \
+    "$settings_scroll_target"
 
   KEYDEX_APP_INVENTORY_MODE="$inventory_mode" \
     KEYDEX_APP_WINDOW_PRESET="$window_preset" \
+    KEYDEX_APP_SETTINGS_SCROLL_TARGET="$settings_scroll_target" \
     KEYDEX_APP_SCREEN_SCENARIO="$scenario" \
     "$app_binary" &
   app_pid="$!"
