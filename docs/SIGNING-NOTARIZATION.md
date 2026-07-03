@@ -39,6 +39,13 @@ Create a local evidence shell before filling final release evidence:
 make release-signing-evidence-template
 ```
 
+If a pending evidence shell already exists for an older SHA, refresh it before filling
+final results:
+
+```bash
+make release-signing-evidence-template ARGS=--force
+```
+
 ## Credential Setup
 
 Create or update the notary profile interactively:

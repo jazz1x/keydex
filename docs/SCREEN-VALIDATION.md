@@ -80,11 +80,11 @@ window preset, and scenario-specific review targets from `scripts/app-evidence-s
 The generated manifests intentionally use `pending` values; change them to `pass` only
 after reviewing the paired notes on the current Git SHA plus dirty state.
 If a pending-only evidence set becomes stale after a new commit, run
-`scripts/app-accessibility-evidence-template.sh --refresh-pending` to update only
+`make app-accessibility-evidence-template ARGS=--refresh-pending` to update only
 `git_sha` and `git_dirty` while preserving notes. The refresh refuses any scenario that
 already contains reviewed non-pending result values.
 If a pending-only notes set was created before scenario focus sections existed, run
-`scripts/app-accessibility-evidence-template.sh --upgrade-pending-notes`; it refreshes the
+`make app-accessibility-evidence-template ARGS=--upgrade-pending-notes`; it refreshes the
 pending manifest SHA and inserts missing scenario focus guidance without touching reviewed
 pass evidence.
 Use `make app-accessibility-evidence-status` to list each scenario's VoiceOver,
