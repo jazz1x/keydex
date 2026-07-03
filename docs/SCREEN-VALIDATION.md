@@ -21,15 +21,17 @@ outside CI. The command writes a screenshot PNG plus a manifest into
 The capture harness treats window geometry as the stability signal and uses the latest
 window id for `screencapture`, so AppKit window-number churn does not masquerade as a
 screen regression.
-The stability comparison waits for the expected preset window size before accepting a
-stable report, while the manifest still records signed screen coordinates for review
-on multi-display sessions.
+The window candidate scan and stability comparison both require the expected preset
+window size before accepting a stable report. This expected preset window size gate
+runs before the manifest records signed screen coordinates for review on multi-display
+sessions.
 It also waits for the launched app process during cleanup so repeated local capture
 loops do not leave stale windows racing the next scenario.
 
 Use `scripts/app-screen-evidence.sh --list` to inspect supported local capture
 scenarios. Use `make app-screen-evidence SCENARIO=<name>` to capture a specific
-scenario.
+scenario, and use `make app-screen-evidence-all` to capture the full supported
+scenario set with fail-fast propagation.
 The supported scenario list is owned by `scripts/app-evidence-scenarios.sh` and
 is consumed by screen and accessibility evidence scripts so local review coverage
 does not drift across capture, template, and review paths.

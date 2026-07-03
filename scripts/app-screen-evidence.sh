@@ -91,6 +91,7 @@ expected_window_description() {
 window_report() {
   local pid="$1"
   local selector="$2"
+  local preset="$3"
 
   swift -e '
     import CoreGraphics
@@ -98,8 +99,20 @@ window_report() {
 
     let pid = Int(CommandLine.arguments[1])!
     let selector = CommandLine.arguments[2]
+    let preset = CommandLine.arguments[3]
     let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID)
       as? [[String: Any]] ?? []
+
+    func matchesPreset(width: Int, height: Int, preset: String) -> Bool {
+      switch preset {
+      case "default":
+        return width == 1080 && height == 680
+      case "compact":
+        return width >= 900 && height == 620
+      default:
+        return false
+      }
+    }
 
     var selectedReport: String?
     var selectedArea = selector == "settings" ? Int.max : 0
@@ -126,6 +139,10 @@ window_report() {
       let report = "window=\(number) x=\(x) y=\(y) width=\(width) height=\(height)"
       let area = width * height
 
+      guard matchesPreset(width: width, height: height, preset: preset) else {
+        continue
+      }
+
       if selector == "settings" {
         if area < selectedArea {
           selectedArea = area
@@ -143,7 +160,7 @@ window_report() {
     }
 
     exit(2)
-  ' "$pid" "$selector"
+  ' "$pid" "$selector" "$preset"
 }
 
 list_scenarios() {
@@ -187,7 +204,7 @@ report=""
 previous_geometry=""
 expected_geometry="$(expected_window_description "$window_preset")"
 for attempt in 1 2 3 4 5 6 7 8 9 10; do
-  if current_report="$(window_report "$app_pid" "$window_selector")"; then
+  if current_report="$(window_report "$app_pid" "$window_selector" "$window_preset")"; then
     current_geometry="$(window_stability_geometry "$current_report")"
     if ! window_matches_expected_preset "$current_geometry" "$window_preset"; then
       previous_geometry=""

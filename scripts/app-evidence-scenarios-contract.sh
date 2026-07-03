@@ -174,6 +174,7 @@ done
 for needle in \
   "scripts/app-evidence-scenarios.sh" \
   "scripts/app-screen-evidence.sh --list" \
+  "make app-screen-evidence-all" \
   "make app-evidence-scenarios-contract" \
   "scenario has current screenshot and accessibility evidence"; do
   if ! rg --fixed-strings --quiet -- "$needle" "$validation_doc"; then
