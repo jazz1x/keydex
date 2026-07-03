@@ -44,6 +44,10 @@ if keydex_evidence_window_preset "missing-scenario" >/dev/null; then
   fail "unknown evidence scenario must not resolve to a window preset"
 fi
 
+if keydex_evidence_settings_scroll_target "missing-scenario" >/dev/null; then
+  fail "unknown evidence scenario must not resolve to a settings scroll target"
+fi
+
 if keydex_evidence_window_description "missing-preset" >/dev/null; then
   fail "unknown window preset must not resolve to a geometry contract"
 fi
@@ -187,6 +191,16 @@ while IFS= read -r scenario; do
       ;;
     *)
       fail "unsupported window preset for scenario $scenario: $window_preset"
+      ;;
+  esac
+
+  settings_scroll_target="$(keydex_evidence_settings_scroll_target "$scenario")" ||
+    fail "missing settings scroll target for scenario: $scenario"
+  case "$settings_scroll_target" in
+    top | bottom)
+      ;;
+    *)
+      fail "unsupported settings scroll target for scenario $scenario: $settings_scroll_target"
       ;;
   esac
 

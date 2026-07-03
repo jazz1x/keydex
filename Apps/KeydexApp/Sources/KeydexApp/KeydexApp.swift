@@ -67,6 +67,7 @@ struct CredentialInventoryShellView: View {
   @Environment(\.appearsActive) private var appearsActive
   private let artworkStore: CredentialArtworkStore
   private let settingsStore: ShellSettingsStore
+  private let settingsScrollTarget: SettingsScrollTarget
   private let persistsSettings: Bool
   @State private var selectedSidebar: SidebarSelection
   @State private var selectedCredentialID: CredentialRow.ID?
@@ -88,7 +89,8 @@ struct CredentialInventoryShellView: View {
       defaultingTo: initialScenario.inventoryMode
     )
     let artworkLoadState = artworkStore.loadOverrides()
-    let defaultSettings = sampleSettingsData(displayMode: initialScenario.displayMode)
+    let defaultSettings = initialScenario.settingsData(displayMode: initialScenario.displayMode)
+    let settingsScrollTarget = Self.settingsScrollTargetFromEnvironment()
     let persistsSettings = Self.persistsSettingsForCurrentEnvironment()
     let settingsLoadState =
       persistsSettings
@@ -96,6 +98,7 @@ struct CredentialInventoryShellView: View {
       : ShellSettingsLoadState(config: defaultSettings, issueMessage: nil)
     self.artworkStore = artworkStore
     self.settingsStore = settingsStore
+    self.settingsScrollTarget = settingsScrollTarget
     self.persistsSettings = persistsSettings
     _selectedSidebar = State(initialValue: initialScenario.sidebarSelection)
     _selectedCredentialID = State(initialValue: initialScenario.selectedCredentialID)
@@ -145,6 +148,12 @@ struct CredentialInventoryShellView: View {
 
   private static func persistsSettingsForCurrentEnvironment() -> Bool {
     ProcessInfo.processInfo.environment["KEYDEX_APP_SCREEN_SCENARIO"] == nil
+  }
+
+  private static func settingsScrollTargetFromEnvironment() -> SettingsScrollTarget {
+    ProcessInfo.processInfo.environment["KEYDEX_APP_SETTINGS_SCROLL_TARGET"] == "bottom"
+      ? .bottom
+      : .top
   }
 
   private var graph: InventoryGraph {
@@ -313,7 +322,8 @@ struct CredentialInventoryShellView: View {
 
         SettingsPanel(
           settings: $settingsConfig,
-          selectedSection: $selectedSettingsSection
+          selectedSection: $selectedSettingsSection,
+          scrollTarget: settingsScrollTarget
         ) {
           dismissSettings()
         }

@@ -111,6 +111,7 @@ review_scenario() {
   local scenario="$1"
   local inventory_mode="$2"
   local window_preset="$3"
+  local settings_scroll_target="$4"
   local manifest_path="$evidence_dir/$scenario.manifest"
   local screenshot_path="$evidence_dir/$scenario.png"
 
@@ -120,6 +121,7 @@ review_scenario() {
   expect_manifest_value "$manifest_path" scenario "$scenario"
   expect_manifest_value "$manifest_path" inventory_mode "$inventory_mode"
   expect_manifest_value "$manifest_path" window_preset "$window_preset"
+  expect_manifest_value "$manifest_path" settings_scroll_target "$settings_scroll_target"
   expect_manifest_value "$manifest_path" git_sha "$head_sha"
   expect_manifest_value "$manifest_path" git_dirty "$head_dirty"
   expect_manifest_key "$manifest_path" window
@@ -142,7 +144,9 @@ for scenario in "${KEYDEX_EVIDENCE_SCENARIOS[@]}"; do
     fail "missing inventory mode for scenario: $scenario"
   window_preset="$(keydex_evidence_window_preset "$scenario")" ||
     fail "missing window preset for scenario: $scenario"
-  review_scenario "$scenario" "$inventory_mode" "$window_preset"
+  settings_scroll_target="$(keydex_evidence_settings_scroll_target "$scenario")" ||
+    fail "missing settings scroll target for scenario: $scenario"
+  review_scenario "$scenario" "$inventory_mode" "$window_preset" "$settings_scroll_target"
 done
 
 echo "app screen evidence review clean"

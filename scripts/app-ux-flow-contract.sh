@@ -60,7 +60,7 @@ for needle in \
   "Tag and label color management uses swatches" \
   "Tag chips keep color in a small swatch inside a neutral shell" \
   "720 x 580 pt sheet" \
-  "80 pt bottom reserve" \
+  "96 pt bottom scroll margin" \
   "Settings overlay" \
   "labels on the left and controls on the right" \
   "toolbar controls behind it are visible context" \
@@ -132,12 +132,14 @@ for needle in \
   "KeydexSettingsLayout.tagColorSwatchSize" \
   "KeydexSettingsLayout.tagColorSwatchSpacing" \
   "KeydexSettingsLayout.scrollBottomInset" \
+  "KeydexSettingsLayout.scrollEndAnchorID" \
   "persistenceID: \"keychain\"" \
   "persistenceID: \"shell-profiles\"" \
   "persistenceID: \"environment-variables\"" \
   "persistenceID: \"config-files\"" \
   "KeydexSettingsModalToolbarBlocker" \
   "KeydexSettingsModalContentBlocker" \
+  "KEYDEX_APP_SETTINGS_SCROLL_TARGET" \
   ".keydexContentDisabledBehindSettings(isShowingSettings)" \
   ".keydexDisabledBehindSettings(isShowingSettings)" \
   ".allowsHitTesting(!isShowingSettings)" \
@@ -182,7 +184,7 @@ if ! awk '
   fail "SettingsToggleRow must keep left text and right-aligned hidden-label toggle controls"
 fi
 
-if ! rg --quiet --fixed-strings "static let scrollBottomInset: CGFloat = 80" "$design_source"; then
+if ! rg --quiet --fixed-strings "static let scrollBottomInset: CGFloat = 96" "$design_source"; then
   fail "Settings scroll content must reserve bottom breathing room"
 fi
 
@@ -193,11 +195,12 @@ fi
 if ! awk '
   /struct SettingsPanel: View/ { in_panel = 1 }
   /private struct EditableSettingsListSection/ { in_panel = 0 }
-  in_panel && /\.safeAreaInset\(edge: \.bottom, spacing: 0\)/ { safe_area = 1 }
-  in_panel && /\.frame\(height: KeydexSettingsLayout\.scrollBottomInset\)/ { height = 1 }
-  END { exit(safe_area && height ? 0 : 1) }
+  in_panel && /ScrollViewReader/ { reader = 1 }
+  in_panel && /scrollProxy\.scrollTo\(KeydexSettingsLayout\.scrollEndAnchorID, anchor: \.bottom\)/ { scroll_to = 1 }
+  in_panel && /\.contentMargins\(\.bottom, KeydexSettingsLayout\.scrollBottomInset, for: \.scrollContent\)/ { margin = 1 }
+  END { exit(reader && scroll_to && margin ? 0 : 1) }
 ' "$settings_source"; then
-  fail "Settings scroll bottom reserve must be applied as visible scroll inset"
+  fail "Settings scroll bottom reserve must be applied as a scroll content margin"
 fi
 
 if ! awk '

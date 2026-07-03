@@ -186,6 +186,8 @@ inventory_mode="$(keydex_evidence_inventory_mode "$scenario")" ||
   fail "unknown screen evidence scenario: $scenario. Supported scenarios: $(keydex_supported_evidence_scenarios)"
 window_preset="$(keydex_evidence_window_preset "$scenario")" ||
   fail "unknown screen evidence scenario: $scenario. Supported scenarios: $(keydex_supported_evidence_scenarios)"
+settings_scroll_target="$(keydex_evidence_settings_scroll_target "$scenario")" ||
+  fail "unknown screen evidence scenario: $scenario. Supported scenarios: $(keydex_supported_evidence_scenarios)"
 
 output_dir="${KEYDEX_SCREEN_EVIDENCE_DIR:-tmp/screen-evidence}"
 mkdir -p "$output_dir"
@@ -197,6 +199,7 @@ test -x "$app_binary" || fail "missing built app binary: $app_binary"
 
 KEYDEX_APP_INVENTORY_MODE="$inventory_mode" \
   KEYDEX_APP_SCREEN_SCENARIO="$scenario" \
+  KEYDEX_APP_SETTINGS_SCROLL_TARGET="$settings_scroll_target" \
   KEYDEX_APP_WINDOW_PRESET="$window_preset" \
   "$app_binary" &
 app_pid="$!"
@@ -248,6 +251,7 @@ pixel_height="$(image_dimension "$capture_path" pixelHeight)"
   printf 'scenario=%s\n' "$scenario"
   printf 'inventory_mode=%s\n' "$inventory_mode"
   printf 'window_preset=%s\n' "$window_preset"
+  printf 'settings_scroll_target=%s\n' "$settings_scroll_target"
   printf 'captured_at=%s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
   printf 'git_sha=%s\n' "$(git rev-parse --short HEAD)"
   printf 'git_dirty=%s\n' "$(git_dirty_state)"
