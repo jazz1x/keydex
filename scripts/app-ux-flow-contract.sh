@@ -60,7 +60,7 @@ for needle in \
   "Tag and label color management uses swatches" \
   "Tag chips keep color in a small swatch inside a neutral shell" \
   "720 x 580 pt sheet" \
-  "96 pt bottom scroll margin" \
+  "128 pt bottom scroll margin" \
   "Settings overlay" \
   "labels on the left and controls on the right" \
   "toolbar controls behind it are visible context" \
@@ -132,6 +132,7 @@ for needle in \
   "KeydexSettingsLayout.tagColorSwatchSize" \
   "KeydexSettingsLayout.tagColorSwatchSpacing" \
   "KeydexSettingsLayout.scrollBottomInset" \
+  "KeydexSettingsLayout.scrollEndAnchorHeight" \
   "KeydexSettingsLayout.scrollEndAnchorID" \
   "persistenceID: \"keychain\"" \
   "persistenceID: \"shell-profiles\"" \
@@ -185,7 +186,7 @@ if ! awk '
   fail "SettingsToggleRow must keep left text and right-aligned hidden-label toggle controls"
 fi
 
-if ! rg --quiet --fixed-strings "static let scrollBottomInset: CGFloat = 96" "$design_source"; then
+if ! rg --quiet --fixed-strings "static let scrollBottomInset: CGFloat = 128" "$design_source"; then
   fail "Settings scroll content must reserve bottom breathing room"
 fi
 
@@ -198,10 +199,11 @@ if ! awk '
   /private struct EditableSettingsListSection/ { in_panel = 0 }
   in_panel && /ScrollViewReader/ { reader = 1 }
   in_panel && /scrollProxy\.scrollTo\(KeydexSettingsLayout\.scrollEndAnchorID, anchor: \.bottom\)/ { scroll_to = 1 }
-  in_panel && /\.frame\(height: KeydexSettingsLayout\.scrollBottomInset\)/ { spacer = 1 }
-  END { exit(reader && scroll_to && spacer ? 0 : 1) }
+  in_panel && /\.padding\(\.bottom, KeydexSettingsLayout\.scrollBottomInset\)/ { inset = 1 }
+  in_panel && /\.frame\(height: KeydexSettingsLayout\.scrollEndAnchorHeight\)/ { anchor = 1 }
+  END { exit(reader && scroll_to && inset && anchor ? 0 : 1) }
 ' "$settings_source"; then
-  fail "Settings scroll bottom reserve must be applied as a visible scroll-end spacer"
+  fail "Settings scroll bottom reserve must be applied as visible scroll-end content inset"
 fi
 
 if ! awk '

@@ -132,7 +132,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Rail feedback | Doctor rail state changes use native symbol, numeric, macOS hover scale, and sensory feedback. |
 | Scroll continuity | Sidebar selection and card detail transitions must not force the user back to the top of a scrolled list or shelf. |
 | Settings dismissal | Settings exposes an icon-only close button and Escape shortcut; header status pills remain single-line. |
-| Settings scroll end | Settings screen evidence records `settings_scroll_target`; the long rules scenario captures the scrolled end with the 96 pt bottom scroll margin visible. |
+| Settings scroll end | Settings screen evidence records `settings_scroll_target`; the long rules scenario captures the scrolled end with the 128 pt bottom scroll margin visible. |
 | Table rail inset | List/table mode keeps the 90 pt footer reserve so final rows remain reachable under the material rail. |
 | Table legibility | Repeated rows do not use heavy material effects. |
 | Card legibility | Inventory cards keep 8 pt radius, stable 248 pt poster height, title/caption text below the poster, and source previews. |
