@@ -45,6 +45,7 @@ expect_file scripts/app-evidence-scenarios.sh
 expect_file scripts/app-evidence-scenarios-contract.sh
 expect_file scripts/app-screen-evidence-all.sh
 expect_file scripts/app-accessibility-evidence-template.sh
+expect_file scripts/app-accessibility-evidence-status.sh
 expect_file scripts/app-accessibility-evidence-review.sh
 expect_file scripts/app-design-contract.sh
 expect_file scripts/app-ux-flow-contract.sh
@@ -231,6 +232,7 @@ expect_file_contains Makefile "app-menubar-smoke"
 expect_file_contains Makefile "app-accessibility-contract"
 expect_file_contains Makefile "app-accessibility-smoke"
 expect_file_contains Makefile "app-accessibility-evidence-template"
+expect_file_contains Makefile "app-accessibility-evidence-status"
 expect_file_contains Makefile "app-accessibility-evidence-review"
 expect_file_contains Makefile "app-design-contract"
 expect_file_contains Makefile "app-ux-flow-contract"
@@ -287,6 +289,9 @@ expect_file_contains scripts/app-accessibility-evidence-template.sh "dynamic_typ
 expect_file_contains scripts/app-accessibility-evidence-template.sh "--refresh-pending"
 expect_file_contains scripts/app-accessibility-evidence-template.sh "refusing to refresh reviewed evidence"
 expect_file_contains scripts/app-accessibility-evidence-template.sh "app accessibility evidence refresh clean"
+expect_file_contains scripts/app-accessibility-evidence-status.sh "pending_fields"
+expect_file_contains scripts/app-accessibility-evidence-status.sh 'for scenario in "${KEYDEX_EVIDENCE_SCENARIOS[@]}"'
+expect_file_contains scripts/app-accessibility-evidence-status.sh "app accessibility evidence status current"
 expect_file_contains scripts/app-accessibility-evidence-review.sh "tmp/accessibility-evidence"
 expect_file_contains scripts/app-accessibility-evidence-review.sh "expect_manifest_value \"\$manifest_path\" git_dirty"
 expect_file_contains scripts/app-accessibility-evidence-review.sh "expect_manifest_value \"\$manifest_path\" voiceover pass"
@@ -295,6 +300,10 @@ expect_file_contains scripts/app-accessibility-evidence-review.sh "expect_manife
 expect_file_contains docs/SCREEN-VALIDATION.md "state-label, and dynamic type notes for required scenarios with exact manifest key-value matching"
 expect_file_contains docs/SCREEN-VALIDATION.md "pending-only evidence set becomes stale"
 expect_file_contains docs/SCREEN-VALIDATION.md "refuses any scenario that"
+expect_file_contains docs/SCREEN-VALIDATION.md "make app-accessibility-evidence-status"
+expect_file_contains docs/VERIFICATION.md "App Accessibility Evidence Status"
+expect_file_contains docs/ENFORCEMENT.md "Manual accessibility progress stays visible"
+expect_file_contains README.md "make app-accessibility-evidence-status"
 expect_file_contains scripts/app-design-contract.sh "NavigationSplitView"
 expect_file_contains scripts/app-design-contract.sh "No dashboard theater"
 expect_file_contains scripts/app-design-contract.sh "LinearGradient"
