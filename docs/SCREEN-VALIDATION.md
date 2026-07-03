@@ -50,11 +50,12 @@ It proves required SwiftUI surfaces expose stable accessibility labels and ident
 before permissioned screenshot or VoiceOver evidence is attached.
 
 The first runtime accessibility smoke is `scripts/app-accessibility-smoke.sh`. It launches
-the app locally, reads the macOS accessibility tree with `AXUIElement`, and proves core
-surface names for card library, card detail, table, inspector, and settings are visible
-from the running app. It requires macOS accessibility trust for
-the host process and is not a substitute for VoiceOver review notes. Runtime accessibility
-smoke scenarios must remain members of `scripts/app-evidence-scenarios.sh`, so renamed
+the app locally, reads the macOS accessibility tree with `AXUIElement`, and proves every
+supported scenario from `scripts/app-evidence-scenarios.sh` exposes its expected running
+surface names, including card library, card detail, empty, search, inspector, settings
+subsections, and compact window sizing. It requires macOS accessibility trust for the
+host process and is not a substitute for VoiceOver review notes. Runtime accessibility
+smoke scenarios must exactly match `scripts/app-evidence-scenarios.sh`, so added, renamed,
 or removed screen states fail the shared scenario contract instead of silently drifting.
 When settings is open, the same smoke asserts toolbar controls behind the modal sheet
 are not exposed in the accessibility tree.
@@ -167,7 +168,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Local screen evidence | `scripts/app-screen-evidence.sh --list` and `make app-screen-evidence SCENARIO=<name>` | Captures local screenshot and manifest for manual screen review evidence in `tmp/screen-evidence` (not CI required). |
 | Local screen review | `make app-screen-evidence-review` | Verifies the local screenshot and manifest set for all required script scenarios with exact manifest key-value matching for SHA, dirty state, scenario, mode, preset, screenshot path, and actual PNG pixel dimensions. |
 | Accessibility contract | `scripts/app-accessibility-contract.sh` | Required app surfaces expose stable labels and identifiers. |
-| Runtime accessibility smoke | `make app-accessibility-smoke` | Running app exposes expected sidebar, table, doctor, inspector, settings, and state names through AX, while settings hides toolbar controls behind the modal sheet from AX. |
+| Runtime accessibility smoke | `make app-accessibility-smoke` | Running app exposes every supported scenario through AX, including card, list, settings, and compact-window surfaces, while settings hides toolbar controls behind the modal sheet from AX. |
 | Accessibility evidence template | `make app-accessibility-evidence-template` | Creates pending local manifest and notes files for every required scenario. |
 | Accessibility evidence status | `make app-accessibility-evidence-status` | Lists per-scenario pending/pass fields for current local accessibility evidence without turning pending evidence into pass. |
 | Accessibility evidence review | `make app-accessibility-evidence-review` | Verifies local VoiceOver, keyboard, state-label, and dynamic type notes for required scenarios with exact manifest key-value matching for SHA, dirty state, scenario, pass fields, and notes path. |
