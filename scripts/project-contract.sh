@@ -26,6 +26,7 @@ for path in \
   docs/GOALS.md \
   docs/PRODUCT-PLAN.md \
   docs/FEATURE-SPEC.md \
+  docs/SWIFT-STYLE.md \
   docs/CLI-INTERFACE.md \
   docs/DESIGN-SYSTEM.md \
   docs/GRAPH-WORKFLOW.md \
@@ -78,6 +79,10 @@ for document in \
 done
 expect_file_contains docs/PRODUCT-PLAN.md "Total Goal"
 expect_file_contains docs/FEATURE-SPEC.md "Acceptance Criteria"
+expect_file_contains docs/SWIFT-STYLE.md 'Do not use `try?` to erase failure.'
+expect_file_contains docs/SWIFT-STYLE.md "Do not add abstraction for a single pure implementation."
+expect_file_contains README.md "SWIFT-STYLE.md"
+expect_file_contains CONTRIBUTING.md "SWIFT-STYLE.md"
 expect_file_contains docs/VALIDATION-SCENARIOS.md "Functional Scenarios"
 expect_file_contains docs/SCREEN-VALIDATION.md "Screenshot Scenarios"
 expect_file_contains docs/RELEASE-READINESS.md "Release Candidate Checklist"
