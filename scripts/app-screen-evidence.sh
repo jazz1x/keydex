@@ -38,6 +38,56 @@ window_geometry() {
   printf '%s' "${report#window=* }"
 }
 
+window_stability_geometry() {
+  local report="$1"
+  local window_pattern='width=([0-9]+) height=([0-9]+)'
+
+  [[ "$report" =~ $window_pattern ]] ||
+    fail "unable to read stable window size from report: $report"
+  printf 'width=%s height=%s' "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
+}
+
+window_matches_expected_preset() {
+  local geometry="$1"
+  local preset="$2"
+  local geometry_pattern='width=([0-9]+) height=([0-9]+)'
+  local width
+  local height
+
+  [[ "$geometry" =~ $geometry_pattern ]] ||
+    fail "unable to read window size from geometry: $geometry"
+  width="${BASH_REMATCH[1]}"
+  height="${BASH_REMATCH[2]}"
+
+  case "$preset" in
+    default)
+      [[ "$width" == "1080" && "$height" == "680" ]]
+      ;;
+    compact)
+      [[ "$width" -ge 900 && "$height" == "620" ]]
+      ;;
+    *)
+      fail "unknown window preset for screen evidence: $preset"
+      ;;
+  esac
+}
+
+expected_window_description() {
+  local preset="$1"
+
+  case "$preset" in
+    default)
+      printf 'width=1080 height=680'
+      ;;
+    compact)
+      printf 'width>=900 height=620'
+      ;;
+    *)
+      fail "unknown window preset for screen evidence: $preset"
+      ;;
+  esac
+}
+
 window_report() {
   local pid="$1"
   local selector="$2"
@@ -135,9 +185,15 @@ trap cleanup EXIT
 
 report=""
 previous_geometry=""
+expected_geometry="$(expected_window_description "$window_preset")"
 for attempt in 1 2 3 4 5 6 7 8 9 10; do
   if current_report="$(window_report "$app_pid" "$window_selector")"; then
-    current_geometry="$(window_geometry "$current_report")"
+    current_geometry="$(window_stability_geometry "$current_report")"
+    if ! window_matches_expected_preset "$current_geometry" "$window_preset"; then
+      previous_geometry=""
+      sleep 1
+      continue
+    fi
     if [[ "$current_geometry" == "$previous_geometry" ]] && ((attempt >= 5)); then
       report="$current_report"
       break
@@ -147,7 +203,8 @@ for attempt in 1 2 3 4 5 6 7 8 9 10; do
   sleep 1
 done
 
-test -n "$report" || fail "KeydexApp did not publish a stable on-screen window for $scenario"
+test -n "$report" ||
+  fail "KeydexApp did not publish a stable $expected_geometry window for $scenario"
 
 window_id="${report#window=}"
 window_id="${window_id%% *}"
