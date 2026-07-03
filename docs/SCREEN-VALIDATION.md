@@ -21,6 +21,8 @@ outside CI. The command writes a screenshot PNG plus a manifest into
 The capture harness treats window geometry as the stability signal and uses the latest
 window id for `screencapture`, so AppKit window-number churn does not masquerade as a
 screen regression.
+It also waits for the launched app process during cleanup so repeated local capture
+loops do not leave stale windows racing the next scenario.
 
 Use `scripts/app-screen-evidence.sh --list` to inspect supported local capture
 scenarios. Use `make app-screen-evidence SCENARIO=<name>` to capture a specific

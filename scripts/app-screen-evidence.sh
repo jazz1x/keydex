@@ -128,9 +128,8 @@ KEYDEX_APP_INVENTORY_MODE="$inventory_mode" \
 app_pid="$!"
 
 cleanup() {
-  if kill -0 "$app_pid" >/dev/null 2>&1; then
-    kill "$app_pid"
-  fi
+  kill "$app_pid" >/dev/null 2>&1 || true
+  wait "$app_pid" >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
 

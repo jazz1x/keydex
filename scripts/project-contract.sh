@@ -178,7 +178,9 @@ expect_file_contains docs/SCREEN-VALIDATION.md "signed screen coordinates"
 expect_file_contains scripts/app-screen-evidence.sh "window_geometry()"
 expect_file_contains scripts/app-screen-evidence.sh "current_geometry"
 expect_file_contains scripts/app-screen-evidence.sh "previous_geometry"
+expect_file_contains scripts/app-screen-evidence.sh 'wait "$app_pid"'
 expect_file_contains scripts/app-screen-evidence-review.sh "x=-?[0-9]+ y=-?[0-9]+"
+expect_file_contains docs/SCREEN-VALIDATION.md "stale windows racing the next scenario"
 expect_file_contains docs/SCREEN-VALIDATION.md 'Completion claims must use `make evidence-status` output'
 expect_file_contains docs/SCREEN-VALIDATION.md "app_screen_evidence=pass"
 expect_file_contains docs/SCREEN-VALIDATION.md "app_accessibility_manual=pass"
