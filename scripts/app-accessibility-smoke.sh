@@ -149,6 +149,25 @@ bin_dir="$(swift build --show-bin-path)"
 app_binary="$bin_dir/KeydexApp"
 test -x "$app_binary" || fail "missing built app binary: $app_binary"
 
+run_scenario card-view \
+  "Credential scopes" \
+  "Credential inventory cards" \
+  "Credential Library" \
+  "aws" \
+  "missing-keychain-item" \
+  "Credential repair queue"
+
+run_scenario card-detail \
+  "Credential card detail" \
+  "Credential Library" \
+  "aws" \
+  "missing-keychain-item" \
+  "Manage Keychain reference" \
+  "Manage credential tags" \
+  "Choose custom artwork" \
+  "Sources" \
+  "AWS_ACCESS_KEY_ID"
+
 run_scenario inspector \
   "Credential scopes" \
   "Credential inventory table" \
