@@ -173,7 +173,22 @@ done
 expect_file_contains .pre-commit-config.yaml "keydex-guard"
 expect_file_contains .pre-commit-config.yaml "keydex-quality"
 expect_file_contains .pre-commit-config.yaml "gitleaks"
-expect_file_contains .github/workflows/guard.yml "name: release-smoke"
+for workflow_gate in \
+  "  guard:" \
+  "    name: guard" \
+  "  quality:" \
+  "    name: quality" \
+  "  release-smoke:" \
+  "    name: release-smoke"; do
+  expect_file_contains .github/workflows/guard.yml "$workflow_gate"
+done
+for workflow_gate in \
+  "  gitleaks:" \
+  "    name: gitleaks" \
+  "  trivy:" \
+  "    name: trivy"; do
+  expect_file_contains .github/workflows/security.yml "$workflow_gate"
+done
 for branch_gate in "\"guard\"" "\"quality\"" "\"release-smoke\"" "\"gitleaks\"" "\"trivy\""; do
   expect_file_contains .github/branch-protection-main.json "$branch_gate"
 done
