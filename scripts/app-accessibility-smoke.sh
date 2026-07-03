@@ -30,6 +30,16 @@ expect_dump_contains() {
     fail "$scenario accessibility tree is missing expected text: $needle"
 }
 
+expect_dump_not_contains() {
+  local scenario="$1"
+  local dump="$2"
+  local needle="$3"
+
+  if printf '%s\n' "$dump" | rg --fixed-strings --quiet -- "$needle"; then
+    fail "$scenario accessibility tree exposes hidden text: $needle"
+  fi
+}
+
 dump_accessibility_tree() {
   local pid="$1"
   local readiness_needle="$2"
@@ -121,22 +131,51 @@ print(finalDump)
 run_scenario() {
   local scenario="$1"
   shift
+  local -a expected_needles=()
+  local -a hidden_needles=()
+  local hidden_mode=false
+  local needle
+
+  while (($#)); do
+    if [[ "$1" == "--not" ]]; then
+      hidden_mode=true
+      shift
+      continue
+    fi
+
+    if [[ "$hidden_mode" == true ]]; then
+      hidden_needles+=("$1")
+    else
+      expected_needles+=("$1")
+    fi
+    shift
+  done
 
   KEYDEX_APP_WINDOW_PRESET=default KEYDEX_APP_SCREEN_SCENARIO="$scenario" "$app_binary" &
   app_pid="$!"
 
   local readiness_needle=""
-  for needle in "$@"; do
-    readiness_needle="$needle"
-  done
+  if ((${#expected_needles[@]})); then
+    for needle in "${expected_needles[@]}"; do
+      readiness_needle="$needle"
+    done
+  fi
 
   local ax_dump
   ax_dump="$(dump_accessibility_tree "$app_pid" "$readiness_needle")"
   cleanup
 
-  for needle in "$@"; do
-    expect_dump_contains "$scenario" "$ax_dump" "$needle"
-  done
+  if ((${#expected_needles[@]})); then
+    for needle in "${expected_needles[@]}"; do
+      expect_dump_contains "$scenario" "$ax_dump" "$needle"
+    done
+  fi
+
+  if ((${#hidden_needles[@]})); then
+    for needle in "${hidden_needles[@]}"; do
+      expect_dump_not_contains "$scenario" "$ax_dump" "$needle"
+    done
+  fi
 
   printf 'accessibility_smoke=%s\n' "$scenario"
 }
@@ -185,7 +224,11 @@ run_scenario settings \
   "Keychain" \
   "Enabled for inventory scan runs" \
   "Enable keychain access" \
-  "Request runtime keychain prompt"
+  "Request runtime keychain prompt" \
+  --not \
+  "Register Keychain reference" \
+  "Open settings" \
+  "Inventory and display controls"
 
 run_scenario settings-appearance \
   "Settings" \
@@ -193,6 +236,10 @@ run_scenario settings-appearance \
   "Appearance" \
   "Display mode" \
   "Cards" \
-  "System light/dark"
+  "System light/dark" \
+  --not \
+  "Register Keychain reference" \
+  "Open settings" \
+  "Inventory and display controls"
 
 echo "app accessibility smoke clean"
