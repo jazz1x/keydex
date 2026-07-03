@@ -66,6 +66,8 @@ struct KeydexApp: App {
 struct CredentialInventoryShellView: View {
   @Environment(\.appearsActive) private var appearsActive
   private let artworkStore: CredentialArtworkStore
+  private let settingsStore: ShellSettingsStore
+  private let persistsSettings: Bool
   @State private var selectedSidebar: SidebarSelection
   @State private var selectedCredentialID: CredentialRow.ID?
   @State private var searchText: String
@@ -75,27 +77,36 @@ struct CredentialInventoryShellView: View {
   @State private var settingsConfig: ShellSettingsConfig
   @State private var artworkOverrides: [CredentialArtworkID: CredentialArtworkOverride]
   @State private var artworkIssueMessage: String?
+  @State private var settingsIssueMessage: String?
 
-  init(artworkStore: CredentialArtworkStore = CredentialArtworkStore()) {
+  init(
+    artworkStore: CredentialArtworkStore = CredentialArtworkStore(),
+    settingsStore: ShellSettingsStore = ShellSettingsStore()
+  ) {
     let initialScenario = Self.screenScenarioFromEnvironment()
     let initialMode = Self.inventoryModeFromEnvironment(
       defaultingTo: initialScenario.inventoryMode
     )
     let artworkLoadState = artworkStore.loadOverrides()
+    let defaultSettings = sampleSettingsData(displayMode: initialScenario.displayMode)
+    let persistsSettings = Self.persistsSettingsForCurrentEnvironment()
+    let settingsLoadState =
+      persistsSettings
+      ? settingsStore.load(defaults: defaultSettings)
+      : ShellSettingsLoadState(config: defaultSettings, issueMessage: nil)
     self.artworkStore = artworkStore
+    self.settingsStore = settingsStore
+    self.persistsSettings = persistsSettings
     _selectedSidebar = State(initialValue: initialScenario.sidebarSelection)
     _selectedCredentialID = State(initialValue: initialScenario.selectedCredentialID)
     _searchText = State(initialValue: initialScenario.searchText)
     _isShowingSettings = State(initialValue: initialScenario.showsSettings)
     _selectedSettingsSection = State(initialValue: initialScenario.settingsSection)
     _inventoryMode = State(initialValue: initialMode)
-    _settingsConfig = State(
-      initialValue: sampleSettingsData(
-        displayMode: initialScenario.displayMode
-      )
-    )
+    _settingsConfig = State(initialValue: settingsLoadState.config)
     _artworkOverrides = State(initialValue: artworkLoadState.overrides)
     _artworkIssueMessage = State(initialValue: artworkLoadState.issueMessage)
+    _settingsIssueMessage = State(initialValue: settingsLoadState.issueMessage)
   }
 
   fileprivate static func inventoryModeFromEnvironment(
@@ -130,6 +141,10 @@ struct CredentialInventoryShellView: View {
     }
 
     return scenario
+  }
+
+  private static func persistsSettingsForCurrentEnvironment() -> Bool {
+    ProcessInfo.processInfo.environment["KEYDEX_APP_SCREEN_SCENARIO"] == nil
   }
 
   private var graph: InventoryGraph {
@@ -214,6 +229,13 @@ struct CredentialInventoryShellView: View {
     } message: {
       Text(artworkIssueMessage ?? "The artwork library reported an unknown issue.")
     }
+    .alert("Settings could not be updated", isPresented: settingsIssueBinding) {
+      Button("OK", role: .cancel) {
+        settingsIssueMessage = nil
+      }
+    } message: {
+      Text(settingsIssueMessage ?? "The settings library reported an unknown issue.")
+    }
     .toolbar {
       ToolbarItem(placement: .status) {
         MusicToolbarCluster(
@@ -251,6 +273,9 @@ struct CredentialInventoryShellView: View {
     }
     .onChange(of: inventoryMode) { _, _ in
       selectedCredentialID = nil
+    }
+    .onChange(of: settingsConfig) { _, nextConfig in
+      persistSettings(nextConfig)
     }
   }
 
@@ -437,6 +462,17 @@ struct CredentialInventoryShellView: View {
     )
   }
 
+  private var settingsIssueBinding: Binding<Bool> {
+    Binding(
+      get: { settingsIssueMessage != nil },
+      set: { isPresented in
+        if !isPresented {
+          settingsIssueMessage = nil
+        }
+      }
+    )
+  }
+
   private func presentSettings(section: SettingsSection? = nil) {
     if !isShowingSettings {
       if let section {
@@ -481,6 +517,17 @@ struct CredentialInventoryShellView: View {
       artworkOverrides.removeValue(forKey: row.id)
     case .failure(let error):
       artworkIssueMessage = error.localizedDescription
+    }
+  }
+
+  private func persistSettings(_ config: ShellSettingsConfig) {
+    guard persistsSettings else {
+      return
+    }
+
+    let result = settingsStore.save(config)
+    if case .failure(let error) = result {
+      settingsIssueMessage = error.localizedDescription
     }
   }
 

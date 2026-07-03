@@ -20,8 +20,10 @@ local controls for:
 - Editable scan paths
 - Editable ignored/unmanaged source lists
 
-Values are local app state for the current run. The shell still avoids runtime keychain
-access and does not persist settings yet.
+Values persist as local settings metadata under Application Support for normal app runs.
+Evidence scenarios keep using deterministic in-memory sample settings so screenshots and
+AX smoke do not drift with personal local state. The shell still avoids runtime keychain
+access.
 
 The Settings sheet uses a glass-style header, segmented section rail, and grouped list
 sections so scan controls feel native without becoming a dashboard.

@@ -55,6 +55,7 @@ for needle in \
   "Custom artwork import only ships with a persisted asset store" \
   "Artwork actions stay near credential identity" \
   "Custom artwork rendering uses the Shell-owned artwork root" \
+  "Settings edits persist as local metadata" \
   "Tag and label color management uses swatches" \
   "Tag chips keep color in a small swatch inside a neutral shell" \
   "56 pt bottom reserve" \
@@ -115,6 +116,7 @@ for needle in \
   "SettingsDisplayModeRow" \
   "EditableSettingsListSection" \
   "EditableTagListSection" \
+  "ShellSettingsStore" \
   "SettingsIconActionButton" \
   "keydex.settings.keychain-access" \
   "keydex.settings.add-scan-path" \
@@ -134,6 +136,7 @@ for needle in \
   ".allowsHitTesting(!isShowingSettings)" \
   "presentSettings(section:" \
   "dismissSettings()" \
+  "persistSettings(" \
   "keydex.settings.close" \
   "Close settings" \
   ".keyboardShortcut(.escape, modifiers: [])" \
@@ -205,6 +208,18 @@ if ! awk '
   END { exit(use && blocker && disabled && hit_test ? 0 : 1) }
 ' "$app_shell_source"; then
   fail "Settings modal must keep background content visible while blocking pointer interaction"
+fi
+
+if ! awk '
+  /private let settingsStore: ShellSettingsStore/ { store = 1 }
+  /private let persistsSettings: Bool/ { flag = 1 }
+  /settingsStore\.load\(defaults:/ { load = 1 }
+  /settingsStore\.save\(config\)/ { save = 1 }
+  /KEYDEX_APP_SCREEN_SCENARIO/ { scenario = 1 }
+  /ShellSettingsLoadState\(config: defaultSettings, issueMessage: nil\)/ { deterministic = 1 }
+  END { exit(store && flag && load && save && scenario && deterministic ? 0 : 1) }
+' "$app_shell_source"; then
+  fail "Settings persistence must save normal app edits while keeping screen evidence deterministic"
 fi
 
 if ! awk '
