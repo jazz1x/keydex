@@ -21,7 +21,7 @@ prove its own contract will drift into wishful UI.
 | App Accessibility Evidence Review | `scripts/app-accessibility-evidence-review.sh` | Local VoiceOver, keyboard, state-label, and dynamic type evidence covers required screen scenarios for the current Git SHA and dirty state, with non-template reviewer and UTC ISO-8601 review timestamp. |
 | App Design Contract | `scripts/app-design-contract.sh` | Native Mac utility structure, graph-derived repair surfaces, and anti-theater visual rules remain wired. |
 | App UX Flow Contract | `scripts/app-ux-flow-contract.sh` | Daily Mac utility flow remains intact: orient, narrow, inspect, act, and configure without hiding manual blockers. |
-| Forbidden Patterns | `scripts/forbidden-patterns.sh` | No silent `try?`, script-level `try!`, script command argument force unwraps, script window-list fallbacks, empty `catch`, or obvious secret-value metadata. |
+| Forbidden Patterns | `scripts/forbidden-patterns.sh` | No silent `try?`, script-level `try!`, script command argument force unwraps, script window-list fallbacks, empty `catch`, obvious secret-value metadata, or fake secret literals in production source. |
 | Loop Contract | `scripts/loop-contract.sh` | Clean Architecture import boundaries, package dependency boundaries, and loop documentation wiring remain aligned. |
 | Project Contract | `scripts/project-contract.sh` | Goals, planning pack, design system, graph workflow, verification docs, and README links stay aligned. |
 | Quality | `make quality` | CLI docs, state taxonomy, workflow wiring, project contract, loop contract, CLI smoke, app accessibility/design/UX flow contracts, app evidence scenario SSOT, accessibility/signing evidence template contracts, and menubar smoke script contract. |

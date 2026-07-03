@@ -18,6 +18,7 @@ Keydex uses three enforcement layers.
 | No silent window-list fallback in scripts | `scripts/forbidden-patterns.sh` |
 | No empty `catch` | `scripts/forbidden-patterns.sh` |
 | No obvious secret-value columns | `scripts/forbidden-patterns.sh` |
+| No fake secret literals in production source | `scripts/forbidden-patterns.sh` |
 | Swift style implementation rules | `docs/SWIFT-STYLE.md`, `scripts/forbidden-patterns.sh`, `scripts/loop-contract.sh` |
 | Clean Architecture boundaries | `scripts/loop-contract.sh` |
 | State enum labels stay stable | unit tests |
