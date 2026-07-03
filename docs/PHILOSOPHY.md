@@ -6,6 +6,9 @@ Keydex is not a password manager. It is an inventory for Mac developer credentia
 secret value belongs in macOS Keychain or another explicit secret store. Keydex owns the
 map: references, metadata, sources, state, and doctor findings.
 
+`SWIFT-STYLE.md` is the implementation contract for this philosophy: typed failures,
+parse boundaries, and restrained abstractions are how the code keeps these claims true.
+
 ## Layer 1. The Representation Must Be True
 
 State must not lie.
