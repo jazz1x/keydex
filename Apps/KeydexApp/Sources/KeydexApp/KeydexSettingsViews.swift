@@ -283,6 +283,7 @@ private struct EditableSettingsListSection: View {
         TextField(textFieldLabel, text: $draftValue)
           .textFieldStyle(.plain)
           .font(monospace ? .system(.body, design: .monospaced) : .body)
+          .frame(maxWidth: .infinity, alignment: .leading)
           .accessibilityIdentifier(draftFieldIdentifier)
           .accessibilityLabel(textFieldLabel)
 
@@ -345,6 +346,7 @@ private struct EditableTagListSection: View {
           TextField("Tag name", text: $draftName)
             .textFieldStyle(.plain)
             .font(.body)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .accessibilityIdentifier("keydex.settings.tag.draft-name")
             .accessibilityLabel("New tag name")
 
@@ -408,7 +410,7 @@ private struct CredentialTagColorSwatchPicker: View {
   let accessibilityLabel: String
 
   var body: some View {
-    HStack(spacing: 5) {
+    HStack(spacing: KeydexSettingsLayout.tagColorSwatchSpacing) {
       ForEach(CredentialTagColor.allCases) { color in
         Button {
           selection = color
@@ -428,7 +430,10 @@ private struct CredentialTagColorSwatchPicker: View {
                 .accessibilityHidden(true)
             }
           }
-          .frame(width: 18, height: 18)
+          .frame(
+            width: KeydexSettingsLayout.tagColorSwatchSize,
+            height: KeydexSettingsLayout.tagColorSwatchSize
+          )
           .contentShape(Circle())
         }
         .buttonStyle(.plain)
@@ -438,7 +443,8 @@ private struct CredentialTagColorSwatchPicker: View {
         .accessibilityValue(selection == color ? "Selected" : "Not selected")
       }
     }
-    .padding(.horizontal, 2)
+    .padding(.horizontal, KeydexSettingsLayout.tagColorPickerHorizontalPadding)
+    .frame(width: KeydexSettingsLayout.tagColorPickerWidth, alignment: .trailing)
     .accessibilityElement(children: .contain)
     .accessibilityIdentifier(accessibilityIdentifier)
     .accessibilityLabel(accessibilityLabel)
@@ -500,6 +506,7 @@ private struct SettingsTagEditableRow: View {
         TextField("Tag name", text: $tag.name)
           .textFieldStyle(.plain)
           .font(.body)
+          .frame(maxWidth: .infinity, alignment: .leading)
           .accessibilityIdentifier("keydex.settings.tag.name")
           .accessibilityLabel("Tag name")
 
@@ -710,6 +717,7 @@ private struct SettingsEditableRow: View {
       TextField(textFieldLabel, text: $text)
         .textFieldStyle(.plain)
         .font(monospace ? .system(.body, design: .monospaced) : .body)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityIdentifier(valueFieldIdentifier)
         .accessibilityLabel(textFieldLabel)
 

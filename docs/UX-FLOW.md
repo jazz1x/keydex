@@ -44,7 +44,8 @@ uncertainty to the next concrete action without making them decode implementatio
 - Settings rows keep labels on the left and controls on the right so scanning and toggling
   do not fight each other.
 - Settings add/remove controls share one icon action column so repeated label
-  editing does not shift.
+  editing does not shift; tag color swatches sit in a fixed lane so the plus and
+  minus buttons keep 0 pt trailing-edge delta.
 - Tag and label color management uses swatches, not text-only color menus.
 - Tag chips keep color in a small swatch inside a neutral shell, so opening card detail
   does not create a blue focus-ring look around label metadata.
