@@ -60,7 +60,7 @@ for needle in \
   "Tag and label color management uses swatches" \
   "Tag chips keep color in a small swatch inside a neutral shell" \
   "720 x 580 pt sheet" \
-  "128 pt bottom scroll margin" \
+  "160 pt bottom scroll margin" \
   "Settings overlay" \
   "labels on the left and controls on the right" \
   "toolbar controls behind it are visible context" \
@@ -131,8 +131,8 @@ for needle in \
   "KeydexSettingsLayout.tagColorPickerWidth" \
   "KeydexSettingsLayout.tagColorSwatchSize" \
   "KeydexSettingsLayout.tagColorSwatchSpacing" \
-  "KeydexSettingsLayout.scrollContentBottomPadding" \
-  "KeydexSettingsLayout.scrollEndSpacerHeight" \
+  "KeydexSettingsLayout.scrollBottomInset" \
+  "KeydexSettingsLayout.scrollEndAnchorHeight" \
   "KeydexSettingsLayout.scrollEndAnchorID" \
   "persistenceID: \"keychain\"" \
   "persistenceID: \"shell-profiles\"" \
@@ -186,12 +186,12 @@ if ! awk '
   fail "SettingsToggleRow must keep left text and right-aligned hidden-label toggle controls"
 fi
 
-if ! rg --quiet --fixed-strings "static let scrollContentBottomPadding: CGFloat = 28" "$design_source"; then
-  fail "Settings scroll content must keep direct bottom padding after the last section"
+if ! rg --quiet --fixed-strings "static let scrollBottomInset: CGFloat = 160" "$design_source"; then
+  fail "Settings scroll content must reserve visible bottom breathing room"
 fi
 
-if ! rg --quiet --fixed-strings "static let scrollEndSpacerHeight: CGFloat = 120" "$design_source"; then
-  fail "Settings scroll content must reserve visible scroll-end breathing room"
+if ! rg --quiet --fixed-strings "static let scrollEndAnchorHeight: CGFloat = 1" "$design_source"; then
+  fail "Settings scroll target must use a tiny anchor instead of a second spacer"
 fi
 
 if ! rg --quiet --fixed-strings "static let panelHeight: CGFloat = 580" "$design_source"; then
@@ -203,11 +203,11 @@ if ! awk '
   /private struct EditableSettingsListSection/ { in_panel = 0 }
   in_panel && /ScrollViewReader/ { reader = 1 }
   in_panel && /scrollProxy\.scrollTo\(KeydexSettingsLayout\.scrollEndAnchorID, anchor: \.bottom\)/ { scroll_to = 1 }
-  in_panel && /\.padding\(\.bottom, KeydexSettingsLayout\.scrollContentBottomPadding\)/ { inset = 1 }
-  in_panel && /\.frame\(height: KeydexSettingsLayout\.scrollEndSpacerHeight\)/ { spacer = 1 }
-  END { exit(reader && scroll_to && inset && spacer ? 0 : 1) }
+  in_panel && /\.padding\(\.bottom, KeydexSettingsLayout\.scrollBottomInset\)/ { inset = 1 }
+  in_panel && /\.frame\(height: KeydexSettingsLayout\.scrollEndAnchorHeight\)/ { anchor = 1 }
+  END { exit(reader && scroll_to && inset && anchor ? 0 : 1) }
 ' "$settings_source"; then
-  fail "Settings scroll bottom reserve must be applied as visible scroll-end content inset"
+  fail "Settings scroll bottom reserve must be applied before the bottom scroll target"
 fi
 
 if ! awk '

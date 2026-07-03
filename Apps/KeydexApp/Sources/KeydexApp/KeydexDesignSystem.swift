@@ -123,8 +123,8 @@ enum KeydexSettingsLayout {
   static let iconActionColumnWidth: CGFloat = 28
   static let scrollContentHorizontalPadding: CGFloat = 24
   static let scrollContentTopPadding: CGFloat = 24
-  static let scrollContentBottomPadding: CGFloat = 28
-  static let scrollEndSpacerHeight: CGFloat = 120
+  static let scrollBottomInset: CGFloat = 160
+  static let scrollEndAnchorHeight: CGFloat = 1
   static let scrollEndAnchorID = "keydex.settings.scroll-end"
   static let groupedRowsHorizontalPadding: CGFloat = 12
   static let groupedRowsVerticalPadding: CGFloat = 10
