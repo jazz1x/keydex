@@ -108,6 +108,9 @@ and honest about risk.
   spacing, but labels must not wrap.
 - Settings toggle rows keep label copy left-aligned and place the switch control on
   the right edge of the row.
+- Settings editable rows use a 24 pt leading icon column, 10 pt control gap, and
+  shared 28 pt action column, so add and remove controls keep the same hit area,
+  baseline, and trailing alignment.
 - Native glass buttons use `.glass` or `.glassProminent` when available, with system
   button styles on older macOS versions.
 - Inventory cards are content-layer tiles. On macOS 26+, only the credential poster

@@ -274,11 +274,11 @@ private struct EditableSettingsListSection: View {
         SettingsDivider()
       }
 
-      HStack(alignment: .center, spacing: 10) {
+      HStack(alignment: .center, spacing: KeydexSettingsLayout.rowControlSpacing) {
         Image(systemName: "plus.circle.fill")
           .font(.body.weight(.semibold))
           .foregroundStyle(.secondary)
-          .frame(width: 24)
+          .frame(width: KeydexSettingsLayout.rowIconWidth)
 
         TextField(textFieldLabel, text: $draftValue)
           .textFieldStyle(.plain)
@@ -286,16 +286,13 @@ private struct EditableSettingsListSection: View {
           .accessibilityIdentifier(draftFieldIdentifier)
           .accessibilityLabel(textFieldLabel)
 
-        Button {
+        SettingsIconActionButton(
+          title: addLabel,
+          systemImage: "plus",
+          accessibilityIdentifier: addButtonIdentifier
+        ) {
           addDraftValue()
-        } label: {
-          Label(addLabel, systemImage: "plus")
         }
-        .keydexGlassButton()
-        .labelStyle(.iconOnly)
-        .help(addLabel)
-        .accessibilityLabel(addLabel)
-        .accessibilityIdentifier(addButtonIdentifier)
         .disabled(trimmedDraftValue.isEmpty)
       }
       .padding(.vertical, 8)
@@ -339,11 +336,11 @@ private struct EditableTagListSection: View {
       }
 
       VStack(alignment: .leading, spacing: 6) {
-        HStack(alignment: .center, spacing: 10) {
+        HStack(alignment: .center, spacing: KeydexSettingsLayout.rowControlSpacing) {
           Image(systemName: "plus.circle.fill")
             .font(.body.weight(.semibold))
             .foregroundStyle(.secondary)
-            .frame(width: 24)
+            .frame(width: KeydexSettingsLayout.rowIconWidth)
 
           TextField("Tag name", text: $draftName)
             .textFieldStyle(.plain)
@@ -357,22 +354,19 @@ private struct EditableTagListSection: View {
             accessibilityLabel: "New tag color"
           )
 
-          Button {
+          SettingsIconActionButton(
+            title: "Add tag",
+            systemImage: "plus",
+            accessibilityIdentifier: "keydex.settings.add-tag"
+          ) {
             addDraftTag()
-          } label: {
-            Label("Add tag", systemImage: "plus")
           }
-          .keydexGlassButton()
-          .labelStyle(.iconOnly)
-          .help("Add tag")
-          .accessibilityLabel("Add tag")
-          .accessibilityIdentifier("keydex.settings.add-tag")
           .disabled(trimmedDraftName.isEmpty)
         }
 
-        HStack(spacing: 10) {
+        HStack(spacing: KeydexSettingsLayout.rowControlSpacing) {
           Color.clear
-            .frame(width: 24)
+            .frame(width: KeydexSettingsLayout.rowIconWidth)
             .accessibilityHidden(true)
 
           TextField("service|account, service|account", text: $draftAssignments)
@@ -455,17 +449,53 @@ private struct CredentialTagColorSwatchPicker: View {
   }
 }
 
+private struct SettingsIconActionButton: View {
+  @Environment(\.isEnabled) private var isEnabled
+
+  let title: String
+  let systemImage: String
+  let accessibilityIdentifier: String
+  let action: () -> Void
+
+  var body: some View {
+    Button(action: action) {
+      Label(title, systemImage: systemImage)
+        .labelStyle(.iconOnly)
+        .font(.system(size: 12, weight: .semibold))
+        .frame(
+          width: KeydexSettingsLayout.iconActionButtonSize,
+          height: KeydexSettingsLayout.iconActionButtonSize
+        )
+        .contentShape(Circle())
+    }
+    .buttonStyle(.plain)
+    .foregroundStyle(isEnabled ? Color.primary.opacity(0.72) : Color.secondary.opacity(0.42))
+    .background {
+      Circle()
+        .fill(Color.primary.opacity(isEnabled ? 0.040 : 0.020))
+    }
+    .overlay {
+      Circle()
+        .stroke(Color(nsColor: .separatorColor).opacity(isEnabled ? 0.24 : 0.12), lineWidth: 1)
+    }
+    .frame(width: KeydexSettingsLayout.iconActionColumnWidth, alignment: .center)
+    .help(title)
+    .accessibilityLabel(title)
+    .accessibilityIdentifier(accessibilityIdentifier)
+  }
+}
+
 private struct SettingsTagEditableRow: View {
   @Binding var tag: CredentialTagRow
   let removeAction: () -> Void
 
   var body: some View {
     VStack(alignment: .leading, spacing: 6) {
-      HStack(alignment: .center, spacing: 10) {
+      HStack(alignment: .center, spacing: KeydexSettingsLayout.rowControlSpacing) {
         Image(systemName: "tag.fill")
           .font(.body.weight(.medium))
           .foregroundStyle(tag.color.tint)
-          .frame(width: 24)
+          .frame(width: KeydexSettingsLayout.rowIconWidth)
 
         TextField("Tag name", text: $tag.name)
           .textFieldStyle(.plain)
@@ -479,21 +509,18 @@ private struct SettingsTagEditableRow: View {
           accessibilityLabel: "Tag color"
         )
 
-        Button {
+        SettingsIconActionButton(
+          title: "Remove tag",
+          systemImage: "minus",
+          accessibilityIdentifier: "keydex.settings.remove-tag"
+        ) {
           removeAction()
-        } label: {
-          Label("Remove tag", systemImage: "minus")
         }
-        .buttonStyle(.borderless)
-        .labelStyle(.iconOnly)
-        .help("Remove tag")
-        .accessibilityLabel("Remove tag")
-        .accessibilityIdentifier("keydex.settings.remove-tag")
       }
 
-      HStack(spacing: 10) {
+      HStack(spacing: KeydexSettingsLayout.rowControlSpacing) {
         Color.clear
-          .frame(width: 24)
+          .frame(width: KeydexSettingsLayout.rowIconWidth)
           .accessibilityHidden(true)
 
         TextField("service|account assignments", text: $tag.assignments)
@@ -674,11 +701,11 @@ private struct SettingsEditableRow: View {
   let removeAction: () -> Void
 
   var body: some View {
-    HStack(alignment: .center, spacing: 10) {
+    HStack(alignment: .center, spacing: KeydexSettingsLayout.rowControlSpacing) {
       Image(systemName: monospace ? "folder" : "line.3.horizontal.decrease.circle")
         .font(.body.weight(.medium))
         .foregroundStyle(.secondary)
-        .frame(width: 24)
+        .frame(width: KeydexSettingsLayout.rowIconWidth)
 
       TextField(textFieldLabel, text: $text)
         .textFieldStyle(.plain)
@@ -686,16 +713,13 @@ private struct SettingsEditableRow: View {
         .accessibilityIdentifier(valueFieldIdentifier)
         .accessibilityLabel(textFieldLabel)
 
-      Button {
+      SettingsIconActionButton(
+        title: removeLabel,
+        systemImage: "minus",
+        accessibilityIdentifier: removeButtonIdentifier
+      ) {
         removeAction()
-      } label: {
-        Label(removeLabel, systemImage: "minus")
       }
-      .buttonStyle(.borderless)
-      .labelStyle(.iconOnly)
-      .help(removeLabel)
-      .accessibilityLabel(removeLabel)
-      .accessibilityIdentifier(removeButtonIdentifier)
     }
     .padding(.vertical, 8)
   }
