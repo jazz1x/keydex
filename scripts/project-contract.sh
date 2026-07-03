@@ -238,6 +238,10 @@ expect_file_contains docs/LOOP-CONTRACT.md "actual SwiftPM target dependency gra
 expect_file_contains scripts/quality.sh "scripts/loop-contract.sh"
 expect_file_contains scripts/app-window-smoke.sh "stable on-screen window"
 expect_file_contains scripts/app-window-smoke.sh "KEYDEX_APP_WINDOW_PRESET=default"
+expect_file_contains scripts/app-window-smoke.sh "window_geometry()"
+expect_file_contains scripts/app-window-smoke.sh "previous_geometry"
+expect_file_contains scripts/app-window-smoke.sh 'wait "$app_pid"'
+expect_file_contains docs/SCREEN-VALIDATION.md "the window smoke treats geometry as the stability signal"
 expect_file_contains scripts/app-menubar-smoke.sh "menu bar 2"
 expect_file_contains scripts/app-menubar-smoke.sh "Open Keydex"
 expect_file_contains scripts/app-menubar-smoke.sh "Quit Keydex"

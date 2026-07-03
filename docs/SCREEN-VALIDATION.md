@@ -11,6 +11,8 @@ M4 and release candidates.
 The first local screen smoke is `scripts/app-window-smoke.sh`. It proves the app builds,
 launches, and publishes a stable default local window. It is not a replacement for the
 required screenshot and accessibility evidence below.
+Like the screenshot harness, the window smoke treats geometry as the stability signal and
+waits for the launched app process during cleanup.
 
 `scripts/app-screen-evidence.sh` is the local permissioned app-screen capture path for
 manual validation runs. It requires macOS Screen Recording permission and must be run
