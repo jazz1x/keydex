@@ -277,6 +277,8 @@ expect_file_contains scripts/app-accessibility-smoke.sh "maxAXReadinessAttempts"
 expect_file_contains scripts/app-accessibility-smoke.sh "expect_dump_not_contains"
 expect_file_contains scripts/app-accessibility-smoke.sh 'source "$script_dir/app-evidence-scenarios.sh"'
 expect_file_contains scripts/app-accessibility-smoke.sh "keydex_evidence_window_preset"
+expect_file_contains scripts/app-accessibility-smoke.sh "keydex_evidence_settings_scroll_target"
+expect_file_contains scripts/app-accessibility-smoke.sh "KEYDEX_APP_SETTINGS_SCROLL_TARGET"
 expect_file_contains scripts/app-accessibility-smoke.sh "accessibility_smoke_start"
 expect_file_contains scripts/app-accessibility-smoke.sh "accessibility_smoke_pid"
 expect_file_contains scripts/app-accessibility-smoke.sh "accessibility_smoke_checked"

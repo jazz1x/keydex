@@ -166,6 +166,14 @@ if [[ "$accessibility_smoke_scenarios" != "$expected_scenarios" ]]; then
   fail "$accessibility_smoke_script scenarios drifted from KEYDEX_EVIDENCE_SCENARIOS"
 fi
 
+for needle in \
+  "keydex_evidence_settings_scroll_target" \
+  "KEYDEX_APP_SETTINGS_SCROLL_TARGET"; do
+  if ! rg --fixed-strings --quiet -- "$needle" "$accessibility_smoke_script"; then
+    fail "$accessibility_smoke_script must use shared settings scroll target scenario wiring"
+  fi
+done
+
 while IFS= read -r scenario; do
   keydex_is_evidence_scenario "$scenario" ||
     fail "$accessibility_smoke_script references unsupported evidence scenario: $scenario"

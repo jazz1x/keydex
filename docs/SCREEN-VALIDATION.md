@@ -57,6 +57,9 @@ subsections, and compact window sizing. It requires macOS accessibility trust fo
 host process and is not a substitute for VoiceOver review notes. Runtime accessibility
 smoke scenarios must exactly match `scripts/app-evidence-scenarios.sh`, so added, renamed,
 or removed screen states fail the shared scenario contract instead of silently drifting.
+The smoke also uses the same scenario inventory mode, window preset, and settings scroll
+target as screen evidence, so `settings-rules` is tested in its scrolled-end state in
+both visual and AX runs.
 When settings is open, the same smoke asserts toolbar controls behind the modal sheet
 are not exposed in the accessibility tree.
 AX window publication is asynchronous after app launch, so the smoke uses bounded polling
