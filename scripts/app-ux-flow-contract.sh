@@ -50,13 +50,14 @@ for needle in \
   "Doctor rail" \
   "action-button contract" \
   "Review next entry point" \
-  "global Register Keychain action stays in the toolbar" \
-  "Custom artwork import only ships with a persisted asset store" \
-  "Artwork actions stay near credential identity" \
-  "Custom artwork rendering uses the Shell-owned artwork root" \
-  "Tag and label color management uses swatches" \
-  "Settings overlay" \
-  "labels on the left and controls on the right" \
+	  "global Register Keychain action stays in the toolbar" \
+	  "Custom artwork import only ships with a persisted asset store" \
+	  "Artwork actions stay near credential identity" \
+	  "Custom artwork rendering uses the Shell-owned artwork root" \
+	  "Tag and label color management uses swatches" \
+	  "Tag chips keep color in a small swatch inside a neutral shell" \
+	  "Settings overlay" \
+	  "labels on the left and controls on the right" \
   "Escape" \
   "pending manual accessibility checks"; do
   expect_file_contains "$ux_doc" "$needle"
@@ -260,6 +261,26 @@ if awk '
   END { exit found ? 0 : 1 }
 ' "$inventory_source"; then
   fail "Artwork actions must stay out of tag management"
+fi
+
+if ! awk '
+  /private struct CredentialTagChip/ { in_chip = 1 }
+  /struct CredentialInspectorPanel/ { in_chip = 0 }
+  in_chip && /Circle\(\)/ { swatch = 1 }
+  in_chip && /KeydexGlassTone\.metadataChipFill/ { neutral_fill = 1 }
+  in_chip && /Color\(nsColor: \.separatorColor\)\.opacity\(0\.22\)/ { neutral_stroke = 1 }
+  END { exit(swatch && neutral_fill && neutral_stroke ? 0 : 1) }
+' "$inventory_source"; then
+  fail "Tag chips must render label color as a small swatch inside a neutral shell"
+fi
+
+if awk '
+  /private struct CredentialTagChip/ { in_chip = 1 }
+  /struct CredentialInspectorPanel/ { in_chip = 0 }
+  in_chip && /tag\.color\.tint\.opacity\(KeydexGlassTone\.metadataChip(Fill|Stroke)Alpha\)/ { found = 1 }
+  END { exit found ? 0 : 1 }
+' "$inventory_source"; then
+  fail "Tag chips must not use tag color as the full capsule fill or stroke"
 fi
 
 if awk '

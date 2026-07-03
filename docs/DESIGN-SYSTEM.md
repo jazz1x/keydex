@@ -133,6 +133,9 @@ and honest about risk.
 - Repeated inventory cards follow a single poster frame only contract. Card mode
   has no repeated capsule badge strip below each poster; account, canonical state,
   and Keychain status compress into one plain caption below the title.
+- Tag chips use a small color swatch inside a neutral metadata shell. Full colored
+  capsule strokes are reserved away from label metadata because they can read like
+  keyboard focus after opening card detail.
 - Clicking an inventory card opens a Music-like credential detail page inside the
   content pane: back-to-library affordance, large poster artwork, compact action
   cluster, status chip, and source rows that read like a playlist track list. Card

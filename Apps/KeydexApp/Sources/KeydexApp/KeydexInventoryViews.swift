@@ -670,21 +670,24 @@ private struct CredentialTagChip: View {
   var compact = false
 
   var body: some View {
-    Label(tag.name, systemImage: "tag.fill")
-      .font(compact ? .caption2.weight(.medium) : .caption.weight(.medium))
-      .labelStyle(.titleAndIcon)
-      .foregroundStyle(tag.color.tint)
-      .lineLimit(1)
-      .padding(.horizontal, compact ? 6 : 8)
-      .padding(.vertical, compact ? 3 : 4)
-      .background(tag.color.tint.opacity(KeydexGlassTone.metadataChipFillAlpha), in: Capsule())
-      .overlay {
-        Capsule()
-          .stroke(
-            tag.color.tint.opacity(KeydexGlassTone.metadataChipStrokeAlpha),
-            lineWidth: 1
-          )
-      }
+    HStack(spacing: compact ? 4 : 6) {
+      Circle()
+        .fill(tag.color.tint)
+        .frame(width: compact ? 6 : 7, height: compact ? 6 : 7)
+        .accessibilityHidden(true)
+
+      Text(tag.name)
+        .lineLimit(1)
+    }
+    .font(compact ? .caption2.weight(.medium) : .caption.weight(.medium))
+    .foregroundStyle(.primary)
+    .padding(.horizontal, compact ? 6 : 8)
+    .padding(.vertical, compact ? 3 : 4)
+    .background(KeydexGlassTone.metadataChipFill, in: Capsule())
+    .overlay {
+      Capsule()
+        .stroke(Color(nsColor: .separatorColor).opacity(0.22), lineWidth: 1)
+    }
   }
 }
 
