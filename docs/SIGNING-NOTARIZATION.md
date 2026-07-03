@@ -28,8 +28,10 @@ Before attempting the signing flow, run:
 make release-signing-readiness
 ```
 
-This command only checks local prerequisites. It does not submit artifacts, read secret
-values, or replace the signing and notarization evidence below.
+This command checks only non-secret local prerequisites: a Developer ID Application
+identity plus the Apple `notarytool` and `stapler` commands. It does not submit
+artifacts, validate the `keydex-notary` credential profile, read secret values, or replace
+the signing and notarization evidence below.
 
 Create a local evidence shell before filling final release evidence:
 
