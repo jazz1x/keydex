@@ -61,6 +61,9 @@ When settings is open, the same smoke asserts toolbar controls behind the modal 
 are not exposed in the accessibility tree.
 AX window publication is asynchronous after app launch, so the smoke uses bounded polling
 only to wait for the first readable window tree; missing windows still fail.
+The smoke prints scenario start, launched process id, and checked needle counts before
+each pass line so local AX or app-process crashes point to the failing scenario instead of
+ending as an undifferentiated shell exit.
 
 Manual accessibility evidence is reviewed with
 `scripts/app-accessibility-evidence-review.sh`. It verifies local manifests and notes in
