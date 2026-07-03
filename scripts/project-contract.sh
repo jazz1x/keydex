@@ -174,7 +174,16 @@ expect_file_contains .pre-commit-config.yaml "keydex-guard"
 expect_file_contains .pre-commit-config.yaml "keydex-quality"
 expect_file_contains .pre-commit-config.yaml "gitleaks"
 expect_file_contains .github/workflows/guard.yml "name: release-smoke"
-expect_file_contains .github/branch-protection-main.json "\"release-smoke\""
+for branch_gate in "\"guard\"" "\"quality\"" "\"release-smoke\"" "\"gitleaks\"" "\"trivy\""; do
+  expect_file_contains .github/branch-protection-main.json "$branch_gate"
+done
+expect_file_contains .github/branch-protection-main.json '"strict": true'
+expect_file_contains .github/branch-protection-main.json '"enforce_admins": true'
+expect_file_contains .github/branch-protection-main.json '"required_linear_history": true'
+expect_file_contains .github/branch-protection-main.json '"allow_force_pushes": false'
+expect_file_contains .github/branch-protection-main.json '"allow_deletions": false'
+expect_file_contains .github/branch-protection-main.json '"required_conversation_resolution": true'
+expect_file_contains .github/branch-protection-main.json '"allow_fork_syncing": false'
 expect_file_contains docs/VERIFICATION.md "planning pack"
 expect_file_contains docs/VERIFICATION.md "SWIFT-STYLE.md"
 expect_file_contains docs/VERIFICATION.md "Loop Contract"
