@@ -109,7 +109,7 @@ enum KeydexSidebarLayout {
 
 enum KeydexSettingsLayout {
   static let panelWidth: CGFloat = 720
-  static let panelHeight: CGFloat = 520
+  static let panelHeight: CGFloat = 580
   static let panelCornerRadius: CGFloat = 14
   static let groupedRowsCornerRadius: CGFloat = 10
   static let glassContainerSpacing: CGFloat = 18
@@ -121,7 +121,7 @@ enum KeydexSettingsLayout {
   static let tagColorPickerWidth: CGFloat = 184
   static let iconActionButtonSize: CGFloat = 28
   static let iconActionColumnWidth: CGFloat = 28
-  static let scrollBottomInset: CGFloat = 56
+  static let scrollBottomInset: CGFloat = 80
 }
 
 private struct KeydexGlassButtonModifier: ViewModifier {
