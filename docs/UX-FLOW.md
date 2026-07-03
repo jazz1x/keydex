@@ -44,6 +44,8 @@ uncertainty to the next concrete action without making them decode implementatio
 - Settings rows keep labels on the left and controls on the right so scanning and toggling
   do not fight each other.
 - Tag and label color management uses swatches, not text-only color menus.
+- Tag chips keep color in a small swatch inside a neutral shell, so opening card detail
+  does not create a blue focus-ring look around label metadata.
 - Escape and an icon close affordance must dismiss settings.
 - The Doctor rail is a repair queue, not a warning decoration. It must show severity,
   count, cause, action, and a Review next entry point into the first issue.
