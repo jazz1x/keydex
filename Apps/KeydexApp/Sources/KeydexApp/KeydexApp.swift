@@ -256,6 +256,7 @@ struct CredentialInventoryShellView: View {
           inventoryMode: $inventoryMode,
           displayMode: $settingsConfig.displayMode
         )
+        .keydexDisabledBehindSettings(isShowingSettings)
       }
 
       ToolbarItem(placement: .primaryAction) {
@@ -269,6 +270,7 @@ struct CredentialInventoryShellView: View {
         .help("Add or manage Keychain references")
         .accessibilityIdentifier("keydex.toolbar.register-keychain")
         .accessibilityLabel("Register Keychain reference")
+        .keydexDisabledBehindSettings(isShowingSettings)
       }
 
       ToolbarItem(placement: .primaryAction) {
@@ -281,6 +283,7 @@ struct CredentialInventoryShellView: View {
         .accessibilityIdentifier("keydex.toolbar.settings")
         .accessibilityLabel("Open settings")
         .keydexGlassButton()
+        .keydexDisabledBehindSettings(isShowingSettings)
       }
     }
     .onChange(of: inventoryMode) { _, _ in
@@ -463,5 +466,22 @@ struct CredentialInventoryShellView: View {
     return settingsConfig.tags.filter { tag in
       tag.matchesCredentialID(credentialID)
     }
+  }
+}
+
+private struct KeydexSettingsModalToolbarBlocker: ViewModifier {
+  let isShowingSettings: Bool
+
+  func body(content: Content) -> some View {
+    content
+      .disabled(isShowingSettings)
+      .allowsHitTesting(!isShowingSettings)
+      .accessibilityHidden(isShowingSettings)
+  }
+}
+
+extension View {
+  fileprivate func keydexDisabledBehindSettings(_ isShowingSettings: Bool) -> some View {
+    modifier(KeydexSettingsModalToolbarBlocker(isShowingSettings: isShowingSettings))
   }
 }

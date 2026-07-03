@@ -9,6 +9,7 @@ fail() {
 command -v rg >/dev/null 2>&1 || fail "missing dependency: rg (ripgrep)"
 
 app_sources="Apps/KeydexApp/Sources/KeydexApp"
+app_shell_source="$app_sources/KeydexApp.swift"
 inventory_source="$app_sources/KeydexInventoryViews.swift"
 design_source="$app_sources/KeydexDesignSystem.swift"
 settings_source="$app_sources/KeydexSettingsViews.swift"
@@ -56,8 +57,9 @@ for needle in \
 	  "Custom artwork rendering uses the Shell-owned artwork root" \
 	  "Tag and label color management uses swatches" \
 	  "Tag chips keep color in a small swatch inside a neutral shell" \
-	  "Settings overlay" \
-	  "labels on the left and controls on the right" \
+  "Settings overlay" \
+  "labels on the left and controls on the right" \
+  "toolbar controls behind it are visible context" \
   "Escape" \
   "pending manual accessibility checks"; do
   expect_file_contains "$ux_doc" "$needle"
@@ -123,6 +125,9 @@ for needle in \
   "KeydexSettingsLayout.tagColorPickerWidth" \
   "KeydexSettingsLayout.tagColorSwatchSize" \
   "KeydexSettingsLayout.tagColorSwatchSpacing" \
+  "KeydexSettingsModalToolbarBlocker" \
+  ".keydexDisabledBehindSettings(isShowingSettings)" \
+  ".allowsHitTesting(!isShowingSettings)" \
   "keydex.settings.close" \
   "Close settings" \
   ".keyboardShortcut(.escape, modifiers: [])" \
@@ -156,6 +161,17 @@ if ! awk '
   END { exit(leading && toggle && hidden && trailing ? 0 : 1) }
 ' "$settings_source"; then
   fail "SettingsToggleRow must keep left text and right-aligned hidden-label toggle controls"
+fi
+
+if ! awk '
+  /\.keydexDisabledBehindSettings\(isShowingSettings\)/ { count++ }
+  /private struct KeydexSettingsModalToolbarBlocker/ { blocker = 1 }
+  /\.disabled\(isShowingSettings\)/ { disabled = 1 }
+  /\.allowsHitTesting\(!isShowingSettings\)/ { hit_test = 1 }
+  /\.accessibilityHidden\(isShowingSettings\)/ { accessibility = 1 }
+  END { exit(count >= 3 && blocker && disabled && hit_test && accessibility ? 0 : 1) }
+' "$app_shell_source"; then
+  fail "Settings modal must disable toolbar/header controls behind the visible overlay"
 fi
 
 if ! awk '
