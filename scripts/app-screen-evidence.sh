@@ -88,11 +88,17 @@ window_report() {
     import CoreGraphics
     import Foundation
 
-    let pid = Int(CommandLine.arguments[1])!
+    guard CommandLine.arguments.count >= 6,
+      let pid = Int(CommandLine.arguments[1]),
+      let expectedWidth = Int(CommandLine.arguments[4]),
+      let expectedHeight = Int(CommandLine.arguments[5])
+    else {
+      fputs("app screen evidence: invalid window-report arguments\n", stderr)
+      exit(2)
+    }
+
     let selector = CommandLine.arguments[2]
     let widthMode = CommandLine.arguments[3]
-    let expectedWidth = Int(CommandLine.arguments[4])!
-    let expectedHeight = Int(CommandLine.arguments[5])!
     let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID)
       as? [[String: Any]] ?? []
 

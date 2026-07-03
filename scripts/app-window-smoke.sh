@@ -19,7 +19,11 @@ window_report() {
     import CoreGraphics
     import Foundation
 
-    let pid = Int(CommandLine.arguments[1])!
+    guard let pid = Int(CommandLine.arguments[1]) else {
+      fputs("app window smoke: invalid pid argument\n", stderr)
+      exit(2)
+    }
+
     let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID)
       as? [[String: Any]] ?? []
     var selectedReport: String?
