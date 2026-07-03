@@ -56,6 +56,7 @@ incomplete until screen validation and accessibility evidence pass.
 | --- | --- | --- |
 | Product goal | `PRODUCT-PLAN.md` | Total goal questions have working CLI/UI answers. |
 | Feature behavior | `FEATURE-SPEC.md` | Acceptance criteria pass for each feature. |
+| Implementation convention | `SWIFT-STYLE.md` | Swift code follows typed failures, parse boundaries, and restrained abstraction rules. |
 | Functional validation | `VALIDATION-SCENARIOS.md` | Required scenarios pass. |
 | Screen validation | `SCREEN-VALIDATION.md` | Screenshots and accessibility evidence pass. |
 | Release validation | `RELEASE-READINESS.md`, `RELEASE-CANDIDATE.md`, `SIGNING-NOTARIZATION.md` | Release candidate checklist is complete. |
