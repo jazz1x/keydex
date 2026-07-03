@@ -131,8 +131,8 @@ for needle in \
   "KeydexSettingsLayout.tagColorPickerWidth" \
   "KeydexSettingsLayout.tagColorSwatchSize" \
   "KeydexSettingsLayout.tagColorSwatchSpacing" \
-  "KeydexSettingsLayout.scrollBottomInset" \
-  "KeydexSettingsLayout.scrollEndAnchorHeight" \
+  "KeydexSettingsLayout.scrollContentBottomPadding" \
+  "KeydexSettingsLayout.scrollEndSpacerHeight" \
   "KeydexSettingsLayout.scrollEndAnchorID" \
   "persistenceID: \"keychain\"" \
   "persistenceID: \"shell-profiles\"" \
@@ -186,8 +186,12 @@ if ! awk '
   fail "SettingsToggleRow must keep left text and right-aligned hidden-label toggle controls"
 fi
 
-if ! rg --quiet --fixed-strings "static let scrollBottomInset: CGFloat = 128" "$design_source"; then
-  fail "Settings scroll content must reserve bottom breathing room"
+if ! rg --quiet --fixed-strings "static let scrollContentBottomPadding: CGFloat = 28" "$design_source"; then
+  fail "Settings scroll content must keep direct bottom padding after the last section"
+fi
+
+if ! rg --quiet --fixed-strings "static let scrollEndSpacerHeight: CGFloat = 120" "$design_source"; then
+  fail "Settings scroll content must reserve visible scroll-end breathing room"
 fi
 
 if ! rg --quiet --fixed-strings "static let panelHeight: CGFloat = 580" "$design_source"; then
@@ -199,9 +203,9 @@ if ! awk '
   /private struct EditableSettingsListSection/ { in_panel = 0 }
   in_panel && /ScrollViewReader/ { reader = 1 }
   in_panel && /scrollProxy\.scrollTo\(KeydexSettingsLayout\.scrollEndAnchorID, anchor: \.bottom\)/ { scroll_to = 1 }
-  in_panel && /\.padding\(\.bottom, KeydexSettingsLayout\.scrollBottomInset\)/ { inset = 1 }
-  in_panel && /\.frame\(height: KeydexSettingsLayout\.scrollEndAnchorHeight\)/ { anchor = 1 }
-  END { exit(reader && scroll_to && inset && anchor ? 0 : 1) }
+  in_panel && /\.padding\(\.bottom, KeydexSettingsLayout\.scrollContentBottomPadding\)/ { inset = 1 }
+  in_panel && /\.frame\(height: KeydexSettingsLayout\.scrollEndSpacerHeight\)/ { spacer = 1 }
+  END { exit(reader && scroll_to && inset && spacer ? 0 : 1) }
 ' "$settings_source"; then
   fail "Settings scroll bottom reserve must be applied as visible scroll-end content inset"
 fi
