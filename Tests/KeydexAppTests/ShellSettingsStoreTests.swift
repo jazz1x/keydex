@@ -8,6 +8,7 @@ func shellSettingsStoreSavesAndLoadsConfig() throws {
   var config = sampleSettingsData(displayMode: .list)
   config.keychainAccess = false
   config.requestPrompt = true
+  config.scanSources[2].enabled = true
   config.tags = [
     CredentialTagRow(
       id: try #require(UUID(uuidString: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")),
@@ -18,10 +19,15 @@ func shellSettingsStoreSavesAndLoadsConfig() throws {
   ]
 
   try requireSuccess(ShellSettingsStore(rootURL: rootURL).save(config))
+  let manifest = try String(contentsOf: settingsManifestURL(rootURL: rootURL), encoding: .utf8)
   let loaded = ShellSettingsStore(rootURL: rootURL).load(defaults: sampleSettingsData())
 
   #expect(loaded.issueMessage == nil)
   #expect(loaded.config == config)
+  #expect(manifest.contains("scanSourceEnabledByID"))
+  #expect(manifest.contains("environment-variables"))
+  #expect(manifest.contains("Environment variables") == false)
+  #expect(manifest.contains("Enumerate non-secret environment values") == false)
 }
 
 @Test
@@ -42,7 +48,7 @@ func shellSettingsStoreSurfacesUnreadableManifestAsIssue() throws {
   let defaults = sampleSettingsData(displayMode: .cards)
   try FileManager.default.createDirectory(at: rootURL, withIntermediateDirectories: true)
   try "{".write(
-    to: rootURL.appendingPathComponent("settings.json", isDirectory: false),
+    to: settingsManifestURL(rootURL: rootURL),
     atomically: true,
     encoding: .utf8
   )
@@ -56,10 +62,21 @@ func shellSettingsStoreSurfacesUnreadableManifestAsIssue() throws {
   )
 }
 
+@Test
+func sampleSettingsDataUsesUniqueScanSourcePersistenceIDs() {
+  let scanSourceIDs = sampleSettingsData().scanSources.map(\.persistenceID)
+
+  #expect(Set(scanSourceIDs).count == scanSourceIDs.count)
+}
+
 private func temporarySettingsRoot() -> URL {
   FileManager.default.temporaryDirectory
     .appendingPathComponent(UUID().uuidString, isDirectory: true)
     .appendingPathComponent("Settings", isDirectory: true)
+}
+
+private func settingsManifestURL(rootURL: URL) -> URL {
+  rootURL.appendingPathComponent("settings.json", isDirectory: false)
 }
 
 private func requireSuccess<T>(

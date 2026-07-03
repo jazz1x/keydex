@@ -58,7 +58,8 @@ for needle in \
   "Settings edits persist as local metadata" \
   "Tag and label color management uses swatches" \
   "Tag chips keep color in a small swatch inside a neutral shell" \
-  "56 pt bottom reserve" \
+  "720 x 580 pt sheet" \
+  "80 pt bottom reserve" \
   "Settings overlay" \
   "labels on the left and controls on the right" \
   "toolbar controls behind it are visible context" \
@@ -129,6 +130,10 @@ for needle in \
   "KeydexSettingsLayout.tagColorSwatchSize" \
   "KeydexSettingsLayout.tagColorSwatchSpacing" \
   "KeydexSettingsLayout.scrollBottomInset" \
+  "persistenceID: \"keychain\"" \
+  "persistenceID: \"shell-profiles\"" \
+  "persistenceID: \"environment-variables\"" \
+  "persistenceID: \"config-files\"" \
   "KeydexSettingsModalToolbarBlocker" \
   "KeydexSettingsModalContentBlocker" \
   ".keydexContentDisabledBehindSettings(isShowingSettings)" \
@@ -172,8 +177,12 @@ if ! awk '
   fail "SettingsToggleRow must keep left text and right-aligned hidden-label toggle controls"
 fi
 
-if ! rg --quiet --fixed-strings "static let scrollBottomInset: CGFloat = 56" "$design_source"; then
+if ! rg --quiet --fixed-strings "static let scrollBottomInset: CGFloat = 80" "$design_source"; then
   fail "Settings scroll content must reserve bottom breathing room"
+fi
+
+if ! rg --quiet --fixed-strings "static let panelHeight: CGFloat = 580" "$design_source"; then
+  fail "Settings panel height must leave room for long editable sections"
 fi
 
 if ! awk '
