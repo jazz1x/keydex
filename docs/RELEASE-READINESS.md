@@ -55,7 +55,7 @@ local evidence shell, fill the notes and manifest with the actual commands/resul
 run `make release-signing-evidence-review`. The review gate checks exact manifest
 key-value lines for the current Git SHA, dirty state, expected app and DMG paths,
 Developer ID app signing, stapled notarization validation, signed DMG checksum,
-and non-template review audit values.
+non-template reviewer, and UTC ISO-8601 review timestamp.
 
 ## Release Candidate Checklist
 

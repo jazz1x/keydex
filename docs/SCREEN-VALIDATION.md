@@ -184,7 +184,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Runtime accessibility smoke | `make app-accessibility-smoke` | Running app exposes every supported scenario through AX, including card, list, settings, and compact-window surfaces, while settings hides toolbar controls behind the modal sheet from AX. |
 | Accessibility evidence template | `make app-accessibility-evidence-template` | Creates pending local manifest and notes files for every required scenario. |
 | Accessibility evidence status | `make app-accessibility-evidence-status` | Lists per-scenario pending/pass fields for current local accessibility evidence while requiring notes plus `reviewed_at` and `reviewer` audit keys without turning pending evidence into pass. |
-| Accessibility evidence review | `make app-accessibility-evidence-review` | Verifies local VoiceOver, keyboard, state-label, and dynamic type notes for required scenarios with exact manifest key-value matching for SHA, dirty state, scenario, pass fields, notes path, and non-template review audit values. |
+| Accessibility evidence review | `make app-accessibility-evidence-review` | Verifies local VoiceOver, keyboard, state-label, and dynamic type notes for required scenarios with exact manifest key-value matching for SHA, dirty state, scenario, pass fields, notes path, non-template reviewer, and UTC ISO-8601 review timestamp. |
 | App design contract | `scripts/app-design-contract.sh` | Native Mac utility structure, graph repair surfaces, and anti-theater rules remain wired. |
 | Doctor shell | App source uses `CredentialDoctor().inspect(graph)` | The repair queue surface is graph-derived. |
 | Search shell | App source filters `CredentialProjection` rows | Search narrows graph projections without separate list truth. |
@@ -218,7 +218,7 @@ For each required script scenario, create
 - `state_not_color_only=pass`
 - `dynamic_type=pass`
 - `notes=tmp/accessibility-evidence/<scenario>.md`
-- `reviewed_at=<ISO-8601 timestamp>`
+- `reviewed_at=<UTC ISO-8601 timestamp, e.g. 2026-07-03T12:34:56Z>`
 - `reviewer=<name or handle>`
 
 The paired notes file must start with `# Accessibility Evidence: <scenario>` and cover

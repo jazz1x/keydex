@@ -69,6 +69,18 @@ expect_manifest_review_value() {
     fail "$path still has template review audit value: $key=$template_value"
 }
 
+expect_manifest_review_timestamp() {
+  local path="$1"
+  local key="$2"
+  local value
+
+  expect_manifest_review_value "$path" "$key" "<ISO-8601 timestamp>"
+  value="$(manifest_value "$path" "$key")" ||
+    fail "$path is missing expected manifest key: $key"
+  [[ "$value" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$ ]] ||
+    fail "$path has non-UTC ISO-8601 review timestamp: $key=$value"
+}
+
 evidence_dir="${KEYDEX_RELEASE_SIGNING_EVIDENCE_DIR:-tmp/release-signing-evidence}"
 head_sha="$(git rev-parse --short HEAD)"
 head_dirty="$(git_dirty_state)"
@@ -94,7 +106,7 @@ expect_manifest_value "$manifest_path" stapler_validate pass
 expect_manifest_value "$manifest_path" signed_dmg_checksum pass
 expect_manifest_value "$manifest_path" release_candidate_updated pass
 expect_manifest_value "$manifest_path" notes "$notes_path"
-expect_manifest_review_value "$manifest_path" reviewed_at "<ISO-8601 timestamp>"
+expect_manifest_review_timestamp "$manifest_path" reviewed_at
 expect_manifest_review_value "$manifest_path" reviewer "<name or handle>"
 
 expect_file_contains "$notes_path" "# Release Signing Evidence"
