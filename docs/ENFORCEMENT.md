@@ -26,6 +26,7 @@ Keydex uses three enforcement layers.
 | App accessibility labels stay stable | `scripts/app-accessibility-contract.sh` |
 | App runtime accessibility smoke stays tied to supported scenarios | `scripts/app-evidence-scenarios-contract.sh` plus `scripts/app-accessibility-smoke.sh` |
 | Evidence status stays explicit | `make evidence-status` distinguishes `pass`, `pending`, `blocked`, and `needs-attention` without turning manual blockers into false passes. |
+| Dependent evidence follows readiness | `make evidence-status` reports signing evidence as `blocked` while signing readiness is not `pass`, so stale signing manifests do not hide the missing Developer ID prerequisite. |
 | Planning pack stays present | `scripts/project-contract.sh` |
 | Graph workflow stays visible | `scripts/project-contract.sh` |
 | UI does not invent state | review |
