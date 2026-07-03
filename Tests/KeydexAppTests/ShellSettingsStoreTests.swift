@@ -97,6 +97,14 @@ func sampleSettingsDataUsesUniqueScanSourcePersistenceIDs() {
   #expect(Set(scanSourceIDs).count == scanSourceIDs.count)
 }
 
+@Test
+func settingsScrollTargetRawValuesAreStableEvidenceLabels() {
+  #expect(SettingsScrollTarget.top.rawValue == "top")
+  #expect(SettingsScrollTarget.bottom.rawValue == "bottom")
+  #expect(SettingsScrollTarget.supportedValues == "top, bottom")
+  #expect(SettingsScrollTarget(rawValue: "unknown") == nil)
+}
+
 private func temporarySettingsRoot() -> URL {
   FileManager.default.temporaryDirectory
     .appendingPathComponent(UUID().uuidString, isDirectory: true)

@@ -911,9 +911,13 @@ enum SettingsSection: String, CaseIterable, Identifiable {
   }
 }
 
-enum SettingsScrollTarget {
+enum SettingsScrollTarget: String, CaseIterable {
   case top
   case bottom
+
+  static var supportedValues: String {
+    allCases.map(\.rawValue).joined(separator: ", ")
+  }
 }
 
 func sampleSettingsData(displayMode: InventoryDisplayMode = .cards) -> ShellSettingsConfig {

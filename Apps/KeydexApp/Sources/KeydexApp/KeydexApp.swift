@@ -151,9 +151,18 @@ struct CredentialInventoryShellView: View {
   }
 
   private static func settingsScrollTargetFromEnvironment() -> SettingsScrollTarget {
-    ProcessInfo.processInfo.environment["KEYDEX_APP_SETTINGS_SCROLL_TARGET"] == "bottom"
-      ? .bottom
-      : .top
+    guard let rawTarget = ProcessInfo.processInfo.environment["KEYDEX_APP_SETTINGS_SCROLL_TARGET"]
+    else {
+      return .top
+    }
+
+    guard let target = SettingsScrollTarget(rawValue: rawTarget) else {
+      preconditionFailure(
+        "Unsupported KEYDEX_APP_SETTINGS_SCROLL_TARGET value: \(rawTarget). Expected one of: \(SettingsScrollTarget.supportedValues)."
+      )
+    }
+
+    return target
   }
 
   private var graph: InventoryGraph {
