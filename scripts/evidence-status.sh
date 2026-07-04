@@ -192,6 +192,20 @@ release_signing_evidence_is_current_pending() {
   [[ "$pending_found" == true ]]
 }
 
+release_signing_readiness_summary() {
+  local output="$1"
+  local key
+  local value
+
+  for key in developer_id_identity notarytool stapler; do
+    value="$(
+      printf '%s\n' "$output" |
+        awk -F= -v key="$key" '$1 == key { print $2; found = 1 } END { exit(found ? 0 : 1) }'
+    )" || return 1
+    printf 'release_signing_readiness_%s=%s\n' "$key" "$value"
+  done
+}
+
 print_review_result() {
   local label="$1"
   local state="$2"
@@ -245,6 +259,7 @@ run_review() {
         "missing Apple notarytool" \
         "missing Apple stapler"; then
         print_review_result "$label" blocked "$reason"
+        release_signing_readiness_summary "$output"
         return 0
       fi
       ;;

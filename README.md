@@ -232,7 +232,7 @@ Design rules live in docs and scripts rather than screenshots alone:
 | `make release-smoke` | Release payload, CLI smoke artifact, ad-hoc app signing, archive, checksum, and DMG verification. |
 | `make release-signing-readiness` | Developer ID / notarization readiness evidence. |
 | `make app-accessibility-evidence-status` | Per-scenario manual accessibility evidence progress without converting pending work into pass. |
-| `make evidence-status` | Current local evidence status, including pending manual accessibility counts and blocked Developer ID signing prerequisites. |
+| `make evidence-status` | Current local evidence status, including pending manual accessibility counts and blocked Developer ID signing prerequisite status. |
 | `pre-commit run --all-files` | Local hook suite before commit. |
 
 CI runs `guard`, `quality`, `release-smoke`, `gitleaks`, and `trivy`. The protected
