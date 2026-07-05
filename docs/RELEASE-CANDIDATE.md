@@ -8,10 +8,10 @@ release.
 
 | Field | Value |
 | --- | --- |
-| Channel | GitHub pre-release candidate. |
-| App artifact | Ad-hoc signed app bundle inside an unsigned DMG smoke artifact. |
+| Channel | GitHub pre-signing release. |
+| App artifact | Ad-hoc signed app bundle inside an unsigned DMG. |
 | CLI artifact | Release-mode Swift executable in the release-smoke archive. |
-| Public release status | Not publishable as a trusted Mac app yet. |
+| Public release status | Downloadable as a pre-signing artifact; not a trusted/signed Mac app yet. |
 
 ## Release Notes Draft
 
@@ -50,12 +50,13 @@ values.
 
 ### Known Limits
 
+- First release is an explicit pre-signing artifact.
 - App bundle uses ad-hoc signing only.
 - DMG is unsigned.
-- Developer ID signing is not complete.
-- Notarization is not complete.
+- Developer ID signing and notarization are deferred to a future release.
 - Local signing readiness is blocked when the `Developer ID Application` identity,
-  `notarytool`, or `stapler` prerequisite is unavailable.
+  `notarytool`, or `stapler` prerequisite is unavailable; this is a documented
+  prerequisite for a trusted public Mac app, not a bug.
 - Screen evidence is current locally with `make app-screen-evidence-review` passing for
   the required scenario set; it is not produced in CI.
 - Runtime `make app-accessibility-smoke` passes for the required scenario set.
@@ -67,12 +68,12 @@ values.
 
 | Blocker | Required Evidence |
 | --- | --- |
-| Developer ID signing | `codesign --verify` against the Developer ID signed app. |
-| Notarization | `xcrun notarytool` success and stapled ticket evidence from `SIGNING-NOTARIZATION.md`. |
-| Final DMG | Signed and notarized DMG or documented fallback decision. |
 | Release tag | Protected `main` tag and GitHub release notes. |
 | Screen proof | `make app-screen-evidence-review` passes for required screenshots. |
 | Accessibility proof | `make app-accessibility-evidence-review` passes after manual VoiceOver, keyboard, state-not-color-only, and dynamic type review. |
+| Developer ID signing | `codesign --verify` against the Developer ID signed app. *Deferred: first release is pre-signing.* |
+| Notarization | `xcrun notarytool` success and stapled ticket evidence from `SIGNING-NOTARIZATION.md`. *Deferred: first release is pre-signing.* |
+| Final DMG | Signed and notarized DMG. *Deferred: first release ships an unsigned DMG.* |
 
 ## Completion Rule
 
