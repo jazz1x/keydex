@@ -44,7 +44,8 @@ values.
 | Signing readiness | `make release-signing-readiness` before public app release. |
 | Signing evidence | `make release-signing-evidence-review` before claiming a trusted Mac app release. |
 | Required CI | `guard`, `quality`, `release-smoke`, `gitleaks`, `trivy`. |
-| Screen evidence | `scripts/app-screen-evidence.sh` local output plus `make app-screen-evidence-review` before app release. |
+| Screen evidence | `make app-screen-evidence-all` plus `make app-screen-evidence-review` are current for the required scenario set. |
+| Accessibility evidence | Source-level `make app-accessibility-contract` passes; runtime `make app-accessibility-smoke` and manual review (52 fields across 13 scenarios) remain pending on a permissioned Mac session. |
 | Security boundary | `gitleaks`, `trivy`, forbidden-pattern scan, release artifact inspection. |
 
 ### Known Limits
@@ -55,8 +56,10 @@ values.
 - Notarization is not complete.
 - Local signing readiness is blocked when the `Developer ID Application` identity,
   `notarytool`, or `stapler` prerequisite is unavailable.
-- Screen evidence remains local and manual, but the required manifest and screenshot set
-  is review-gated.
+- Screen evidence is current locally with `make app-screen-evidence-review` passing for
+  the required scenario set; it is not produced in CI.
+- Manual accessibility evidence is pending (52 fields across 13 scenarios); runtime
+  `make app-accessibility-smoke` requires macOS accessibility trust for the host.
 - Homebrew distribution is out of scope for the first release.
 
 ## Publish Blockers
@@ -67,7 +70,8 @@ values.
 | Notarization | `xcrun notarytool` success and stapled ticket evidence from `SIGNING-NOTARIZATION.md`. |
 | Final DMG | Signed and notarized DMG or documented fallback decision. |
 | Release tag | Protected `main` tag and GitHub release notes. |
-| Screen proof | Required screenshots, `make app-screen-evidence-review`, and accessibility notes from `SCREEN-VALIDATION.md`. |
+| Screen proof | `make app-screen-evidence-review` passes for required screenshots. |
+| Accessibility proof | `make app-accessibility-evidence-review` passes after manual VoiceOver, keyboard, state-not-color-only, and dynamic type review. |
 
 ## Completion Rule
 
