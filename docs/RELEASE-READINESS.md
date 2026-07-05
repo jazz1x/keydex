@@ -31,9 +31,9 @@ artifact.
 | Decision | Current Position |
 | --- | --- |
 | App Store | Out of scope for first release. |
-| Developer ID signing | Required before public Mac app release if feasible; ad-hoc signing is only a structure smoke. |
-| Notarization | Required before public Mac app release if feasible. |
-| DMG | Preferred user-facing app download format; unsigned DMG smoke is a pre-signing gate. |
+| Developer ID signing | Deferred for the first release; the first artifact is ad-hoc signed only. Developer ID signing is required before claiming a trusted public Mac app. |
+| Notarization | Deferred for the first release; required before a trusted public Mac app. |
+| DMG | Preferred user-facing app download format; the first release ships an unsigned DMG as a documented pre-signing artifact. |
 | Zip archive | Acceptable for early internal app builds. |
 | CLI install | GitHub release artifact first; Homebrew formula can come later. |
 
