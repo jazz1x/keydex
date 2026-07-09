@@ -1,5 +1,6 @@
 import AppKit
 import KeydexCore
+import KeydexMacRuntime
 import KeydexRuntime
 import SwiftUI
 
@@ -601,7 +602,7 @@ struct CredentialInventoryShellView: View {
   private func refreshRuntimeInventory(_ config: ShellSettingsConfig) async {
     isRefreshingRuntimeInventory = true
     do {
-      runtimeGraph = try await LocalInventoryGraphBuilder().graph(
+      runtimeGraph = try await MacLocalInventoryGraphBuilder().graph(
         for: runtimeRequest(from: config)
       )
       runtimeIssueMessage = nil

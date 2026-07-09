@@ -140,8 +140,8 @@ Rules:
 
 - `expiresAt` uses `YYYY-MM-DD`.
 - `notifyBeforeDays` requires `expiresAt` and must be zero or greater.
-- `locations[].kind = "keychain"` is reconciled against live Keychain only when
-  `--include-keychain` is passed.
+- `locations[].kind = "keychain"` is reconciled against live Keychain when
+  `--include-keychain` is passed in the CLI or Keychain access is enabled in the app.
 - Metadata stores references and state, never the secret value.
 
 ---

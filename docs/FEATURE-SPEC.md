@@ -44,7 +44,7 @@ stable acceptance criteria here before expanding scope.
 | Environment | Parse credential-like environment variable names. | Scanner emits observations and never stores values. |
 | Shell profile | Parse direct assignments and `export` assignments. | Scanner emits observations and never stores values. |
 | Config file | Parse supported config fixtures. | Future scanner emits observations and never stores values. |
-| Keychain | Read Keychain item references and metadata. | Scanner emits secure storage observations without secret values. |
+| Keychain | Read Keychain item references and metadata. | CLI and Mac app Local mode emit secure storage observations without secret values. |
 | Ignored source | Respect user ignore metadata. | Ignored source does not produce active finding. |
 
 ## Doctor
@@ -117,7 +117,7 @@ User language maps to graph truth:
 | Doctor panel | Show repair queue. | Findings grouped by severity and include cause/action. |
 | List/card display | Switch between list and card inventory layouts. | The selected mode and projection are preserved across sidebar selection changes. |
 | Settings | Show permissions, appearance, and scan paths. | User can manage local Keychain permission preference, Keychain references, light/dark appearance mode, scan sources, scan paths, expiry reminder policy, and ignored/unmanaged source rules. |
-| Local inventory source | Use settings-driven graph input for normal app runs. | `Local` mode reads enabled non-secret local sources through `KeydexRuntime`; sample and intentional empty data remain only for evidence or explicit selection, while first-launch Local empty copy guides the user to Settings and Refresh. |
+| Local inventory source | Use settings-driven graph input for normal app runs. | `Local` mode reads enabled non-secret local sources through `KeydexRuntime` and live Keychain references through `KeydexMacRuntime`; sample and intentional empty data remain only for evidence or explicit selection, while first-launch Local empty copy guides the user to Settings and Refresh. |
 
 ## Security
 

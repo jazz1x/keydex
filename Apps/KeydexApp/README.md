@@ -47,7 +47,8 @@ Notes:
   an empty dataset mode.
 - If Local has no indexed credentials yet, the empty state points to Settings and
   Refresh rather than describing the explicit empty evidence fixture.
-- It does not store secrets and does not access the live keychain.
+- It does not store secrets. When Keychain access is enabled, it reads live item
+  references only and omits secret values.
 - It now renders a native Doctor panel in the shell (`CredentialDoctor().inspect(graph)`) showing
   severity, credential, state, cause, and action for each detected issue.
 - It also exposes a toolbar search to filter graph-derived credential rows by service, account,
@@ -55,6 +56,6 @@ Notes:
 
 The toolbar includes a native segmented inventory source control that swaps between:
 
-- Local: settings-driven `InventoryGraph` from `LocalInventoryGraphBuilder`
+- Local: settings-driven `InventoryGraph` from `MacLocalInventoryGraphBuilder`
 - Sample: populated `InventoryGraph` produced by `sampleCredentialGraph()`
 - Empty: empty `InventoryGraph(records: [])`, producing no credentials and no doctor issues

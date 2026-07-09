@@ -101,7 +101,8 @@ struct SettingsPanel: View {
                   ) {
                     SettingsToggleRow(
                       title: "Enable keychain access",
-                      subtitle: "Include configured Keychain references in local inventory scans",
+                      subtitle:
+                        "Include configured and live Keychain references in local inventory scans",
                       systemImage: "lock.open",
                       isOn: $settings.keychainAccess,
                       accessibilityIdentifier: "keydex.settings.keychain-access"
