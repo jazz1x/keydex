@@ -212,6 +212,7 @@ struct SettingsPanel: View {
                     addButtonIdentifier: "keydex.settings.add-unmanaged-source",
                     removeButtonIdentifier: "keydex.settings.remove-unmanaged-source"
                   )
+                  SettingsReminderPolicySection(policy: $settings.expiryReminderPolicy)
                 }
               }
             }
@@ -243,7 +244,7 @@ struct SettingsPanel: View {
   }
 
   private var settingsSummary: String {
-    "\(settings.displayMode.title) · \(settings.tags.count) tags · \(settings.scanPaths.count) paths · \(settings.ignoredSources.count) ignored"
+    "\(settings.displayMode.title) · \(settings.tags.count) tags · \(settings.scanPaths.count) paths · \(settings.expiryReminderPolicy.defaultNotifyBeforeDays)d reminders"
   }
 
   private var keychainPermissionStatus: String {
@@ -252,6 +253,44 @@ struct SettingsPanel: View {
     }
 
     return "Disabled for inventory scan runs"
+  }
+}
+
+private struct SettingsReminderPolicySection: View {
+  @Binding var policy: ExpiryReminderPolicy
+
+  var body: some View {
+    SettingsGlassSection(
+      title: "Expiry Reminders",
+      subtitle: reminderSummary,
+      systemImage: "bell.badge"
+    ) {
+      SettingsToggleRow(
+        title: "Show due reminders",
+        subtitle: "Surface scheduled, due, and expired metadata reminders",
+        systemImage: "bell",
+        isOn: $policy.dueRemindersEnabled,
+        accessibilityIdentifier: "keydex.settings.expiry-reminders-enabled"
+      )
+
+      SettingsDivider()
+
+      SettingsStepperRow(
+        title: "Default reminder lead",
+        subtitle: "Suggested notifyBeforeDays for new expiry metadata",
+        systemImage: "calendar.badge.clock",
+        value: $policy.defaultNotifyBeforeDays,
+        range: 0...365,
+        step: 1,
+        unit: "days",
+        accessibilityIdentifier: "keydex.settings.expiry-notify-before-days"
+      )
+    }
+  }
+
+  private var reminderSummary: String {
+    let enabled = policy.dueRemindersEnabled ? "On" : "Off"
+    return "\(enabled) · \(policy.defaultNotifyBeforeDays)d default lead"
   }
 }
 
@@ -557,6 +596,54 @@ private struct SettingsTagEditableRow: View {
       }
     }
     .padding(.vertical, 8)
+  }
+}
+
+private struct SettingsStepperRow: View {
+  let title: String
+  let subtitle: String
+  let systemImage: String
+  @Binding var value: Int
+  let range: ClosedRange<Int>
+  let step: Int
+  let unit: String
+  let accessibilityIdentifier: String
+
+  var body: some View {
+    HStack(alignment: .center, spacing: 12) {
+      HStack(alignment: .top, spacing: 10) {
+        Image(systemName: systemImage)
+          .font(.body.weight(.medium))
+          .foregroundStyle(.secondary)
+          .frame(width: 24)
+
+        VStack(alignment: .leading, spacing: 3) {
+          Text(title)
+            .font(.body)
+          Text(subtitle)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
+        }
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
+
+      HStack(spacing: 8) {
+        Text("\(value) \(unit)")
+          .font(.body.monospacedDigit())
+          .foregroundStyle(.secondary)
+          .frame(width: 74, alignment: .trailing)
+
+        Stepper(title, value: $value, in: range, step: step)
+          .labelsHidden()
+      }
+      .frame(width: 142, alignment: .trailing)
+    }
+    .padding(.vertical, 8)
+    .help(subtitle)
+    .accessibilityIdentifier(accessibilityIdentifier)
+    .accessibilityLabel(title)
+    .accessibilityValue("\(value) \(unit)")
   }
 }
 

@@ -60,6 +60,8 @@ for identifier in \
   keydex.settings.tag.draft-color \
   keydex.settings.add-tag \
   keydex.settings.remove-tag \
+  keydex.settings.expiry-reminders-enabled \
+  keydex.settings.expiry-notify-before-days \
   keydex.settings.add-ignored-source \
   keydex.settings.add-unmanaged-source; do
   expect_file_contains "$app_sources" "$identifier"
@@ -93,6 +95,8 @@ for label in \
   "Remove scan path" \
   "Add tag" \
   "Remove tag" \
+  "Show due reminders" \
+  "Default reminder lead" \
   "Add ignored source" \
   "Remove ignored source" \
   "Add unmanaged source" \

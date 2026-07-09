@@ -104,7 +104,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Inventory Cards | Scannable card view with Keychain status and source previews. |
 | Inspector | Selected credential relationships. |
 | Doctor Panel | Repair queue grouped by severity. |
-| Settings | Permissions, appearance, scan paths, ignored sources. |
+| Settings | Permissions, appearance, scan paths, expiry reminders, ignored sources. |
 | Search/Filter | Graph projection narrowing. |
 
 ## Viewport Matrix
@@ -167,7 +167,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | UI5 | Duplicate credential | `default-window` | Screenshot with duplicate state and relationship evidence. |
 | UI6 | Inspector sources | `inspector` | Screenshot showing stored/observed source relationships. |
 | UI7 | Doctor queue | `default-window` | Screenshot with grouped cause/action findings. |
-| UI8 | Settings permissions, appearance, tags, and rules | `settings`, `settings-appearance`, `settings-sources`, `settings-paths`, `settings-tags`, `settings-rules` | Full app screenshots with the in-window Liquid Glass settings overlay above Keychain access, appearance mode controls, scan sources, scan paths, user-owned tag metadata, ignored sources, and unmanaged sources. |
+| UI8 | Settings permissions, appearance, tags, reminders, and rules | `settings`, `settings-appearance`, `settings-sources`, `settings-paths`, `settings-tags`, `settings-rules` | Full app screenshots with the in-window Liquid Glass settings overlay above Keychain access, appearance mode controls, scan sources, scan paths, user-owned tag metadata, expiry reminder defaults, ignored sources, and unmanaged sources. |
 | UI9 | Search/filter | `search-filter` | Screenshot after graph projection filtering; compare with `default-window`. |
 | UI10 | Compact viewport | `compact-window` | Screenshot proving no overlap. |
 

@@ -816,6 +816,20 @@ struct CredentialTagRow: Codable, Identifiable, Hashable {
   }
 }
 
+struct ExpiryReminderPolicy: Codable, Equatable {
+  var dueRemindersEnabled: Bool
+  var defaultNotifyBeforeDays: Int
+
+  static let defaultNotifyBeforeDays = 30
+
+  static var standard: ExpiryReminderPolicy {
+    ExpiryReminderPolicy(
+      dueRemindersEnabled: true,
+      defaultNotifyBeforeDays: defaultNotifyBeforeDays
+    )
+  }
+}
+
 enum CredentialTagColor: String, CaseIterable, Codable, Identifiable, Hashable {
   case accent
   case red
@@ -879,6 +893,7 @@ struct ShellSettingsConfig: Equatable {
   var scanSources: [ScanSourceRow]
   var scanPaths: [EditableSettingsRow]
   var tags: [CredentialTagRow]
+  var expiryReminderPolicy: ExpiryReminderPolicy
   var ignoredSources: [EditableSettingsRow]
   var unmanagedSources: [EditableSettingsRow]
 }
@@ -977,6 +992,7 @@ func sampleSettingsData(displayMode: InventoryDisplayMode = .cards) -> ShellSett
         color: .accent
       ),
     ],
+    expiryReminderPolicy: .standard,
     ignoredSources: [
       EditableSettingsRow("~/Downloads/keys/legacy.env"),
       EditableSettingsRow("~/tmp/oneoff/.env.disabled"),

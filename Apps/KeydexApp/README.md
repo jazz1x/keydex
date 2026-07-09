@@ -18,6 +18,7 @@ local controls for:
 - Keychain permission/status
 - Source scan toggles (Keychain, Shell, Environment, Config)
 - Editable scan paths
+- Expiry reminder defaults for safe `notifyBeforeDays` metadata
 - Editable ignored/unmanaged source lists
 
 Values persist as local settings metadata under Application Support for normal app runs.
@@ -26,7 +27,8 @@ AX smoke do not drift with personal local state. The shell still avoids runtime 
 access.
 
 The Settings sheet uses a glass-style header, segmented section rail, and grouped list
-sections so scan controls feel native without becoming a dashboard.
+sections so scan and reminder controls feel native without becoming a dashboard. Reminder
+controls store safe metadata defaults only; they do not store secret values.
 
 ## Local Run
 

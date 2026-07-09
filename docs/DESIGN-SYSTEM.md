@@ -61,7 +61,7 @@ and honest about risk.
 | Inventory Cards | Secondary scan view | poster-only credential artwork, two-line title/caption deck below, source count affordance, Music-like detail page on click |
 | Inspector | Relationship detail | credential, sources, graph edges, expiry, notes, actions |
 | Doctor Panel | Repair queue | transparent music-player-like footer lane with centered clear glass rail, 90 pt content reserve, severity, cause, action, and count controls |
-| Settings | Permissions, appearance, tags, and rules | in-window Liquid Glass overlay for Keychain access, system appearance mode, scan paths, user-owned tags, ignored sources |
+| Settings | Permissions, appearance, tags, reminders, and rules | in-window Liquid Glass overlay for Keychain access, system appearance mode, scan paths, user-owned tags, expiry reminder defaults, ignored sources |
 
 ## Component Contracts
 
@@ -113,6 +113,8 @@ and honest about risk.
   spacing, but labels must not wrap.
 - Settings toggle rows keep label copy left-aligned and place the switch control on
   the right edge of the row.
+- Settings numeric reminder rows keep label copy left-aligned and place the stepper
+  control on the trailing edge.
 - Settings editable rows use a 24 pt leading icon column, 10 pt control gap, and
   shared 28 pt action column, so add and remove controls keep the same hit area,
   baseline, and trailing alignment.

@@ -11,7 +11,7 @@ uncertainty to the next concrete action without making them decode implementatio
 | Narrow | Which item or state needs attention? | Sidebar search, clear affordance, search result header | Search filters service, account, state, tag, and source without changing graph truth. |
 | Inspect | Why does this credential look risky? | Card detail or inspector | Detail surfaces show state, source relationships, findings, notes, and expiry context. |
 | Act | What do I do next? | Inspector/card detail actions and Doctor rail | Unhealthy states expose cause and action; repair is explicit and user initiated. |
-| Configure | How do I make Keydex match my Mac? | Settings overlay | Settings exposes keychain access, scan sources, paths, tags, ignored/unmanaged sources, and closes predictably. |
+| Configure | How do I make Keydex match my Mac? | Settings overlay | Settings exposes keychain access, scan sources, paths, tags, expiry reminder defaults, ignored/unmanaged sources, and closes predictably. |
 
 ## Interaction Rules
 
@@ -37,8 +37,8 @@ uncertainty to the next concrete action without making them decode implementatio
 - Detail and inspector actions must not auto-read as focused blue controls. Global
   registration can stay prominent, but credential-scoped actions use neutral action
   buttons unless the user explicitly focuses them.
-- Actions must be explicit. Managing Keychain references, tags, ignored sources, and scan
-  paths must be visible user actions rather than automatic repair.
+- Actions must be explicit. Managing Keychain references, tags, expiry reminder defaults,
+  ignored sources, and scan paths must be visible user actions rather than automatic repair.
 - Primary and secondary action buttons use the action-button contract so they do not read
   as disabled glass decorations.
 - Settings rows keep labels on the left and controls on the right so scanning and toggling
@@ -83,7 +83,7 @@ uncertainty to the next concrete action without making them decode implementatio
 | Detail and return | `CredentialMusicDetailView`, `keydex.card-detail.back`. |
 | Explicit actions | `keydexActionButton`, `keydex.inspector.manage-keychain`, `keydex.inspector.manage-tags`, `keydex.card-detail.manage-keychain`, `keydex.card-detail.manage-tags`. |
 | Repair queue | `DoctorPanel`, `keydex.doctor.review-next`, `reviewDoctorIssue`, `Cause:`, `Action:`. |
-| Settings workflow | `SettingsToggleRow`, `SettingsDisplayModeRow`, `SettingsIconActionButton`, `CredentialTagColorSwatchPicker`, `EditableSettingsListSection`, `EditableTagListSection`, `ShellSettingsStore`, `Close settings`, Escape shortcut. |
+| Settings workflow | `SettingsToggleRow`, `SettingsDisplayModeRow`, `SettingsStepperRow`, `SettingsIconActionButton`, `CredentialTagColorSwatchPicker`, `EditableSettingsListSection`, `EditableTagListSection`, `SettingsReminderPolicySection`, `ShellSettingsStore`, `Close settings`, Escape shortcut. |
 
 ## Review Questions
 

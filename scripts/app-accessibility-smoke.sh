@@ -343,6 +343,9 @@ run_scenario settings-rules \
   "Rules" \
   "Ignored Sources" \
   "Unmanaged Sources" \
+  "Expiry Reminders" \
+  "Show due reminders" \
+  "Default reminder lead" \
   "~/Downloads/keys/legacy.env" \
   "process:local-session-secret" \
   --not \

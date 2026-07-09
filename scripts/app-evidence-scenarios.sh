@@ -233,7 +233,7 @@ keydex_evidence_accessibility_focus() {
       printf 'Settings tags modal with editable label names, assignments, color swatches, and actions visible.'
       ;;
     settings-rules)
-      printf 'Settings rules modal with ignored and unmanaged source lists visible.'
+      printf 'Settings rules modal with ignored sources, unmanaged sources, and expiry reminder defaults visible.'
       ;;
     compact-window)
       printf 'Compact window list surface at the minimum-width preset with repair queue still reachable.'
@@ -320,6 +320,8 @@ keydex_evidence_accessibility_targets() {
       printf '%s\n' \
         "Ignored Sources section" \
         "Unmanaged Sources section" \
+        "Expiry Reminders section" \
+        "Default reminder lead control" \
         "Source add and remove actions"
       ;;
     compact-window)
