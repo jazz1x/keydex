@@ -136,6 +136,7 @@ accessibility_pending_summary() {
   local pending_fields
   local next_pending_scenario
   local next_pending_fields
+  local next_pending_notes
 
   output="$("$script_dir/app-accessibility-evidence-status.sh")" || return 1
   pending_scenarios="$(
@@ -154,11 +155,16 @@ accessibility_pending_summary() {
     printf '%s\n' "$output" |
       awk -F= '$1 == "next_pending_fields" { print $2; found = 1 } END { exit(found ? 0 : 1) }'
   )" || return 1
+  next_pending_notes="$(
+    printf '%s\n' "$output" |
+      awk -F= '$1 == "next_pending_notes" { print $2; found = 1 } END { exit(found ? 0 : 1) }'
+  )" || return 1
 
   printf 'app_accessibility_manual_pending_scenarios=%s\n' "$pending_scenarios"
   printf 'app_accessibility_manual_pending_fields=%s\n' "$pending_fields"
   printf 'app_accessibility_manual_next_pending_scenario=%s\n' "$next_pending_scenario"
   printf 'app_accessibility_manual_next_pending_fields=%s\n' "$next_pending_fields"
+  printf 'app_accessibility_manual_next_pending_notes=%s\n' "$next_pending_notes"
 }
 
 release_signing_evidence_is_current_pending() {
