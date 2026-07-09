@@ -118,6 +118,7 @@ User language maps to graph truth:
 | List/card display | Switch between list and card inventory layouts. | The selected mode and projection are preserved across sidebar selection changes. |
 | Settings | Show permissions, appearance, and scan paths. | User can manage local Keychain permission preference, Keychain references, light/dark appearance mode, scan sources, scan paths, expiry reminder policy, and ignored/unmanaged source rules. |
 | Local inventory source | Use settings-driven graph input for normal app runs. | `Local` mode reads enabled non-secret local sources through `KeydexRuntime` and live Keychain references through `KeydexMacRuntime`; sample and intentional empty data remain only for evidence or explicit selection, while first-launch Local empty copy guides the user to Settings and Refresh. |
+| Runtime Keychain prompt | Ask before live app Keychain reference scans. | When enabled, Local refresh presents a confirmation before `KeydexMacRuntime` reads live Keychain item references; the prompt states that secret values stay in Keychain. |
 
 ## Security
 

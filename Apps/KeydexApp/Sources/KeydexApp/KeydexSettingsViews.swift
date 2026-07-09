@@ -112,7 +112,7 @@ struct SettingsPanel: View {
 
                     SettingsToggleRow(
                       title: "Request runtime keychain prompt",
-                      subtitle: "Ask before a future live scan reads Keychain item references",
+                      subtitle: "Ask before Local refresh reads live Keychain item references",
                       systemImage: "hand.raised",
                       isOn: $settings.requestPrompt,
                       accessibilityIdentifier: "keydex.settings.request-prompt"

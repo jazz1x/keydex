@@ -127,6 +127,9 @@ for needle in \
   "SettingsIconActionButton" \
   "keydex.settings.keychain-access" \
   "keydex.settings.add-scan-path" \
+  "pendingKeychainPromptConfig" \
+  "Scan live Keychain references?" \
+  "bypassingKeychainPrompt" \
   "keydex.settings.add-tag" \
   "LegacyScanSourceDocument" \
   "CredentialTagColorSwatchPicker" \

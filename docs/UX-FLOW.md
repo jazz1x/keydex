@@ -41,6 +41,8 @@ uncertainty to the next concrete action without making them decode implementatio
   buttons unless the user explicitly focuses them.
 - Actions must be explicit. Managing Keychain references, tags, expiry reminder defaults,
   ignored sources, and scan paths must be visible user actions rather than automatic repair.
+- Runtime Keychain prompt mode must ask before live Keychain reference scanning while
+  stating that secret values remain in Keychain.
 - Refreshing Local inventory is an explicit toolbar action so users can rescan after
   changing files or settings without reopening the app.
 - Primary and secondary action buttons use the action-button contract so they do not read
@@ -82,7 +84,7 @@ uncertainty to the next concrete action without making them decode implementatio
 | Flow Anchor | Source Evidence |
 | --- | --- |
 | Card/list mode | `InventoryDisplayMode`, `CredentialCardGrid`, `CredentialInventoryTable`. |
-| Local graph input | `LocalInventoryGraphBuilder`, `runtimeRequest(from:)`, `refreshLocalInventory`, `refreshRuntimeInventoryIfNeeded`, `keydex.toolbar.refresh-inventory`. |
+| Local graph input | `MacLocalInventoryGraphBuilder`, `LocalInventoryGraphBuilder`, `runtimeRequest(from:)`, `refreshLocalInventory`, `refreshRuntimeInventoryIfNeeded`, `keydex.toolbar.refresh-inventory`. |
 | Default artwork | `CredentialArtworkPreset`, `CredentialDefaultArtwork`, `CredentialArtworkPanel`. |
 | Custom artwork | `CredentialArtworkStore`, `artworkRootURL`, `CredentialCustomArtwork`, `CredentialArtworkActionGroup`, `keydex.artwork.choose`, `keydex.artwork.reset`. |
 | Search narrowing | `MusicSearchField`, `Clear search`, `MusicSearchResultHeader`. |
