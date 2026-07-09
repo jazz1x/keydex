@@ -113,3 +113,35 @@ func reconcilerPreservesNonKeychainMetadataLocations() throws {
     ]
   )
 }
+
+@Test
+func reconcilerMergesAdditionalSourceObservations() throws {
+  let ref = try CredentialRef.parse(service: "openai", account: "default")
+  let keychainLocation = CredentialLocation.keychain(
+    service: ref.service,
+    account: ref.account
+  )
+  let metadataRecord = CredentialRecord(
+    ref: ref,
+    state: .missingKeychainItem,
+    locations: [keychainLocation]
+  )
+  let environmentName = try NonEmptyText.parse("OPENAI_API_KEY", field: "name")
+  let environmentObservation = CredentialObservation(
+    ref: try CredentialRef.parse(service: "openai", account: "OPENAI_API_KEY"),
+    state: .plaintextFallback,
+    location: .environment(name: environmentName)
+  )
+
+  let graph = CredentialInventoryReconciler().graph(
+    metadataRecords: [metadataRecord],
+    keychainObservations: [],
+    additionalObservations: [environmentObservation]
+  )
+
+  #expect(graph.credentialProjections.map(\.ref.service.value) == ["openai", "openai"])
+  #expect(
+    graph.credentialProjections.flatMap(\.states)
+      == [.plaintextFallback, .missingKeychainItem]
+  )
+}

@@ -54,16 +54,16 @@ struct MusicToolbarCluster: View {
 
   var body: some View {
     HStack(spacing: 10) {
-      Picker("Sample mode", selection: $inventoryMode) {
+      Picker("Inventory source", selection: $inventoryMode) {
         ForEach(InventoryMode.allCases) { mode in
           Text(mode.title).tag(mode)
         }
       }
       .pickerStyle(.segmented)
-      .frame(width: 154)
-      .help("Switch sample credential dataset")
+      .frame(width: 216)
+      .help("Switch local, sample, or empty inventory")
       .accessibilityIdentifier("keydex.toolbar.inventory-mode")
-      .accessibilityLabel("Inventory mode")
+      .accessibilityLabel("Inventory source")
 
       Divider()
         .frame(height: 22)

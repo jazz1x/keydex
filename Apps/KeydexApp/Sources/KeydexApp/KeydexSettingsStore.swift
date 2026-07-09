@@ -29,11 +29,24 @@ struct ShellSettingsStore {
   }
 
   private static func defaultRootURL(fileManager: FileManager) -> URL {
-    fileManager.homeDirectoryForCurrentUser
-      .appendingPathComponent("Library", isDirectory: true)
-      .appendingPathComponent("Application Support", isDirectory: true)
-      .appendingPathComponent("Keydex", isDirectory: true)
-      .appendingPathComponent("Settings", isDirectory: true)
+    let rootURL: URL
+    if let rawRoot = ProcessInfo.processInfo.environment["KEYDEX_APP_SETTINGS_ROOT"] {
+      if rawRoot.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        preconditionFailure(
+          "Unsupported KEYDEX_APP_SETTINGS_ROOT value: expected a non-empty path."
+        )
+      }
+
+      rootURL = URL(fileURLWithPath: rawRoot, isDirectory: true)
+    } else {
+      rootURL = fileManager.homeDirectoryForCurrentUser
+        .appendingPathComponent("Library", isDirectory: true)
+        .appendingPathComponent("Application Support", isDirectory: true)
+        .appendingPathComponent("Keydex", isDirectory: true)
+        .appendingPathComponent("Settings", isDirectory: true)
+    }
+
+    return rootURL
   }
 
   func load(defaults: ShellSettingsConfig) -> ShellSettingsLoadState {
@@ -86,6 +99,7 @@ private struct ShellSettingsDocument: Codable, Equatable {
   let legacyScanSourceEnabledStates: [Bool]?
   let scanPaths: [EditableSettingsRow]
   let tags: [CredentialTagRow]
+  let expiryReminderPolicy: ExpiryReminderPolicy?
   let ignoredSources: [EditableSettingsRow]
   let unmanagedSources: [EditableSettingsRow]
 
@@ -102,6 +116,7 @@ private struct ShellSettingsDocument: Codable, Equatable {
     legacyScanSourceEnabledStates = nil
     scanPaths = config.scanPaths
     tags = config.tags
+    expiryReminderPolicy = config.expiryReminderPolicy
     ignoredSources = config.ignoredSources
     unmanagedSources = config.unmanagedSources
   }
@@ -133,6 +148,10 @@ private struct ShellSettingsDocument: Codable, Equatable {
 
     scanPaths = try container.decode([EditableSettingsRow].self, forKey: .scanPaths)
     tags = try container.decode([CredentialTagRow].self, forKey: .tags)
+    expiryReminderPolicy = try container.decodeIfPresent(
+      ExpiryReminderPolicy.self,
+      forKey: .expiryReminderPolicy
+    )
     ignoredSources = try container.decode([EditableSettingsRow].self, forKey: .ignoredSources)
     unmanagedSources = try container.decode([EditableSettingsRow].self, forKey: .unmanagedSources)
   }
@@ -146,6 +165,7 @@ private struct ShellSettingsDocument: Codable, Equatable {
     try container.encode(scanSourceEnabledByID, forKey: .scanSourceEnabledByID)
     try container.encode(scanPaths, forKey: .scanPaths)
     try container.encode(tags, forKey: .tags)
+    try container.encodeIfPresent(expiryReminderPolicy, forKey: .expiryReminderPolicy)
     try container.encode(ignoredSources, forKey: .ignoredSources)
     try container.encode(unmanagedSources, forKey: .unmanagedSources)
   }
@@ -169,6 +189,9 @@ private struct ShellSettingsDocument: Codable, Equatable {
     }
     config.scanPaths = scanPaths
     config.tags = tags
+    if let expiryReminderPolicy {
+      config.expiryReminderPolicy = expiryReminderPolicy
+    }
     config.ignoredSources = ignoredSources
     config.unmanagedSources = unmanagedSources
     return config
@@ -183,6 +206,7 @@ private struct ShellSettingsDocument: Codable, Equatable {
     case scanSources
     case scanPaths
     case tags
+    case expiryReminderPolicy
     case ignoredSources
     case unmanagedSources
   }

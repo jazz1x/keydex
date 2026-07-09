@@ -43,7 +43,7 @@ doctor findings, security boundaries, and future UI.
 
 | ID | Scenario | Required Result |
 | --- | --- | --- |
-| F1 | Empty inventory | CLI and UI show honest empty state. |
+| F1 | Empty inventory | CLI and UI show honest empty state; normal Local empty copy points to settings and refresh rather than the explicit Empty fixture. |
 | F2 | Env plaintext credential | `scan env` emits `plaintext-fallback` observation without value. |
 | F3 | Shell plaintext credential | `scan shell` emits `plaintext-fallback` observation without value. |
 | F4 | Config plaintext credential | `scan config` emits observation without value. |

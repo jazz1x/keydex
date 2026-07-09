@@ -9,8 +9,8 @@ prove its own contract will drift into wishful UI.
 | --- | --- | --- |
 | Format | `swift-format lint --recursive --strict Package.swift Sources Tests Apps` | Swift style stays stable. |
 | Swift Style | `docs/SWIFT-STYLE.md`, `scripts/forbidden-patterns.sh`, `scripts/loop-contract.sh` | Typed failures, parse boundaries, and restrained abstraction rules stay visible in automated gates. |
-| Tests | `swift test` | Domain, graph, source parser, doctor behavior, and app presentation stores. |
-| App Build | `swift build --product KeydexApp` | SwiftUI Mac app shell compiles against graph projections. |
+| Tests | `swift test` | Domain, graph, source parser, runtime graph builder, doctor behavior, and app presentation stores. |
+| App Build | `swift build --product KeydexApp` | SwiftUI Mac app shell compiles against graph projections and the local runtime builder. |
 | App Window Smoke | `scripts/app-window-smoke.sh` | SwiftUI Mac app shell launches a stable default local window and reports its dimensions. |
 | App Evidence Scenarios Contract | `scripts/app-evidence-scenarios-contract.sh` | Screen, accessibility evidence, runtime smoke, docs, and SwiftUI scenario raw values share one supported scenario source of truth. |
 | App Screen Evidence Review | `scripts/app-screen-evidence-review.sh` | Local screenshot manifests and PNGs cover required screen scenarios for the current Git SHA and dirty state. |

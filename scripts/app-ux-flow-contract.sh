@@ -84,6 +84,9 @@ for needle in \
   "Clear search" \
   "MusicSearchResultHeader" \
   "Search results for" \
+  "InventoryEmptyState" \
+  "No local credentials indexed yet" \
+  "Add scan paths or Keychain references in Settings, then refresh inventory." \
   "ContentUnavailableView"; do
   expect_app_contains "$needle"
 done
@@ -116,6 +119,8 @@ echo "4) settings and dismissal flow anchors..."
 for needle in \
   "SettingsToggleRow" \
   "SettingsDisplayModeRow" \
+  "SettingsReminderPolicySection" \
+  "SettingsStepperRow" \
   "EditableSettingsListSection" \
   "EditableTagListSection" \
   "ShellSettingsStore" \
@@ -127,6 +132,8 @@ for needle in \
   "CredentialTagColorSwatchPicker" \
   "keydex.settings.tag.color" \
   "keydex.settings.tag.draft-color" \
+  "keydex.settings.expiry-reminders-enabled" \
+  "keydex.settings.expiry-notify-before-days" \
   "KeydexSettingsLayout.iconActionColumnWidth" \
   "KeydexSettingsLayout.tagColorPickerWidth" \
   "KeydexSettingsLayout.tagColorSwatchSize" \
@@ -141,6 +148,8 @@ for needle in \
   "KeydexSettingsModalContentBlocker" \
   "KEYDEX_APP_SETTINGS_SCROLL_TARGET" \
   "Unsupported KEYDEX_APP_SETTINGS_SCROLL_TARGET" \
+  "KEYDEX_APP_SETTINGS_ROOT" \
+  "Unsupported KEYDEX_APP_SETTINGS_ROOT" \
   ".keydexContentDisabledBehindSettings(isShowingSettings)" \
   ".keydexDisabledBehindSettings(isShowingSettings)" \
   ".allowsHitTesting(!isShowingSettings)" \
@@ -164,6 +173,7 @@ for needle in \
   "Review next repair issue" \
   "reviewDoctorIssue" \
   "settingsConfig.displayMode = .cards" \
+  "keydex.toolbar.refresh-inventory" \
   "keydex.toolbar.register-keychain" \
   "CredentialRow.identifier(for: issue.credential)" \
   "No repair issues are currently listed." \
@@ -183,6 +193,19 @@ if ! awk '
   END { exit(leading && toggle && hidden && trailing ? 0 : 1) }
 ' "$settings_source"; then
   fail "SettingsToggleRow must keep left text and right-aligned hidden-label toggle controls"
+fi
+
+if ! awk '
+  /private struct SettingsStepperRow/ { in_stepper = 1 }
+  /private struct SettingsDisplayModeRow/ { in_stepper = 0 }
+  in_stepper && /\.frame\(maxWidth: \.infinity, alignment: \.leading\)/ { leading = 1 }
+  in_stepper && /Text\("\\\(value\) \\\(unit\)"\)/ { visible_value = 1 }
+  in_stepper && /Stepper\(title, value: \$value, in: range, step: step\)/ { stepper = 1 }
+  in_stepper && /\.labelsHidden\(\)/ { hidden = 1 }
+  in_stepper && /\.frame\(width: 142, alignment: \.trailing\)/ { trailing = 1 }
+  END { exit(leading && visible_value && stepper && hidden && trailing ? 0 : 1) }
+' "$settings_source"; then
+  fail "SettingsStepperRow must show the value and keep right-aligned hidden-label stepper controls"
 fi
 
 if ! rg --quiet --fixed-strings "static let scrollBottomInset: CGFloat = 192" "$design_source"; then

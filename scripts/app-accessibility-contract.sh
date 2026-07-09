@@ -28,6 +28,7 @@ for identifier in \
   keydex.doctor.panel \
   keydex.toolbar.inventory-mode \
   keydex.toolbar.display-mode \
+  keydex.toolbar.refresh-inventory \
   keydex.toolbar.register-keychain \
   keydex.toolbar.settings \
   keydex.inspector \
@@ -60,6 +61,8 @@ for identifier in \
   keydex.settings.tag.draft-color \
   keydex.settings.add-tag \
   keydex.settings.remove-tag \
+  keydex.settings.expiry-reminders-enabled \
+  keydex.settings.expiry-notify-before-days \
   keydex.settings.add-ignored-source \
   keydex.settings.add-unmanaged-source; do
   expect_file_contains "$app_sources" "$identifier"
@@ -73,6 +76,7 @@ for label in \
   "Credential inventory cards" \
   "Credential repair queue" \
   "Credential inspector" \
+  "Refresh local inventory" \
   "Credential card detail" \
   "Manage Keychain reference" \
   "Manage credential tags" \
@@ -85,6 +89,9 @@ for label in \
   expect_file_contains "$app_sources" ".accessibilityLabel(\"$label\")"
 done
 
+echo "3a) empty state accessibility copy..."
+expect_file_contains "$app_sources" ".accessibilityValue(\"\\(title). \\(description). \\(secondaryText)\")"
+
 echo "4) required reusable accessibility labels..."
 for label in \
   "Add scan path" \
@@ -93,6 +100,8 @@ for label in \
   "Remove scan path" \
   "Add tag" \
   "Remove tag" \
+  "Show due reminders" \
+  "Default reminder lead" \
   "Add ignored source" \
   "Remove ignored source" \
   "Add unmanaged source" \

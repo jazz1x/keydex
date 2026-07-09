@@ -8,6 +8,10 @@ func shellSettingsStoreSavesAndLoadsConfig() throws {
   var config = sampleSettingsData(displayMode: .list)
   config.keychainAccess = false
   config.requestPrompt = true
+  config.expiryReminderPolicy = ExpiryReminderPolicy(
+    dueRemindersEnabled: false,
+    defaultNotifyBeforeDays: 21
+  )
   config.scanSources[2].enabled = true
   config.tags = [
     CredentialTagRow(
@@ -25,6 +29,8 @@ func shellSettingsStoreSavesAndLoadsConfig() throws {
   #expect(loaded.issueMessage == nil)
   #expect(loaded.config == config)
   #expect(manifest.contains("scanSourceEnabledByID"))
+  #expect(manifest.contains("expiryReminderPolicy"))
+  #expect(manifest.contains("defaultNotifyBeforeDays"))
   #expect(manifest.contains("environment-variables"))
   #expect(manifest.contains("Environment variables") == false)
   #expect(manifest.contains("Enumerate non-secret environment values") == false)
@@ -63,6 +69,7 @@ func shellSettingsStoreLoadsLegacyFullConfigManifest() throws {
   expected.scanSources[3].enabled = false
   expected.scanPaths = []
   expected.tags = []
+  expected.expiryReminderPolicy = .standard
   expected.ignoredSources = []
   expected.unmanagedSources = []
 

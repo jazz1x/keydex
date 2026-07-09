@@ -11,7 +11,7 @@ uncertainty to the next concrete action without making them decode implementatio
 | Narrow | Which item or state needs attention? | Sidebar search, clear affordance, search result header | Search filters service, account, state, tag, and source without changing graph truth. |
 | Inspect | Why does this credential look risky? | Card detail or inspector | Detail surfaces show state, source relationships, findings, notes, and expiry context. |
 | Act | What do I do next? | Inspector/card detail actions and Doctor rail | Unhealthy states expose cause and action; repair is explicit and user initiated. |
-| Configure | How do I make Keydex match my Mac? | Settings overlay | Settings exposes keychain access, scan sources, paths, tags, ignored/unmanaged sources, and closes predictably. |
+| Configure | How do I make Keydex match my Mac? | Settings overlay | Settings exposes keychain access, scan sources, paths, tags, expiry reminder defaults, ignored/unmanaged sources, and closes predictably. |
 
 ## Interaction Rules
 
@@ -25,6 +25,8 @@ uncertainty to the next concrete action without making them decode implementatio
   action away.
 - Empty inventory is not a blank canvas. It must explain that no credentials are indexed
   and point to settings or registration as the next action.
+- Local runtime empty state must not read as an intentional fixture. It must point to
+  Settings and Refresh so the user can move from first launch to a populated inventory.
 - Details must answer why before how. State and sources come before action buttons.
 - Detail artwork does not carry a fake selected/focus stroke. Keyboard focus belongs to
   actual controls, not decorative identity artwork.
@@ -37,8 +39,10 @@ uncertainty to the next concrete action without making them decode implementatio
 - Detail and inspector actions must not auto-read as focused blue controls. Global
   registration can stay prominent, but credential-scoped actions use neutral action
   buttons unless the user explicitly focuses them.
-- Actions must be explicit. Managing Keychain references, tags, ignored sources, and scan
-  paths must be visible user actions rather than automatic repair.
+- Actions must be explicit. Managing Keychain references, tags, expiry reminder defaults,
+  ignored sources, and scan paths must be visible user actions rather than automatic repair.
+- Refreshing Local inventory is an explicit toolbar action so users can rescan after
+  changing files or settings without reopening the app.
 - Primary and secondary action buttons use the action-button contract so they do not read
   as disabled glass decorations.
 - Settings rows keep labels on the left and controls on the right so scanning and toggling
@@ -68,6 +72,8 @@ uncertainty to the next concrete action without making them decode implementatio
   default artwork store while resolving image files.
 - Settings edits persist as local metadata for normal app runs, while screen evidence
   scenarios use deterministic sample settings so personal state cannot change screenshots.
+- Normal app runs default to the Local inventory source. Sample and Empty are explicit
+  evidence/debug modes, not the primary user loop.
 - Accessibility labels must preserve the same workflow vocabulary: inventory, search
   results, credential detail, manage Keychain reference, manage tags, settings, and repair.
 
@@ -76,14 +82,15 @@ uncertainty to the next concrete action without making them decode implementatio
 | Flow Anchor | Source Evidence |
 | --- | --- |
 | Card/list mode | `InventoryDisplayMode`, `CredentialCardGrid`, `CredentialInventoryTable`. |
+| Local graph input | `LocalInventoryGraphBuilder`, `runtimeRequest(from:)`, `refreshLocalInventory`, `refreshRuntimeInventoryIfNeeded`, `keydex.toolbar.refresh-inventory`. |
 | Default artwork | `CredentialArtworkPreset`, `CredentialDefaultArtwork`, `CredentialArtworkPanel`. |
 | Custom artwork | `CredentialArtworkStore`, `artworkRootURL`, `CredentialCustomArtwork`, `CredentialArtworkActionGroup`, `keydex.artwork.choose`, `keydex.artwork.reset`. |
 | Search narrowing | `MusicSearchField`, `Clear search`, `MusicSearchResultHeader`. |
-| Empty state | `ContentUnavailableView`. |
+| Empty state | `InventoryEmptyState`, `EmptyStatePanel`, `ContentUnavailableView`. |
 | Detail and return | `CredentialMusicDetailView`, `keydex.card-detail.back`. |
 | Explicit actions | `keydexActionButton`, `keydex.inspector.manage-keychain`, `keydex.inspector.manage-tags`, `keydex.card-detail.manage-keychain`, `keydex.card-detail.manage-tags`. |
 | Repair queue | `DoctorPanel`, `keydex.doctor.review-next`, `reviewDoctorIssue`, `Cause:`, `Action:`. |
-| Settings workflow | `SettingsToggleRow`, `SettingsDisplayModeRow`, `SettingsIconActionButton`, `CredentialTagColorSwatchPicker`, `EditableSettingsListSection`, `EditableTagListSection`, `ShellSettingsStore`, `Close settings`, Escape shortcut. |
+| Settings workflow | `SettingsToggleRow`, `SettingsDisplayModeRow`, `SettingsStepperRow`, `SettingsIconActionButton`, `CredentialTagColorSwatchPicker`, `EditableSettingsListSection`, `EditableTagListSection`, `SettingsReminderPolicySection`, `ShellSettingsStore`, `Close settings`, Escape shortcut. |
 
 ## Review Questions
 
