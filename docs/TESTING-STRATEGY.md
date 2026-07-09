@@ -74,6 +74,7 @@ The first CLI smoke gate is `scripts/cli-smoke.sh`. It uses tracked fixtures in
 | Doctor panel | Findings show cause and action. |
 | Settings | Scan path and permission controls render. |
 | Runtime graph | Local inventory source rebuilds graph input from enabled scan sources and configured references. |
+| Mac runtime graph | App-facing Local runtime injects live Keychain observations only when the Keychain source is enabled. |
 | Local empty inventory | Normal app launch with isolated settings explains that no local credentials are indexed and points to settings plus refresh. |
 | Artwork store | Imported artwork copies into the app support store, manifest state loads, reset removes files, filename collisions are prevented, replacements clean old files, and unreadable manifests surface an issue. |
 | Settings store | Settings metadata saves and loads, missing files use defaults, unreadable files surface an issue, and screen evidence scenarios ignore personal local settings. |

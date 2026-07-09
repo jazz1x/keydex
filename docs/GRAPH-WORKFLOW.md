@@ -68,6 +68,7 @@ The first graph implementation is intentionally small:
 - shell profile scanning through `ShellProfileScanner`
 - config file scanning through `ConfigFileScanner`
 - Keychain item reference scanning through `KeychainInventoryScanner`
+- Mac app Local refresh injects live Keychain observations through `KeydexMacRuntime`
 - local graph composition through `LocalInventoryGraphBuilder`
 - `scan env` projects observations through `InventoryGraph`
 - `scan shell` projects observations through `InventoryGraph`

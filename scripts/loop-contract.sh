@@ -119,6 +119,7 @@ let expected: [String: Set<String>] = [
   "KeydexSources": ["KeydexCore"],
   "KeydexStore": ["KeydexCore"],
   "KeydexRuntime": ["KeydexCore", "KeydexSources", "KeydexStore"],
+  "KeydexMacRuntime": ["KeydexKeychain", "KeydexRuntime"],
   "keydex": [
     "KeydexCore",
     "KeydexKeychain",
@@ -127,12 +128,13 @@ let expected: [String: Set<String>] = [
     "KeydexStore",
     "product:ArgumentParser",
   ],
-  "KeydexApp": ["KeydexCore", "KeydexRuntime"],
+  "KeydexApp": ["KeydexCore", "KeydexMacRuntime", "KeydexRuntime"],
   "KeydexCoreTests": ["KeydexCore"],
   "KeydexKeychainTests": ["KeydexKeychain"],
   "KeydexSourcesTests": ["KeydexSources"],
   "KeydexStoreTests": ["KeydexStore"],
   "KeydexRuntimeTests": ["KeydexRuntime"],
+  "KeydexMacRuntimeTests": ["KeydexMacRuntime"],
   "KeydexAppTests": ["KeydexApp"],
 ]
 
@@ -173,6 +175,7 @@ reject_import "KeydexCore" "SwiftUI|AppKit|Security" Sources/KeydexCore
 reject_import "KeydexSources" "SwiftUI|AppKit|Security" Sources/KeydexSources
 reject_import "KeydexStore" "SwiftUI|AppKit|Security" Sources/KeydexStore
 reject_import "KeydexRuntime" "SwiftUI|AppKit|Security" Sources/KeydexRuntime
+reject_import "KeydexMacRuntime" "SwiftUI|AppKit|Security" Sources/KeydexMacRuntime
 reject_import "KeydexKeychain" "SwiftUI|AppKit" Sources/KeydexKeychain
 reject_import "keydex CLI" "SwiftUI|AppKit" Sources/keydex
 reject_import "KeydexApp" "Security" Apps/KeydexApp/Sources/KeydexApp
@@ -180,6 +183,7 @@ reject_import "KeydexCore" "KeydexKeychain|KeydexSources|KeydexStore|KeydexApp" 
 reject_import "KeydexSources" "KeydexKeychain|KeydexStore|KeydexApp" Sources/KeydexSources
 reject_import "KeydexStore" "KeydexKeychain|KeydexSources|KeydexApp" Sources/KeydexStore
 reject_import "KeydexRuntime" "KeydexKeychain|KeydexApp" Sources/KeydexRuntime
+reject_import "KeydexMacRuntime" "KeydexApp|KeydexSources|KeydexStore" Sources/KeydexMacRuntime
 reject_import "KeydexKeychain" "KeydexSources|KeydexStore|KeydexApp" Sources/KeydexKeychain
 reject_import "KeydexApp" "KeydexKeychain|KeydexSources|KeydexStore" Apps/KeydexApp/Sources/KeydexApp
 
@@ -190,6 +194,7 @@ expect_text Package.swift 'dependencies: ["KeydexCore"]'
 expect_text Package.swift '.target(name: "KeydexSources", dependencies: ["KeydexCore"])'
 expect_text Package.swift '.target(name: "KeydexStore", dependencies: ["KeydexCore"])'
 expect_text Package.swift '.target(name: "KeydexRuntime", dependencies: ["KeydexCore", "KeydexSources", "KeydexStore"])'
+expect_text Package.swift '.target(name: "KeydexMacRuntime", dependencies: ["KeydexKeychain", "KeydexRuntime"])'
 expect_text Package.swift 'path: "Apps/KeydexApp/Sources/KeydexApp"'
 package_boundary_graph
 echo "package boundary graph clean"

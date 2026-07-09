@@ -13,6 +13,7 @@ let package = Package(
     .library(name: "KeydexSources", targets: ["KeydexSources"]),
     .library(name: "KeydexStore", targets: ["KeydexStore"]),
     .library(name: "KeydexRuntime", targets: ["KeydexRuntime"]),
+    .library(name: "KeydexMacRuntime", targets: ["KeydexMacRuntime"]),
     .executable(name: "keydex", targets: ["keydex"]),
     .executable(name: "KeydexApp", targets: ["KeydexApp"]),
   ],
@@ -29,6 +30,7 @@ let package = Package(
     .target(name: "KeydexSources", dependencies: ["KeydexCore"]),
     .target(name: "KeydexStore", dependencies: ["KeydexCore"]),
     .target(name: "KeydexRuntime", dependencies: ["KeydexCore", "KeydexSources", "KeydexStore"]),
+    .target(name: "KeydexMacRuntime", dependencies: ["KeydexKeychain", "KeydexRuntime"]),
     .executableTarget(
       name: "keydex",
       dependencies: [
@@ -42,7 +44,7 @@ let package = Package(
     ),
     .executableTarget(
       name: "KeydexApp",
-      dependencies: ["KeydexCore", "KeydexRuntime"],
+      dependencies: ["KeydexCore", "KeydexMacRuntime", "KeydexRuntime"],
       path: "Apps/KeydexApp/Sources/KeydexApp",
       resources: [.process("Resources")]
     ),
@@ -51,6 +53,7 @@ let package = Package(
     .testTarget(name: "KeydexSourcesTests", dependencies: ["KeydexSources"]),
     .testTarget(name: "KeydexStoreTests", dependencies: ["KeydexStore"]),
     .testTarget(name: "KeydexRuntimeTests", dependencies: ["KeydexRuntime"]),
+    .testTarget(name: "KeydexMacRuntimeTests", dependencies: ["KeydexMacRuntime"]),
     .testTarget(name: "KeydexAppTests", dependencies: ["KeydexApp"]),
   ]
 )

@@ -30,14 +30,16 @@ before.
 | `KeydexSources` | Environment, shell, config observations | KeydexCore, Foundation | SwiftUI, AppKit, Security |
 | `KeydexStore` | Metadata parsing and persistence | KeydexCore, Foundation | SwiftUI, AppKit, Security |
 | `KeydexRuntime` | Local graph build orchestration | KeydexCore, KeydexSources, KeydexStore, Foundation | SwiftUI, AppKit, Security, KeydexKeychain |
+| `KeydexMacRuntime` | macOS runtime source adapters | KeydexRuntime, KeydexKeychain, Foundation | SwiftUI, AppKit, Security |
 | `keydex` | CLI orchestration and terminal presentation | Core, sources, store, keychain | SwiftUI, AppKit |
-| `KeydexApp` | Native macOS presentation and screen evidence hooks | KeydexCore, KeydexRuntime, SwiftUI, AppKit | Security |
+| `KeydexApp` | Native macOS presentation and screen evidence hooks | KeydexCore, KeydexRuntime, KeydexMacRuntime, SwiftUI, AppKit | Security |
 
 Source imports follow the package dependency direction. `KeydexApp` consumes
-`KeydexCore` projections, `KeydexRuntime` local graph orchestration, and local
-presentation state; it must not import `KeydexKeychain`, `KeydexSources`, or
-`KeydexStore` directly. Qualified imports such as `import struct KeydexStore.MetadataRecord`
-count as direct imports.
+`KeydexCore` projections, `KeydexRuntime` local graph orchestration,
+`KeydexMacRuntime` live macOS source adapters, and local presentation state; it
+must not import `KeydexKeychain`, `KeydexSources`, or `KeydexStore` directly.
+Qualified imports such as `import struct KeydexStore.MetadataRecord` count as direct
+imports.
 `make loop-contract` also parses `swift package dump-package` output so the
 actual SwiftPM target dependency graph must match these boundaries, not just the
 source import text.
