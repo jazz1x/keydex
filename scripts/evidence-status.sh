@@ -256,6 +256,7 @@ release_signing_readiness_summary() {
         ;;
     esac
     printf 'release_signing_readiness_runbook=%s\n' "docs/SIGNING-NOTARIZATION.md"
+    printf 'release_signing_readiness_next_command=%s\n' "open docs/SIGNING-NOTARIZATION.md"
   fi
 }
 
