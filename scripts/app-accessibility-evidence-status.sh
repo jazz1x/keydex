@@ -106,6 +106,9 @@ scenario_count=0
 pass_scenarios=0
 pending_scenarios=0
 pending_fields=0
+next_pending_scenario=
+next_pending_fields=
+next_pending_notes=
 
 printf 'git_sha=%s\n' "$head_sha"
 printf 'git_dirty=%s\n' "$head_dirty"
@@ -139,6 +142,7 @@ for scenario in "${KEYDEX_EVIDENCE_SCENARIOS[@]}"; do
 
   scenario_count=$((scenario_count + 1))
   scenario_pending_fields=0
+  scenario_pending_field_names=()
   for state in "$voiceover_state" "$keyboard_state" "$state_state" "$dynamic_type_state"; do
     if [[ "$state" == pending ]]; then
       scenario_pending_fields=$((scenario_pending_fields + 1))
@@ -146,10 +150,23 @@ for scenario in "${KEYDEX_EVIDENCE_SCENARIOS[@]}"; do
     fi
   done
 
+  [[ "$voiceover_state" == pending ]] && scenario_pending_field_names+=("voiceover")
+  [[ "$keyboard_state" == pending ]] && scenario_pending_field_names+=("keyboard")
+  [[ "$state_state" == pending ]] && scenario_pending_field_names+=("state_not_color_only")
+  [[ "$dynamic_type_state" == pending ]] && scenario_pending_field_names+=("dynamic_type")
+
   if [[ "$scenario_pending_fields" == 0 ]]; then
     pass_scenarios=$((pass_scenarios + 1))
   else
     pending_scenarios=$((pending_scenarios + 1))
+    if [[ -z "$next_pending_scenario" ]]; then
+      next_pending_scenario="$scenario"
+      next_pending_fields="$(
+        IFS=,
+        printf '%s' "${scenario_pending_field_names[*]}"
+      )"
+      next_pending_notes="$notes_path"
+    fi
   fi
 
   printf 'scenario=%s voiceover=%s keyboard=%s state_not_color_only=%s dynamic_type=%s\n' \
@@ -164,4 +181,9 @@ printf 'scenarios=%s\n' "$scenario_count"
 printf 'pass_scenarios=%s\n' "$pass_scenarios"
 printf 'pending_scenarios=%s\n' "$pending_scenarios"
 printf 'pending_fields=%s\n' "$pending_fields"
+if [[ -n "$next_pending_scenario" ]]; then
+  printf 'next_pending_scenario=%s\n' "$next_pending_scenario"
+  printf 'next_pending_fields=%s\n' "$next_pending_fields"
+  printf 'next_pending_notes=%s\n' "$next_pending_notes"
+fi
 echo "app accessibility evidence status current"
