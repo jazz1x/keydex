@@ -17,10 +17,10 @@ enum KeydexGlassTone {
   static let metadataChipFill = Color.primary.opacity(0.045)
   static let posterBadgeFill = Color.primary.opacity(0.045)
   static let posterBadgeStroke = Color(nsColor: .separatorColor).opacity(0.22)
-  static let settingsActiveBackdropDimAlpha = 0.020
-  static let settingsInactiveBackdropDimAlpha = 0.11
-  static let settingsActivePanelWash = Color.white.opacity(0.006)
-  static let settingsInactivePanelWash = Color.accentColor.opacity(0.040)
+  static let settingsActiveBackdropDimAlpha = 0.10
+  static let settingsInactiveBackdropDimAlpha = 0.16
+  static let settingsActivePanelWash = Color.white.opacity(0.075)
+  static let settingsInactivePanelWash = Color.accentColor.opacity(0.085)
   static let artworkColorAlpha = 0.18
   static let posterSymbolAlpha = 0.50
   static let posterWashHighAlpha = 0.045
@@ -412,7 +412,7 @@ private struct KeydexSheetGlassPanelModifier: ViewModifier {
         let glassContent =
           content
           .glassEffect(
-            .clear.tint(KeydexGlassTone.settingsPanelWash(appearsActive: appearsActive))
+            .regular.tint(KeydexGlassTone.settingsPanelWash(appearsActive: appearsActive))
               .interactive(),
             in: shape
           )
