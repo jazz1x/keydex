@@ -140,10 +140,10 @@ for needle in \
   ".onTapGesture {}" \
   "controlGlassTint = Color.white.opacity(0.040)" \
   "groupedRowsFill = Color.primary.opacity(0.010)" \
-  "settingsActiveBackdropDimAlpha = 0.10" \
-  "settingsInactiveBackdropDimAlpha = 0.16" \
-  "settingsActivePanelWash = Color.white.opacity(0.075)" \
-  "settingsInactivePanelWash = Color.accentColor.opacity(0.085)" \
+  "settingsActiveBackdropDimAlpha = 0.16" \
+  "settingsInactiveBackdropDimAlpha = 0.22" \
+  "settingsActivePanelWash = Color.white.opacity(0.140)" \
+  "settingsInactivePanelWash = Color.white.opacity(0.180)" \
   "settingsPanelWash(appearsActive:" \
   "rowIconWidth" \
   "iconActionButtonSize" \
