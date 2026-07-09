@@ -83,6 +83,8 @@ struct CredentialInventoryShellView: View {
   @State private var artworkIssueMessage: String?
   @State private var settingsIssueMessage: String?
   @State private var runtimeIssueMessage: String?
+  @State private var pendingKeychainPromptConfig: ShellSettingsConfig
+  @State private var isShowingKeychainPrompt: Bool
   @State private var isRefreshingRuntimeInventory: Bool
 
   init(
@@ -120,6 +122,8 @@ struct CredentialInventoryShellView: View {
     _artworkIssueMessage = State(initialValue: artworkLoadState.issueMessage)
     _settingsIssueMessage = State(initialValue: settingsLoadState.issueMessage)
     _runtimeIssueMessage = State(initialValue: nil)
+    _pendingKeychainPromptConfig = State(initialValue: settingsLoadState.config)
+    _isShowingKeychainPrompt = State(initialValue: false)
     _isRefreshingRuntimeInventory = State(initialValue: false)
   }
 
@@ -286,6 +290,25 @@ struct CredentialInventoryShellView: View {
       }
     } message: {
       Text(runtimeIssueMessage ?? "The local inventory pipeline reported an unknown issue.")
+    }
+    .alert("Scan live Keychain references?", isPresented: $isShowingKeychainPrompt) {
+      Button("Scan References") {
+        isShowingKeychainPrompt = false
+        Task {
+          await refreshRuntimeInventory(
+            pendingKeychainPromptConfig,
+            bypassingKeychainPrompt: true
+          )
+        }
+      }
+
+      Button("Not Now", role: .cancel) {
+        isShowingKeychainPrompt = false
+      }
+    } message: {
+      Text(
+        "Keydex reads service/account references only. Secret values stay in Keychain."
+      )
     }
     .toolbar {
       ToolbarItem(placement: .status) {
@@ -582,7 +605,7 @@ struct CredentialInventoryShellView: View {
     selectedCredentialID = nil
     if inventoryMode == .runtime {
       Task {
-        await refreshRuntimeInventory(settingsConfig)
+        await refreshRuntimeInventory(settingsConfig, bypassingKeychainPrompt: false)
       }
     } else {
       inventoryMode = .runtime
@@ -595,11 +618,20 @@ struct CredentialInventoryShellView: View {
       return
     }
 
-    await refreshRuntimeInventory(config)
+    await refreshRuntimeInventory(config, bypassingKeychainPrompt: false)
   }
 
   @MainActor
-  private func refreshRuntimeInventory(_ config: ShellSettingsConfig) async {
+  private func refreshRuntimeInventory(
+    _ config: ShellSettingsConfig,
+    bypassingKeychainPrompt: Bool
+  ) async {
+    if shouldPromptBeforeLiveKeychainScan(config) && !bypassingKeychainPrompt {
+      pendingKeychainPromptConfig = config
+      isShowingKeychainPrompt = true
+      return
+    }
+
     isRefreshingRuntimeInventory = true
     do {
       runtimeGraph = try await MacLocalInventoryGraphBuilder().graph(
@@ -613,6 +645,11 @@ struct CredentialInventoryShellView: View {
         + error.localizedDescription
     }
     isRefreshingRuntimeInventory = false
+  }
+
+  private func shouldPromptBeforeLiveKeychainScan(_ config: ShellSettingsConfig) -> Bool {
+    config.requestPrompt
+      && runtimeRequest(from: config).enabledSourceIDs.contains(LocalInventorySourceID.keychain)
   }
 
   private func runtimeRequest(from config: ShellSettingsConfig) -> LocalInventoryGraphRequest {

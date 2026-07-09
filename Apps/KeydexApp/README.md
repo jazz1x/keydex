@@ -26,9 +26,8 @@ local controls for:
 
 Values persist as local settings metadata under Application Support for normal app runs.
 Evidence scenarios keep using deterministic in-memory sample settings so screenshots and
-AX smoke do not drift with personal local state. The app still avoids live Keychain
-Security access; configured Keychain references are metadata until a live scan boundary
-proves them registered.
+AX smoke do not drift with personal local state. Normal Local runs can read live Keychain
+item references when access is enabled, but secret values remain outside Keydex.
 
 The Settings sheet uses a glass-style header, segmented section rail, and grouped list
 sections so scan and reminder controls feel native without becoming a dashboard. Reminder
@@ -49,6 +48,8 @@ Notes:
   Refresh rather than describing the explicit empty evidence fixture.
 - It does not store secrets. When Keychain access is enabled, it reads live item
   references only and omits secret values.
+- If runtime Keychain prompt is enabled, Local refresh asks before reading live
+  Keychain references.
 - It now renders a native Doctor panel in the shell (`CredentialDoctor().inspect(graph)`) showing
   severity, credential, state, cause, and action for each detected issue.
 - It also exposes a toolbar search to filter graph-derived credential rows by service, account,
