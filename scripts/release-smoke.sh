@@ -17,8 +17,9 @@ command -v codesign >/dev/null 2>&1 || fail "missing dependency: codesign"
 verify_dmg() {
   local path="$1"
   local output=""
+  local attempt
 
-  for attempt in 1 2 3 4 5; do
+  for attempt in 1 2 3 4 5 6 7 8 9 10 11 12; do
     if output="$(hdiutil verify "$path" 2>&1)"; then
       printf '%s\n' "$output"
       return 0
@@ -26,7 +27,8 @@ verify_dmg() {
 
     case "$output" in
       *"Resource temporarily unavailable"*)
-        sleep 1
+        printf 'hdiutil verify busy; retrying attempt %s for %s\n' "$attempt" "$path" >&2
+        sleep 2
         ;;
       *)
         printf '%s\n' "$output" >&2

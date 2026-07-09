@@ -531,6 +531,8 @@ expect_file_contains scripts/release-smoke.sh "codesign --verify --deep --strict
 expect_file_contains scripts/release-smoke.sh "Keydex.app/Contents/MacOS/KeydexApp"
 expect_file_contains scripts/release-smoke.sh "hdiutil create"
 expect_file_contains scripts/release-smoke.sh "hdiutil verify"
+expect_file_contains scripts/release-smoke.sh "Resource temporarily unavailable"
+expect_file_contains scripts/release-smoke.sh "hdiutil verify busy; retrying attempt"
 expect_file_contains scripts/release-smoke.sh ".dmg"
 expect_file_contains scripts/release-smoke.sh "dmg="
 expect_file_contains scripts/release-smoke.sh "dmg_checksum="
