@@ -164,6 +164,8 @@ expect_file_contains Sources/KeydexRuntime/LocalInventoryGraphBuilder.swift "Loc
 expect_file_contains Sources/KeydexRuntime/LocalInventoryGraphBuilder.swift "LocalInventorySourceID"
 expect_file_contains Tests/KeydexRuntimeTests/LocalInventoryGraphBuilderTests.swift "localInventoryGraphBuilderScansEnabledShellAndConfigPaths"
 expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift "LocalInventoryGraphBuilder().graph"
+expect_file_contains Apps/KeydexApp/Sources/KeydexApp/KeydexApp.swift "keydex.toolbar.refresh-inventory"
+expect_file_contains docs/UX-FLOW.md "Refreshing Local inventory is an explicit toolbar action"
 expect_file_contains Sources/keydex/main.swift "struct Reminders"
 expect_file_contains README.md "keydex reminders"
 expect_file_contains Sources/keydex/main.swift "ignoredCredentials(metadataPath:"

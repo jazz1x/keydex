@@ -39,6 +39,8 @@ uncertainty to the next concrete action without making them decode implementatio
   buttons unless the user explicitly focuses them.
 - Actions must be explicit. Managing Keychain references, tags, expiry reminder defaults,
   ignored sources, and scan paths must be visible user actions rather than automatic repair.
+- Refreshing Local inventory is an explicit toolbar action so users can rescan after
+  changing files or settings without reopening the app.
 - Primary and secondary action buttons use the action-button contract so they do not read
   as disabled glass decorations.
 - Settings rows keep labels on the left and controls on the right so scanning and toggling
@@ -78,7 +80,7 @@ uncertainty to the next concrete action without making them decode implementatio
 | Flow Anchor | Source Evidence |
 | --- | --- |
 | Card/list mode | `InventoryDisplayMode`, `CredentialCardGrid`, `CredentialInventoryTable`. |
-| Local graph input | `LocalInventoryGraphBuilder`, `runtimeRequest(from:)`, `refreshRuntimeInventoryIfNeeded`. |
+| Local graph input | `LocalInventoryGraphBuilder`, `runtimeRequest(from:)`, `refreshLocalInventory`, `refreshRuntimeInventoryIfNeeded`, `keydex.toolbar.refresh-inventory`. |
 | Default artwork | `CredentialArtworkPreset`, `CredentialDefaultArtwork`, `CredentialArtworkPanel`. |
 | Custom artwork | `CredentialArtworkStore`, `artworkRootURL`, `CredentialCustomArtwork`, `CredentialArtworkActionGroup`, `keydex.artwork.choose`, `keydex.artwork.reset`. |
 | Search narrowing | `MusicSearchField`, `Clear search`, `MusicSearchResultHeader`. |

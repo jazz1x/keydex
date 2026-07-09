@@ -82,6 +82,7 @@ struct CredentialInventoryShellView: View {
   @State private var artworkIssueMessage: String?
   @State private var settingsIssueMessage: String?
   @State private var runtimeIssueMessage: String?
+  @State private var isRefreshingRuntimeInventory: Bool
 
   init(
     artworkStore: CredentialArtworkStore = CredentialArtworkStore(),
@@ -118,6 +119,7 @@ struct CredentialInventoryShellView: View {
     _artworkIssueMessage = State(initialValue: artworkLoadState.issueMessage)
     _settingsIssueMessage = State(initialValue: settingsLoadState.issueMessage)
     _runtimeIssueMessage = State(initialValue: nil)
+    _isRefreshingRuntimeInventory = State(initialValue: false)
   }
 
   fileprivate static func inventoryModeFromEnvironment(
@@ -279,6 +281,20 @@ struct CredentialInventoryShellView: View {
           inventoryMode: $inventoryMode,
           displayMode: $settingsConfig.displayMode
         )
+        .keydexDisabledBehindSettings(isShowingSettings)
+      }
+
+      ToolbarItem(placement: .primaryAction) {
+        Button {
+          refreshLocalInventory()
+        } label: {
+          Label("Refresh Inventory", systemImage: "arrow.clockwise")
+        }
+        .help("Refresh local inventory")
+        .accessibilityIdentifier("keydex.toolbar.refresh-inventory")
+        .accessibilityLabel("Refresh local inventory")
+        .keydexGlassButton()
+        .disabled(isRefreshingRuntimeInventory)
         .keydexDisabledBehindSettings(isShowingSettings)
       }
 
@@ -550,12 +566,29 @@ struct CredentialInventoryShellView: View {
     }
   }
 
+  private func refreshLocalInventory() {
+    selectedCredentialID = nil
+    if inventoryMode == .runtime {
+      Task {
+        await refreshRuntimeInventory(settingsConfig)
+      }
+    } else {
+      inventoryMode = .runtime
+    }
+  }
+
   @MainActor
   private func refreshRuntimeInventoryIfNeeded(_ config: ShellSettingsConfig) async {
     guard inventoryMode == .runtime else {
       return
     }
 
+    await refreshRuntimeInventory(config)
+  }
+
+  @MainActor
+  private func refreshRuntimeInventory(_ config: ShellSettingsConfig) async {
+    isRefreshingRuntimeInventory = true
     do {
       runtimeGraph = try await LocalInventoryGraphBuilder().graph(
         for: runtimeRequest(from: config)
@@ -567,6 +600,7 @@ struct CredentialInventoryShellView: View {
         "Local inventory settings were saved, but the scan could not be rebuilt. "
         + error.localizedDescription
     }
+    isRefreshingRuntimeInventory = false
   }
 
   private func runtimeRequest(from config: ShellSettingsConfig) -> LocalInventoryGraphRequest {

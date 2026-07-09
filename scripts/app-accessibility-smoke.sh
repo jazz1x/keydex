@@ -282,6 +282,7 @@ run_scenario settings \
   "Enable keychain access" \
   "Request runtime keychain prompt" \
   --not \
+  "Refresh local inventory" \
   "Register Keychain reference" \
   "Open settings" \
   "Inventory and display controls"
@@ -294,6 +295,7 @@ run_scenario settings-appearance \
   "Cards" \
   "System light/dark" \
   --not \
+  "Refresh local inventory" \
   "Register Keychain reference" \
   "Open settings" \
   "Inventory and display controls"
@@ -307,6 +309,7 @@ run_scenario settings-sources \
   "Environment variables" \
   "Config files" \
   --not \
+  "Refresh local inventory" \
   "Register Keychain reference" \
   "Open settings" \
   "Inventory and display controls"
@@ -320,6 +323,7 @@ run_scenario settings-paths \
   "/Users/example/.aws/credentials" \
   "Add scan path" \
   --not \
+  "Refresh local inventory" \
   "Register Keychain reference" \
   "Open settings" \
   "Inventory and display controls"
@@ -333,6 +337,7 @@ run_scenario settings-tags \
   "Tag color" \
   "Add tag" \
   --not \
+  "Refresh local inventory" \
   "Register Keychain reference" \
   "Open settings" \
   "Inventory and display controls"
@@ -349,6 +354,7 @@ run_scenario settings-rules \
   "~/Downloads/keys/legacy.env" \
   "process:local-session-secret" \
   --not \
+  "Refresh local inventory" \
   "Register Keychain reference" \
   "Open settings" \
   "Inventory and display controls"

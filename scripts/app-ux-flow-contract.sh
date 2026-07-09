@@ -168,6 +168,7 @@ for needle in \
   "Review next repair issue" \
   "reviewDoctorIssue" \
   "settingsConfig.displayMode = .cards" \
+  "keydex.toolbar.refresh-inventory" \
   "keydex.toolbar.register-keychain" \
   "CredentialRow.identifier(for: issue.credential)" \
   "No repair issues are currently listed." \

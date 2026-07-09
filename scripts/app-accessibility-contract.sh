@@ -28,6 +28,7 @@ for identifier in \
   keydex.doctor.panel \
   keydex.toolbar.inventory-mode \
   keydex.toolbar.display-mode \
+  keydex.toolbar.refresh-inventory \
   keydex.toolbar.register-keychain \
   keydex.toolbar.settings \
   keydex.inspector \
@@ -75,6 +76,7 @@ for label in \
   "Credential inventory cards" \
   "Credential repair queue" \
   "Credential inspector" \
+  "Refresh local inventory" \
   "Credential card detail" \
   "Manage Keychain reference" \
   "Manage credential tags" \
