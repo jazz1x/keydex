@@ -591,6 +591,8 @@ expect_file_contains docs/RELEASE-CANDIDATE.md "candidate trusted or M5 complete
 expect_file_contains docs/VERIFICATION.md "Evidence Status"
 expect_file_contains docs/ENFORCEMENT.md "Evidence status stays explicit"
 expect_file_contains README.md "make evidence-status"
+expect_file_contains README.md "next review command"
+expect_file_contains README.md "signing runbook command"
 expect_file_contains scripts/evidence-status.sh "app_screen_evidence"
 expect_file_contains scripts/evidence-status.sh "app_accessibility_manual"
 expect_file_contains scripts/evidence-status.sh "release_signing_readiness"
