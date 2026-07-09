@@ -91,8 +91,9 @@ pass evidence.
 Use `make app-accessibility-evidence-status` to list each scenario's VoiceOver,
 keyboard, state-not-color-only, and dynamic type review state before starting manual
 review. The status output also reports `next_pending_scenario`,
-`next_pending_fields`, `next_pending_notes`, and `next_pending_screenshot` so a
-manual review session has an explicit resume point instead of only aggregate counts.
+`next_pending_fields`, `next_pending_notes`, `next_pending_screenshot`, and
+`next_pending_review_command` so a manual review session has an explicit resume
+point instead of only aggregate counts.
 
 The first source-level HIG and Liquid Glass contract is `scripts/app-design-contract.sh`.
 It proves the app keeps native Mac utility structure, graph-derived repair surfaces,
