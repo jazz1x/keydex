@@ -214,6 +214,7 @@ release_signing_readiness_summary() {
   local output="$1"
   local key
   local value
+  local next_missing=
 
   for key in developer_id_identity notarytool stapler; do
     value="$(
@@ -221,7 +222,29 @@ release_signing_readiness_summary() {
         awk -F= -v key="$key" '$1 == key { print $2; found = 1 } END { exit(found ? 0 : 1) }'
     )" || return 1
     printf 'release_signing_readiness_%s=%s\n' "$key" "$value"
+    if [[ "$value" == missing && -z "$next_missing" ]]; then
+      next_missing="$key"
+    fi
   done
+
+  if [[ -n "$next_missing" ]]; then
+    printf 'release_signing_readiness_next_missing=%s\n' "$next_missing"
+    case "$next_missing" in
+      developer_id_identity)
+        printf 'release_signing_readiness_next_action=%s\n' \
+          "Install a Developer ID Application signing identity in the local Keychain"
+        ;;
+      notarytool)
+        printf 'release_signing_readiness_next_action=%s\n' \
+          "Install Apple notarytool through the active Xcode toolchain"
+        ;;
+      stapler)
+        printf 'release_signing_readiness_next_action=%s\n' \
+          "Install Apple stapler through the active Xcode toolchain"
+        ;;
+    esac
+    printf 'release_signing_readiness_runbook=%s\n' "docs/SIGNING-NOTARIZATION.md"
+  fi
 }
 
 print_review_result() {

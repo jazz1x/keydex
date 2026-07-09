@@ -115,6 +115,9 @@ Releases are immutable evidence points. If a release is wrong:
 M5 is not complete until release evidence proves build, function, screen, security,
 documentation, and artifact checks.
 Trusted public Mac app completion claims must use `make evidence-status` output, not
-`make release-smoke` alone: `release_signing_readiness=pass`,
+`make release-smoke` alone. When readiness is blocked, the status output includes
+`release_signing_readiness_next_missing`,
+`release_signing_readiness_next_action`, and `release_signing_readiness_runbook`.
+For a trusted completion claim, `release_signing_readiness=pass`,
 `release_signing_evidence=pass`, and `needs_attention=0` must all be current for the
 same Git SHA. If signing readiness is blocked, M5 remains pre-signing.
