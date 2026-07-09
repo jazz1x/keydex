@@ -110,6 +110,7 @@ next_pending_scenario=
 next_pending_fields=
 next_pending_notes=
 next_pending_screenshot=
+next_pending_review_command=
 
 printf 'git_sha=%s\n' "$head_sha"
 printf 'git_dirty=%s\n' "$head_dirty"
@@ -168,6 +169,7 @@ for scenario in "${KEYDEX_EVIDENCE_SCENARIOS[@]}"; do
       )"
       next_pending_notes="$notes_path"
       next_pending_screenshot="tmp/screen-evidence/$scenario.png"
+      next_pending_review_command="open tmp/screen-evidence/$scenario.png $notes_path"
     fi
   fi
 
@@ -188,5 +190,6 @@ if [[ -n "$next_pending_scenario" ]]; then
   printf 'next_pending_fields=%s\n' "$next_pending_fields"
   printf 'next_pending_notes=%s\n' "$next_pending_notes"
   printf 'next_pending_screenshot=%s\n' "$next_pending_screenshot"
+  printf 'next_pending_review_command=%s\n' "$next_pending_review_command"
 fi
 echo "app accessibility evidence status current"
