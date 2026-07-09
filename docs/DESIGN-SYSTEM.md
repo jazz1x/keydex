@@ -102,6 +102,9 @@ and honest about risk.
 - Settings outer overlay and header controls use native Liquid Glass on macOS 26+.
   Inner grouped rows stay plain low-alpha surfaces so nested cards do not flatten
   the sheet into an opaque gray panel.
+- Settings sheets keep a readability floor: the backdrop dim is 0.16 active /
+  0.22 inactive, and the panel wash is 0.140 active / 0.180 inactive so
+  background content remains visible without bleeding through body text.
 - `.regularMaterial`, `.thinMaterial`, and `.ultraThinMaterial` are fallback-only
   paths for older macOS.
 - Settings overlays must expose an icon-only close affordance in the header and bind
