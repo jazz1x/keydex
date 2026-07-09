@@ -183,7 +183,7 @@ while IFS= read -r scenario; do
   inventory_mode="$(keydex_evidence_inventory_mode "$scenario")" ||
     fail "missing inventory mode for scenario: $scenario"
   case "$inventory_mode" in
-    sample | empty)
+    sample | runtime | empty)
       ;;
     *)
       fail "unsupported inventory mode for scenario $scenario: $inventory_mode"

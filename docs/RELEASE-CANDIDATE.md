@@ -45,7 +45,7 @@ values.
 | Signing evidence | `make release-signing-evidence-review` before claiming a trusted Mac app release. |
 | Required CI | `guard`, `quality`, `release-smoke`, `gitleaks`, `trivy`. |
 | Screen evidence | `make app-screen-evidence-all` plus `make app-screen-evidence-review` are current for the required scenario set. |
-| Accessibility evidence | Source-level `make app-accessibility-contract` and runtime `make app-accessibility-smoke` pass; manual VoiceOver/keyboard/state-not-color-only/dynamic type review (52 fields across 13 scenarios) remains pending. |
+| Accessibility evidence | Source-level `make app-accessibility-contract` and runtime `make app-accessibility-smoke` pass; manual VoiceOver/keyboard/state-not-color-only/dynamic type review (56 fields across 14 scenarios) remains pending. |
 | Security boundary | `gitleaks`, `trivy`, forbidden-pattern scan, release artifact inspection. |
 
 ### Known Limits
@@ -60,7 +60,7 @@ values.
 - Screen evidence is current locally with `make app-screen-evidence-review` passing for
   the required scenario set; it is not produced in CI.
 - Runtime `make app-accessibility-smoke` passes for the required scenario set.
-- Manual accessibility evidence is pending (52 fields across 13 scenarios) and must be
+- Manual accessibility evidence is pending (56 fields across 14 scenarios) and must be
   reviewed on a permissioned Mac session before claiming `app_accessibility_manual=pass`.
 - Homebrew distribution is out of scope for the first release.
 

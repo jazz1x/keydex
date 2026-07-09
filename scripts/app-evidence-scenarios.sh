@@ -4,6 +4,7 @@ KEYDEX_EVIDENCE_SCENARIOS=(
   default-window
   card-view
   card-detail
+  keychain-prompt
   empty-inventory
   search-filter
   inspector
@@ -56,6 +57,9 @@ keydex_evidence_inventory_mode() {
   keydex_is_evidence_scenario "$scenario" || return 1
 
   case "$scenario" in
+    keychain-prompt)
+      printf 'runtime'
+      ;;
     empty-inventory)
       printf 'empty'
       ;;
@@ -208,6 +212,9 @@ keydex_evidence_accessibility_focus() {
     card-detail)
       printf 'Credential detail surface opened from the aws ci card with scoped actions and sources visible.'
       ;;
+    keychain-prompt)
+      printf 'Runtime Local refresh prompt confirming live Keychain reference scan boundaries.'
+      ;;
     empty-inventory)
       printf 'Empty inventory surface that explains the intentional empty dataset and next action.'
       ;;
@@ -267,6 +274,12 @@ keydex_evidence_accessibility_targets() {
         "Credential card detail" \
         "Manage Keychain reference action" \
         "Sources list"
+      ;;
+    keychain-prompt)
+      printf '%s\n' \
+        "Live Keychain scan confirmation" \
+        "Reference-only boundary copy" \
+        "Cancel action"
       ;;
     empty-inventory)
       printf '%s\n' \

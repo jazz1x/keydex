@@ -59,6 +59,7 @@ enum AppScreenScenario: String, CaseIterable {
   case defaultWindow = "default-window"
   case cardView = "card-view"
   case cardDetail = "card-detail"
+  case keychainPrompt = "keychain-prompt"
   case emptyInventory = "empty-inventory"
   case searchFilter = "search-filter"
   case inspector
@@ -76,6 +77,8 @@ enum AppScreenScenario: String, CaseIterable {
 
   var inventoryMode: InventoryMode {
     switch self {
+    case .keychainPrompt:
+      .runtime
     case .emptyInventory:
       .empty
     case .defaultWindow, .cardView, .cardDetail, .searchFilter, .inspector, .settings,
@@ -89,7 +92,7 @@ enum AppScreenScenario: String, CaseIterable {
     switch self {
     case .defaultWindow, .cardView, .cardDetail:
       .cards
-    case .emptyInventory, .searchFilter, .inspector, .settings,
+    case .keychainPrompt, .emptyInventory, .searchFilter, .inspector, .settings,
       .settingsAppearance, .settingsSources, .settingsPaths, .settingsTags, .settingsRules,
       .compactWindow:
       .list
@@ -100,9 +103,9 @@ enum AppScreenScenario: String, CaseIterable {
     switch self {
     case .searchFilter:
       .state(.plaintextFallback)
-    case .defaultWindow, .cardView, .cardDetail, .emptyInventory, .inspector, .settings,
-      .settingsAppearance, .settingsSources, .settingsPaths, .settingsTags, .settingsRules,
-      .compactWindow:
+    case .defaultWindow, .cardView, .cardDetail, .keychainPrompt, .emptyInventory, .inspector,
+      .settings, .settingsAppearance, .settingsSources, .settingsPaths, .settingsTags,
+      .settingsRules, .compactWindow:
       .all
     }
   }
@@ -113,7 +116,7 @@ enum AppScreenScenario: String, CaseIterable {
       "aws|ci"
     case .inspector:
       "hashicorp-vault|infra"
-    case .defaultWindow, .cardView, .emptyInventory, .searchFilter, .settings,
+    case .defaultWindow, .cardView, .keychainPrompt, .emptyInventory, .searchFilter, .settings,
       .settingsAppearance, .settingsSources, .settingsPaths, .settingsTags, .settingsRules,
       .compactWindow:
       nil
@@ -124,9 +127,9 @@ enum AppScreenScenario: String, CaseIterable {
     switch self {
     case .searchFilter:
       "github"
-    case .defaultWindow, .cardView, .cardDetail, .emptyInventory, .inspector, .settings,
-      .settingsAppearance, .settingsSources, .settingsPaths, .settingsTags, .settingsRules,
-      .compactWindow:
+    case .defaultWindow, .cardView, .cardDetail, .keychainPrompt, .emptyInventory, .inspector,
+      .settings, .settingsAppearance, .settingsSources, .settingsPaths, .settingsTags,
+      .settingsRules, .compactWindow:
       ""
     }
   }
@@ -136,8 +139,8 @@ enum AppScreenScenario: String, CaseIterable {
     case .settings, .settingsAppearance, .settingsSources, .settingsPaths, .settingsTags,
       .settingsRules:
       true
-    case .defaultWindow, .cardView, .cardDetail, .emptyInventory, .searchFilter, .inspector,
-      .compactWindow:
+    case .defaultWindow, .cardView, .cardDetail, .keychainPrompt, .emptyInventory, .searchFilter,
+      .inspector, .compactWindow:
       false
     }
   }
@@ -156,14 +159,25 @@ enum AppScreenScenario: String, CaseIterable {
       .tags
     case .settingsRules:
       .rules
-    case .defaultWindow, .cardView, .cardDetail, .emptyInventory, .searchFilter, .inspector,
-      .compactWindow:
+    case .defaultWindow, .cardView, .cardDetail, .keychainPrompt, .emptyInventory, .searchFilter,
+      .inspector, .compactWindow:
       .permissions
     }
   }
 
   func settingsData(displayMode: InventoryDisplayMode) -> ShellSettingsConfig {
     var settings = sampleSettingsData(displayMode: displayMode)
+
+    if self == .keychainPrompt {
+      settings.keychainAccess = true
+      settings.requestPrompt = true
+      settings.scanSources = settings.scanSources.map { source in
+        var nextSource = source
+        nextSource.enabled = source.persistenceID == runtimeKeychainSourceID
+        return nextSource
+      }
+      settings.scanPaths = []
+    }
 
     if self == .settingsRules {
       settings.ignoredSources.append(

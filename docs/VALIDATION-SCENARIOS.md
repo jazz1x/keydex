@@ -59,6 +59,7 @@ doctor findings, security boundaries, and future UI.
 | F14 | Store persistence | Store persists metadata only. |
 | F15 | Ignore rule | Ignored source or credential is excluded from active repair queue. |
 | F16 | Expiry reminder | Store fixture with `notifyBeforeDays` produces scheduled/due/expired reminder evidence. |
+| F17 | Runtime Keychain prompt | App Local refresh asks before reading live Keychain item references when runtime prompt mode is enabled. |
 
 ## CLI Scenario Matrix
 
