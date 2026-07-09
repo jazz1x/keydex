@@ -52,8 +52,9 @@ before permissioned screenshot or VoiceOver evidence is attached.
 The first runtime accessibility smoke is `scripts/app-accessibility-smoke.sh`. It launches
 the app locally, reads the macOS accessibility tree with `AXUIElement`, and proves every
 supported scenario from `scripts/app-evidence-scenarios.sh` exposes its expected running
-surface names, including card library, card detail, empty, search, inspector, settings
-subsections, and compact window sizing. It requires macOS accessibility trust for the
+surface names, including card library, card detail, live Keychain prompt, empty, search,
+inspector, settings subsections, and compact window sizing. It requires macOS
+accessibility trust for the
 host process and is not a substitute for VoiceOver review notes. Runtime accessibility
 smoke scenarios must exactly match `scripts/app-evidence-scenarios.sh`, so added, renamed,
 or removed screen states fail the shared scenario contract instead of silently drifting.
@@ -162,6 +163,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | UI2A | Explicit card inventory | `card-view` | Screenshot with the same card-first projection for regression comparison. |
 | UI2B | Table inventory | `inspector` | Screenshot with grouped rows, selected pill, state chips, source previews, and inspector context. |
 | UI2C | Card click detail | `card-detail` | Screenshot showing the Music-like selected card detail page with back affordance, artwork, actions, and source rows inside the main content pane. |
+| UI2D | Live Keychain prompt | `keychain-prompt` | Screenshot showing the runtime confirmation before Local refresh reads live Keychain item references, including reference-only secret boundary copy. |
 | UI3 | Plaintext fallback | `default-window` | Screenshot with warning label and source. |
 | UI4 | Missing Keychain item | `default-window` | Screenshot with error label and action. |
 | UI5 | Duplicate credential | `default-window` | Screenshot with duplicate state and relationship evidence. |
@@ -181,7 +183,7 @@ and anti-theater visual rules wired before manual design review evidence is atta
 | Local screen evidence | `scripts/app-screen-evidence.sh --list` and `make app-screen-evidence SCENARIO=<name>` | Captures local screenshot and manifest for manual screen review evidence in `tmp/screen-evidence` (not CI required). |
 | Local screen review | `make app-screen-evidence-review` | Verifies the local screenshot and manifest set for all required script scenarios with exact manifest key-value matching for SHA, dirty state, scenario, mode, preset, screenshot path, and actual PNG pixel dimensions. |
 | Accessibility contract | `scripts/app-accessibility-contract.sh` | Required app surfaces expose stable labels and identifiers. |
-| Runtime accessibility smoke | `make app-accessibility-smoke` | Running app exposes every supported scenario through AX, including card, list, settings, and compact-window surfaces, while settings hides toolbar controls behind the modal sheet from AX; it also launches an isolated normal Local run with `KEYDEX_APP_SETTINGS_ROOT` to prove first-launch empty copy does not reuse the intentional Empty fixture language. |
+| Runtime accessibility smoke | `make app-accessibility-smoke` | Running app exposes every supported scenario through AX, including card, list, live Keychain prompt, settings, and compact-window surfaces, while settings hides toolbar controls behind the modal sheet from AX; it also launches an isolated normal Local run with `KEYDEX_APP_SETTINGS_ROOT` to prove first-launch empty copy does not reuse the intentional Empty fixture language. |
 | Accessibility evidence template | `make app-accessibility-evidence-template` | Creates pending local manifest and notes files for every required scenario. |
 | Accessibility evidence status | `make app-accessibility-evidence-status` | Lists per-scenario pending/pass fields for current local accessibility evidence while requiring notes plus `reviewed_at` and `reviewer` audit keys without turning pending evidence into pass. |
 | Accessibility evidence review | `make app-accessibility-evidence-review` | Verifies local VoiceOver, keyboard, state-label, and dynamic type notes for required scenarios with exact manifest key-value matching for SHA, dirty state, scenario, pass fields, notes path, non-template reviewer, and UTC ISO-8601 review timestamp. |

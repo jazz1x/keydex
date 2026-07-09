@@ -279,6 +279,12 @@ run_scenario card-detail \
   "Sources" \
   "AWS_ACCESS_KEY_ID"
 
+run_scenario keychain-prompt \
+  "Scan live Keychain references?" \
+  "Keydex reads service/account references only. Secret values stay in Keychain." \
+  "Scan References" \
+  "Not Now"
+
 run_scenario empty-inventory \
   "Credential scopes" \
   "Credential inventory table" \
