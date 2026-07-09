@@ -231,8 +231,8 @@ Design rules live in docs and scripts rather than screenshots alone:
 | `make loop-contract` | Clean Architecture import boundaries, package dependency boundaries, and loop documentation wiring. |
 | `make release-smoke` | Release payload, CLI smoke artifact, ad-hoc app signing, archive, checksum, and DMG verification. |
 | `make release-signing-readiness` | Developer ID / notarization readiness evidence. |
-| `make app-accessibility-evidence-status` | Per-scenario manual accessibility evidence progress without converting pending work into pass. |
-| `make evidence-status` | Current local evidence status, including pending manual accessibility counts and blocked Developer ID signing prerequisite status. |
+| `make app-accessibility-evidence-status` | Per-scenario manual accessibility evidence progress, including the next scenario, notes, screenshot, and review command without converting pending work into pass. |
+| `make evidence-status` | Current local evidence status, including pending manual accessibility counts, next review command, blocked Developer ID signing prerequisite status, and signing runbook command. |
 | `pre-commit run --all-files` | Local hook suite before commit. |
 
 CI runs `guard`, `quality`, `release-smoke`, `gitleaks`, and `trivy`. The protected
