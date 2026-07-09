@@ -10,6 +10,7 @@ CLI, app, and release evidence.
 | Domain unit tests | Prove typed parsing, graph edges, state labels, doctor mappings. |
 | Source parser tests | Prove scanner inputs become observations without secret values. |
 | Store fixture tests | Prove metadata input excludes secret values and rejects invalid states. |
+| Runtime builder tests | Prove local app/CLI graph composition uses settings and parser output without secret values. |
 | CLI scenario tests | Prove commands use graph projections and stable output. |
 | App store tests | Prove presentation metadata stores copy, load, reset, and surface visible fallback issues. |
 | App build tests | Prove the SwiftUI shell compiles against graph projections. |
@@ -72,6 +73,7 @@ The first CLI smoke gate is `scripts/cli-smoke.sh`. It uses tracked fixtures in
 | Inspector | Selection shows relationships. |
 | Doctor panel | Findings show cause and action. |
 | Settings | Scan path and permission controls render. |
+| Runtime graph | Local inventory source rebuilds graph input from enabled scan sources and configured references. |
 | Artwork store | Imported artwork copies into the app support store, manifest state loads, reset removes files, filename collisions are prevented, replacements clean old files, and unreadable manifests surface an issue. |
 | Settings store | Settings metadata saves and loads, missing files use defaults, unreadable files surface an issue, and screen evidence scenarios ignore personal local settings. |
 
@@ -81,6 +83,8 @@ The first search shell must filter `CredentialProjection` rows by service, accou
 state, and source label without creating a separate list source of truth.
 The first settings shell must expose Keychain permission, scan source, and unmanaged
 source controls without performing mutations.
+The first runtime builder must keep file parsing outside `KeydexApp` while turning enabled
+local source settings into graph observations.
 The first empty inventory shell must render an empty `InventoryGraph` rather than a
 separate hardcoded list.
 The first accessibility contract must run in `make quality` and check stable SwiftUI

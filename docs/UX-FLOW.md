@@ -68,6 +68,8 @@ uncertainty to the next concrete action without making them decode implementatio
   default artwork store while resolving image files.
 - Settings edits persist as local metadata for normal app runs, while screen evidence
   scenarios use deterministic sample settings so personal state cannot change screenshots.
+- Normal app runs default to the Local inventory source. Sample and Empty are explicit
+  evidence/debug modes, not the primary user loop.
 - Accessibility labels must preserve the same workflow vocabulary: inventory, search
   results, credential detail, manage Keychain reference, manage tags, settings, and repair.
 
@@ -76,6 +78,7 @@ uncertainty to the next concrete action without making them decode implementatio
 | Flow Anchor | Source Evidence |
 | --- | --- |
 | Card/list mode | `InventoryDisplayMode`, `CredentialCardGrid`, `CredentialInventoryTable`. |
+| Local graph input | `LocalInventoryGraphBuilder`, `runtimeRequest(from:)`, `refreshRuntimeInventoryIfNeeded`. |
 | Default artwork | `CredentialArtworkPreset`, `CredentialDefaultArtwork`, `CredentialArtworkPanel`. |
 | Custom artwork | `CredentialArtworkStore`, `artworkRootURL`, `CredentialCustomArtwork`, `CredentialArtworkActionGroup`, `keydex.artwork.choose`, `keydex.artwork.reset`. |
 | Search narrowing | `MusicSearchField`, `Clear search`, `MusicSearchResultHeader`. |

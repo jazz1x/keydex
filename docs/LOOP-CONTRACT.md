@@ -10,7 +10,8 @@ before.
    gate before editing.
 2. **Boundary** - Keep domain rules in `KeydexCore`; keep macOS Security access in
    `KeydexKeychain`; keep file parsing in `KeydexSources` and `KeydexStore`; keep
-   SwiftUI/AppKit composition in `KeydexApp`.
+   shared local graph orchestration in `KeydexRuntime`; keep SwiftUI/AppKit composition
+   in `KeydexApp`.
 3. **Implementation** - Prefer parse-don't-validate, explicit result states, and
    graph projections over defensive fallbacks or hidden branching.
 4. **Evidence** - Run the narrowest command that proves the change, then run the
@@ -28,13 +29,15 @@ before.
 | `KeydexKeychain` | macOS Keychain inventory adapter | KeydexCore, Security | SwiftUI, AppKit |
 | `KeydexSources` | Environment, shell, config observations | KeydexCore, Foundation | SwiftUI, AppKit, Security |
 | `KeydexStore` | Metadata parsing and persistence | KeydexCore, Foundation | SwiftUI, AppKit, Security |
+| `KeydexRuntime` | Local graph build orchestration | KeydexCore, KeydexSources, KeydexStore, Foundation | SwiftUI, AppKit, Security, KeydexKeychain |
 | `keydex` | CLI orchestration and terminal presentation | Core, sources, store, keychain | SwiftUI, AppKit |
-| `KeydexApp` | Native macOS presentation and screen evidence hooks | KeydexCore, SwiftUI, AppKit | Security |
+| `KeydexApp` | Native macOS presentation and screen evidence hooks | KeydexCore, KeydexRuntime, SwiftUI, AppKit | Security |
 
 Source imports follow the package dependency direction. `KeydexApp` consumes
-`KeydexCore` projections and local presentation state; it must not import
-`KeydexKeychain`, `KeydexSources`, or `KeydexStore` directly. Qualified imports
-such as `import struct KeydexStore.MetadataRecord` count as direct imports.
+`KeydexCore` projections, `KeydexRuntime` local graph orchestration, and local
+presentation state; it must not import `KeydexKeychain`, `KeydexSources`, or
+`KeydexStore` directly. Qualified imports such as `import struct KeydexStore.MetadataRecord`
+count as direct imports.
 `make loop-contract` also parses `swift package dump-package` output so the
 actual SwiftPM target dependency graph must match these boundaries, not just the
 source import text.

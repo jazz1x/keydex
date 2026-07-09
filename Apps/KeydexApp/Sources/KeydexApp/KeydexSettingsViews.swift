@@ -101,7 +101,7 @@ struct SettingsPanel: View {
                   ) {
                     SettingsToggleRow(
                       title: "Enable keychain access",
-                      subtitle: "Include Keychain references in local inventory scans",
+                      subtitle: "Include configured Keychain references in local inventory scans",
                       systemImage: "lock.open",
                       isOn: $settings.keychainAccess,
                       accessibilityIdentifier: "keydex.settings.keychain-access"
@@ -111,7 +111,7 @@ struct SettingsPanel: View {
 
                     SettingsToggleRow(
                       title: "Request runtime keychain prompt",
-                      subtitle: "Ask before a scan reads Keychain item references",
+                      subtitle: "Ask before a future live scan reads Keychain item references",
                       systemImage: "hand.raised",
                       isOn: $settings.requestPrompt,
                       accessibilityIdentifier: "keydex.settings.request-prompt"

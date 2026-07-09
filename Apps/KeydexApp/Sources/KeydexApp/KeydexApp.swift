@@ -1,5 +1,6 @@
 import AppKit
 import KeydexCore
+import KeydexRuntime
 import SwiftUI
 
 @main
@@ -75,23 +76,28 @@ struct CredentialInventoryShellView: View {
   @State private var isShowingSettings: Bool
   @State private var selectedSettingsSection: SettingsSection
   @State private var inventoryMode: InventoryMode
+  @State private var runtimeGraph: InventoryGraph
   @State private var settingsConfig: ShellSettingsConfig
   @State private var artworkOverrides: [CredentialArtworkID: CredentialArtworkOverride]
   @State private var artworkIssueMessage: String?
   @State private var settingsIssueMessage: String?
+  @State private var runtimeIssueMessage: String?
 
   init(
     artworkStore: CredentialArtworkStore = CredentialArtworkStore(),
     settingsStore: ShellSettingsStore = ShellSettingsStore()
   ) {
     let initialScenario = Self.screenScenarioFromEnvironment()
+    let persistsSettings = Self.persistsSettingsForCurrentEnvironment()
     let initialMode = Self.inventoryModeFromEnvironment(
-      defaultingTo: initialScenario.inventoryMode
+      defaultingTo: persistsSettings ? .runtime : initialScenario.inventoryMode
     )
     let artworkLoadState = artworkStore.loadOverrides()
-    let defaultSettings = initialScenario.settingsData(displayMode: initialScenario.displayMode)
+    let defaultSettings =
+      persistsSettings
+      ? localSettingsData(displayMode: initialScenario.displayMode)
+      : initialScenario.settingsData(displayMode: initialScenario.displayMode)
     let settingsScrollTarget = Self.settingsScrollTargetFromEnvironment()
-    let persistsSettings = Self.persistsSettingsForCurrentEnvironment()
     let settingsLoadState =
       persistsSettings
       ? settingsStore.load(defaults: defaultSettings)
@@ -106,10 +112,12 @@ struct CredentialInventoryShellView: View {
     _isShowingSettings = State(initialValue: initialScenario.showsSettings)
     _selectedSettingsSection = State(initialValue: initialScenario.settingsSection)
     _inventoryMode = State(initialValue: initialMode)
+    _runtimeGraph = State(initialValue: InventoryGraph(records: []))
     _settingsConfig = State(initialValue: settingsLoadState.config)
     _artworkOverrides = State(initialValue: artworkLoadState.overrides)
     _artworkIssueMessage = State(initialValue: artworkLoadState.issueMessage)
     _settingsIssueMessage = State(initialValue: settingsLoadState.issueMessage)
+    _runtimeIssueMessage = State(initialValue: nil)
   }
 
   fileprivate static func inventoryModeFromEnvironment(
@@ -120,13 +128,15 @@ struct CredentialInventoryShellView: View {
     }
 
     switch rawMode {
+    case InventoryMode.runtime.rawValue:
+      return .runtime
     case InventoryMode.sample.rawValue:
       return .sample
     case InventoryMode.empty.rawValue:
       return .empty
     default:
       preconditionFailure(
-        "Unsupported KEYDEX_APP_INVENTORY_MODE value: \(rawMode). Expected 'sample' or 'empty'."
+        "Unsupported KEYDEX_APP_INVENTORY_MODE value: \(rawMode). Expected 'runtime', 'sample', or 'empty'."
       )
     }
   }
@@ -167,6 +177,8 @@ struct CredentialInventoryShellView: View {
 
   private var graph: InventoryGraph {
     switch inventoryMode {
+    case .runtime:
+      runtimeGraph
     case .sample:
       sampleCredentialGraph()
     case .empty:
@@ -175,7 +187,7 @@ struct CredentialInventoryShellView: View {
   }
 
   private var isEmptyMode: Bool {
-    inventoryMode == .empty
+    inventoryMode == .empty || (inventoryMode == .runtime && graph.credentialProjections.isEmpty)
   }
 
   private var sidebarSelectionItems: [SidebarSelection] {
@@ -254,6 +266,13 @@ struct CredentialInventoryShellView: View {
     } message: {
       Text(settingsIssueMessage ?? "The settings library reported an unknown issue.")
     }
+    .alert("Inventory scan could not be rebuilt", isPresented: runtimeIssueBinding) {
+      Button("OK", role: .cancel) {
+        runtimeIssueMessage = nil
+      }
+    } message: {
+      Text(runtimeIssueMessage ?? "The local inventory pipeline reported an unknown issue.")
+    }
     .toolbar {
       ToolbarItem(placement: .status) {
         MusicToolbarCluster(
@@ -291,9 +310,15 @@ struct CredentialInventoryShellView: View {
     }
     .onChange(of: inventoryMode) { _, _ in
       selectedCredentialID = nil
+      Task {
+        await refreshRuntimeInventoryIfNeeded(settingsConfig)
+      }
     }
     .onChange(of: settingsConfig) { _, nextConfig in
       persistSettings(nextConfig)
+    }
+    .task {
+      await refreshRuntimeInventoryIfNeeded(settingsConfig)
     }
   }
 
@@ -492,6 +517,17 @@ struct CredentialInventoryShellView: View {
     )
   }
 
+  private var runtimeIssueBinding: Binding<Bool> {
+    Binding(
+      get: { runtimeIssueMessage != nil },
+      set: { isPresented in
+        if !isPresented {
+          runtimeIssueMessage = nil
+        }
+      }
+    )
+  }
+
   private func presentSettings(section: SettingsSection? = nil) {
     if !isShowingSettings {
       if let section {
@@ -508,6 +544,48 @@ struct CredentialInventoryShellView: View {
     withAnimation(KeydexMotion.contentTransition) {
       isShowingSettings = false
     }
+
+    Task {
+      await refreshRuntimeInventoryIfNeeded(settingsConfig)
+    }
+  }
+
+  @MainActor
+  private func refreshRuntimeInventoryIfNeeded(_ config: ShellSettingsConfig) async {
+    guard inventoryMode == .runtime else {
+      return
+    }
+
+    do {
+      runtimeGraph = try await LocalInventoryGraphBuilder().graph(
+        for: runtimeRequest(from: config)
+      )
+      runtimeIssueMessage = nil
+    } catch {
+      runtimeGraph = InventoryGraph(records: [])
+      runtimeIssueMessage =
+        "Local inventory settings were saved, but the scan could not be rebuilt. "
+        + error.localizedDescription
+    }
+  }
+
+  private func runtimeRequest(from config: ShellSettingsConfig) -> LocalInventoryGraphRequest {
+    var enabledSourceIDs = Set(
+      config.scanSources.filter(\.enabled).map(\.persistenceID)
+    )
+    if !config.keychainAccess {
+      enabledSourceIDs.remove(LocalInventorySourceID.keychain)
+    }
+
+    return LocalInventoryGraphRequest(
+      enabledSourceIDs: enabledSourceIDs,
+      scanPathValues: config.scanPaths.map(\.value),
+      keychainReferenceValues: config.keychainReferences.map(\.value),
+      ignoredSourceValues: Set(config.ignoredSources.map(\.value)),
+      unmanagedSourceValues: Set(config.unmanagedSources.map(\.value)),
+      environment: ProcessInfo.processInfo.environment,
+      reconcilesKeychainReferences: true
+    )
   }
 
   private func importArtwork(from sourceURL: URL, for row: CredentialRow) {

@@ -7,8 +7,11 @@ SwiftUI macOS app surface shell.
 
 ## What it is
 
-An app-shell-only interface that renders graph-derived credential projections
-from `KeydexCore.InventoryGraph` and `CredentialProjection`.
+A native macOS interface that renders graph-derived credential projections from
+`KeydexCore.InventoryGraph` and `CredentialProjection`. Normal app runs build the
+local graph through `KeydexRuntime.LocalInventoryGraphBuilder`; screen evidence runs
+keep deterministic sample data so visual and accessibility checks do not drift with
+personal machine state.
 
 ## Settings Shell
 
@@ -23,8 +26,9 @@ local controls for:
 
 Values persist as local settings metadata under Application Support for normal app runs.
 Evidence scenarios keep using deterministic in-memory sample settings so screenshots and
-AX smoke do not drift with personal local state. The shell still avoids runtime keychain
-access.
+AX smoke do not drift with personal local state. The app still avoids live Keychain
+Security access; configured Keychain references are metadata until a live scan boundary
+proves them registered.
 
 The Settings sheet uses a glass-style header, segmented section rail, and grouped list
 sections so scan and reminder controls feel native without becoming a dashboard. Reminder
@@ -38,14 +42,17 @@ From the repository root:
 
 Notes:
 
-- This shell uses graph-derived sample data by default and supports an empty dataset mode.
-- It does not read secrets and does not access the live keychain.
+- Normal app runs use the `Local` inventory source by default.
+- Evidence runs and explicit toolbar selection can still use graph-derived sample data or
+  an empty dataset mode.
+- It does not store secrets and does not access the live keychain.
 - It now renders a native Doctor panel in the shell (`CredentialDoctor().inspect(graph)`) showing
   severity, credential, state, cause, and action for each detected issue.
 - It also exposes a toolbar search to filter graph-derived credential rows by service, account,
   state raw value, and source location labels.
 
-The toolbar includes a native segmented `Sample / Empty` control that swaps between:
+The toolbar includes a native segmented inventory source control that swaps between:
 
+- Local: settings-driven `InventoryGraph` from `LocalInventoryGraphBuilder`
 - Sample: populated `InventoryGraph` produced by `sampleCredentialGraph()`
 - Empty: empty `InventoryGraph(records: [])`, producing no credentials and no doctor issues

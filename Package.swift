@@ -12,6 +12,7 @@ let package = Package(
     .library(name: "KeydexKeychain", targets: ["KeydexKeychain"]),
     .library(name: "KeydexSources", targets: ["KeydexSources"]),
     .library(name: "KeydexStore", targets: ["KeydexStore"]),
+    .library(name: "KeydexRuntime", targets: ["KeydexRuntime"]),
     .executable(name: "keydex", targets: ["keydex"]),
     .executable(name: "KeydexApp", targets: ["KeydexApp"]),
   ],
@@ -27,11 +28,13 @@ let package = Package(
     ),
     .target(name: "KeydexSources", dependencies: ["KeydexCore"]),
     .target(name: "KeydexStore", dependencies: ["KeydexCore"]),
+    .target(name: "KeydexRuntime", dependencies: ["KeydexCore", "KeydexSources", "KeydexStore"]),
     .executableTarget(
       name: "keydex",
       dependencies: [
         "KeydexCore",
         "KeydexKeychain",
+        "KeydexRuntime",
         "KeydexSources",
         "KeydexStore",
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
@@ -39,7 +42,7 @@ let package = Package(
     ),
     .executableTarget(
       name: "KeydexApp",
-      dependencies: ["KeydexCore"],
+      dependencies: ["KeydexCore", "KeydexRuntime"],
       path: "Apps/KeydexApp/Sources/KeydexApp",
       resources: [.process("Resources")]
     ),
@@ -47,6 +50,7 @@ let package = Package(
     .testTarget(name: "KeydexKeychainTests", dependencies: ["KeydexKeychain"]),
     .testTarget(name: "KeydexSourcesTests", dependencies: ["KeydexSources"]),
     .testTarget(name: "KeydexStoreTests", dependencies: ["KeydexStore"]),
+    .testTarget(name: "KeydexRuntimeTests", dependencies: ["KeydexRuntime"]),
     .testTarget(name: "KeydexAppTests", dependencies: ["KeydexApp"]),
   ]
 )

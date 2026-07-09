@@ -41,6 +41,8 @@ struct DoctorPanel: View {
       Label {
         Text("Doctor")
           .font(.headline)
+          .lineLimit(1)
+          .fixedSize(horizontal: true, vertical: false)
       } icon: {
         Image(systemName: issues.isEmpty ? "checkmark.seal" : "stethoscope")
           .font(.body.weight(.semibold))
@@ -49,6 +51,8 @@ struct DoctorPanel: View {
           .symbolEffect(.bounce, value: feedbackTrigger)
       }
       .foregroundStyle(issues.isEmpty ? .green : .primary)
+      .fixedSize(horizontal: true, vertical: false)
+      .layoutPriority(2)
 
       Divider()
         .frame(height: 24)
@@ -72,6 +76,8 @@ struct DoctorPanel: View {
             .lineLimit(1)
             .contentTransition(.opacity)
         }
+        .frame(minWidth: 120, idealWidth: 260, alignment: .leading)
+        .layoutPriority(1)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(primaryIssue.accessibilityLabel)
       } else {
@@ -82,6 +88,8 @@ struct DoctorPanel: View {
             .font(.caption)
             .foregroundStyle(.secondary)
         }
+        .frame(minWidth: 120, idealWidth: 260, alignment: .leading)
+        .layoutPriority(1)
       }
 
       Spacer(minLength: 12)
@@ -94,6 +102,8 @@ struct DoctorPanel: View {
         Text("\(issueRows.count) issues")
           .font(.caption.weight(.medium))
           .foregroundStyle(.secondary)
+          .lineLimit(1)
+          .fixedSize(horizontal: true, vertical: false)
           .contentTransition(.numericText())
 
         if remainingIssueCount > 0 {
@@ -103,6 +113,7 @@ struct DoctorPanel: View {
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .background(KeydexGlassTone.railControlFill, in: Capsule())
+            .fixedSize(horizontal: true, vertical: false)
             .contentTransition(.numericText())
         }
 
@@ -110,9 +121,15 @@ struct DoctorPanel: View {
           Button {
             reviewIssueAction(primaryIssue)
           } label: {
-            Label("Review next", systemImage: "arrow.up.forward.circle.fill")
+            ViewThatFits(in: .horizontal) {
+              Label("Review next", systemImage: "arrow.up.forward.circle.fill")
+              Label("Review", systemImage: "arrow.up.forward.circle.fill")
+              Image(systemName: "arrow.up.forward.circle.fill")
+            }
           }
           .keydexActionButton(compact: true)
+          .fixedSize(horizontal: true, vertical: false)
+          .layoutPriority(2)
           .help("Open the first credential that needs repair")
           .accessibilityIdentifier("keydex.doctor.review-next")
           .accessibilityLabel("Review next repair issue")

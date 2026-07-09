@@ -3,6 +3,7 @@ import Darwin
 import Foundation
 import KeydexCore
 import KeydexKeychain
+import KeydexRuntime
 import KeydexSources
 import KeydexStore
 
@@ -151,18 +152,30 @@ private func credentialGraph(
   metadataPath: String?,
   includeKeychain: Bool
 ) async throws -> InventoryGraph {
-  let records = try await credentialRecords(metadataPath: metadataPath)
-
+  let keychainObservations: [CredentialObservation]
   if includeKeychain {
     let keychainReferences = try MacOSKeychain().inventoryReferences()
-    let keychainObservations = KeychainInventoryScanner().observations(from: keychainReferences)
-    return CredentialInventoryReconciler().graph(
-      metadataRecords: records,
-      keychainObservations: keychainObservations
-    )
+    keychainObservations = KeychainInventoryScanner().observations(from: keychainReferences)
+  } else {
+    keychainObservations = []
   }
 
-  return InventoryGraph(records: records)
+  return try await LocalInventoryGraphBuilder().graph(
+    for: LocalInventoryGraphRequest(
+      metadataURL: try metadataURL(metadataPath: metadataPath),
+      keychainObservations: keychainObservations,
+      reconcilesKeychainReferences: includeKeychain
+    )
+  )
+}
+
+private func metadataURL(metadataPath: String?) throws -> URL? {
+  guard let metadataPath else {
+    return nil
+  }
+
+  let path = try NonEmptyText.parse(metadataPath, field: "metadata")
+  return URL(fileURLWithPath: path.value)
 }
 
 private func credentialRecords(

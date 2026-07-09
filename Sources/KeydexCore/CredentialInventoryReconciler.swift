@@ -5,6 +5,18 @@ public struct CredentialInventoryReconciler: Sendable {
     metadataRecords: [CredentialRecord],
     keychainObservations: [CredentialObservation]
   ) -> InventoryGraph {
+    graph(
+      metadataRecords: metadataRecords,
+      keychainObservations: keychainObservations,
+      additionalObservations: []
+    )
+  }
+
+  public func graph(
+    metadataRecords: [CredentialRecord],
+    keychainObservations: [CredentialObservation],
+    additionalObservations: [CredentialObservation]
+  ) -> InventoryGraph {
     var adjustedRecords: [CredentialRecord] = []
     var adjustedObservations: [CredentialObservation] = []
     let observedKeychainIdentities = Set(keychainObservations.compactMap(Self.keychainIdentity))
@@ -64,7 +76,10 @@ public struct CredentialInventoryReconciler: Sendable {
       }
     }
 
-    return InventoryGraph(records: adjustedRecords, observations: adjustedObservations)
+    return InventoryGraph(
+      records: adjustedRecords,
+      observations: adjustedObservations + additionalObservations
+    )
   }
 
   private static func keychainIdentity(_ observation: CredentialObservation) -> KeychainIdentity? {

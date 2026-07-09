@@ -35,6 +35,7 @@ stable acceptance criteria here before expanding scope.
 | Edge taxonomy | Use `stored-in`, `observed-in`, and `has-state`. | Graph workflow and tests use canonical edge labels. |
 | Summary projection | Count credentials, sources, states, and edges. | CLI scan prints graph-derived counts. |
 | No fake defaults | Missing graph relationships remain missing. | No parser fabricates Keychain edges. |
+| Local runtime builder | Compose metadata, source observations, and configured references into one graph. | CLI and macOS app can share `LocalInventoryGraphBuilder` without moving parsing into UI code. |
 
 ## Source Scanning
 
@@ -116,6 +117,7 @@ User language maps to graph truth:
 | Doctor panel | Show repair queue. | Findings grouped by severity and include cause/action. |
 | List/card display | Switch between list and card inventory layouts. | The selected mode and projection are preserved across sidebar selection changes. |
 | Settings | Show permissions, appearance, and scan paths. | User can manage local Keychain permission preference, Keychain references, light/dark appearance mode, scan sources, scan paths, expiry reminder policy, and ignored/unmanaged source rules. |
+| Local inventory source | Use settings-driven graph input for normal app runs. | `Local` mode reads enabled non-secret local sources through `KeydexRuntime`; sample data remains only for evidence or explicit selection. |
 
 ## Security
 
