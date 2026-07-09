@@ -74,6 +74,7 @@ The first CLI smoke gate is `scripts/cli-smoke.sh`. It uses tracked fixtures in
 | Doctor panel | Findings show cause and action. |
 | Settings | Scan path and permission controls render. |
 | Runtime graph | Local inventory source rebuilds graph input from enabled scan sources and configured references. |
+| Local empty inventory | Normal app launch with isolated settings explains that no local credentials are indexed and points to settings plus refresh. |
 | Artwork store | Imported artwork copies into the app support store, manifest state loads, reset removes files, filename collisions are prevented, replacements clean old files, and unreadable manifests surface an issue. |
 | Settings store | Settings metadata saves and loads, missing files use defaults, unreadable files surface an issue, and screen evidence scenarios ignore personal local settings. |
 
@@ -87,6 +88,7 @@ The first runtime builder must keep file parsing outside `KeydexApp` while turni
 local source settings into graph observations.
 The first empty inventory shell must render an empty `InventoryGraph` rather than a
 separate hardcoded list.
+The normal Local empty shell must not reuse the intentional Empty fixture copy.
 The first accessibility contract must run in `make quality` and check stable SwiftUI
 surface labels and identifiers before permissioned screenshot evidence exists.
 The first app evidence scenario contract must run in `make quality` and reject screen,

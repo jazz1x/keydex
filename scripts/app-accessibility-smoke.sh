@@ -13,12 +13,17 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$script_dir/app-evidence-scenarios.sh"
 
 app_pid=""
+runtime_home=""
 
 cleanup() {
   if [[ -n "$app_pid" ]]; then
     kill "$app_pid" >/dev/null 2>&1 || true
     wait "$app_pid" >/dev/null 2>&1 || true
     app_pid=""
+  fi
+  if [[ -n "$runtime_home" ]]; then
+    rm -rf "$runtime_home"
+    runtime_home=""
   fi
 }
 
@@ -214,6 +219,31 @@ run_scenario() {
   printf 'accessibility_smoke=%s\n' "$scenario"
 }
 
+run_normal_local_empty_inventory() {
+  runtime_home="$(mktemp -d "${TMPDIR:-/tmp}/keydex-home.XXXXXX")"
+
+  printf 'accessibility_smoke_start=normal-local-empty inventory_mode=runtime window_preset=default settings_scroll_target=top\n'
+  env -u KEYDEX_APP_SCREEN_SCENARIO \
+    -u KEYDEX_APP_INVENTORY_MODE \
+    HOME="$runtime_home" \
+    KEYDEX_APP_SETTINGS_ROOT="$runtime_home/settings" \
+    KEYDEX_APP_WINDOW_PRESET=default \
+    "$app_binary" &
+  app_pid="$!"
+  printf 'accessibility_smoke_pid=%s scenario=normal-local-empty\n' "$app_pid"
+
+  local ax_dump
+  ax_dump="$(dump_accessibility_tree "$app_pid" "No local credentials indexed yet")"
+  cleanup
+
+  expect_dump_contains "normal-local-empty" "$ax_dump" "Empty credential inventory state"
+  expect_dump_contains "normal-local-empty" "$ax_dump" "No local credentials indexed yet"
+  expect_dump_contains "normal-local-empty" "$ax_dump" "Add scan paths or Keychain references in Settings, then refresh inventory."
+  expect_dump_not_contains "normal-local-empty" "$ax_dump" "This dataset is intentionally empty."
+
+  printf 'accessibility_smoke=normal-local-empty\n'
+}
+
 swift -e 'import ApplicationServices; import Foundation; exit(AXIsProcessTrusted() ? 0 : 1)' ||
   fail "macOS accessibility permission is not trusted for this host"
 
@@ -253,6 +283,8 @@ run_scenario empty-inventory \
   "Credential scopes" \
   "Credential inventory table" \
   "Empty credential inventory state"
+
+run_normal_local_empty_inventory
 
 run_scenario search-filter \
   "Credential scopes" \

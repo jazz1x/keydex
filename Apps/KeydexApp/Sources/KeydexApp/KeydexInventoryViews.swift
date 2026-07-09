@@ -26,6 +26,57 @@ private struct EmptyStatePanel: View {
     .multilineTextAlignment(.center)
     .accessibilityIdentifier("keydex.inventory.empty-state")
     .accessibilityLabel("Empty credential inventory state")
+    .accessibilityValue("\(title). \(description). \(secondaryText)")
+  }
+}
+
+enum InventoryEmptyState: Equatable {
+  case explicitEmpty
+  case localInventory
+  case filtered
+
+  var title: String {
+    switch self {
+    case .explicitEmpty:
+      "No credentials"
+    case .localInventory:
+      "No local credentials indexed yet"
+    case .filtered:
+      "No matching credentials"
+    }
+  }
+
+  var systemImage: String {
+    switch self {
+    case .explicitEmpty:
+      "tray"
+    case .localInventory:
+      "tray.and.arrow.down"
+    case .filtered:
+      "line.3.horizontal.decrease.circle"
+    }
+  }
+
+  var description: String {
+    switch self {
+    case .explicitEmpty:
+      "This dataset is intentionally empty."
+    case .localInventory:
+      "Add scan paths or Keychain references in Settings, then refresh inventory."
+    case .filtered:
+      "No rows match this scope or search."
+    }
+  }
+
+  var secondaryText: String {
+    switch self {
+    case .explicitEmpty:
+      "Use Local or Sample mode to populate credentials."
+    case .localInventory:
+      "Keydex stores references and metadata only; secret values stay out of inventory."
+    case .filtered:
+      "Clear search or choose another scope."
+    }
   }
 }
 
@@ -35,7 +86,7 @@ struct InventoryContentView: View {
   let searchText: String
   let displayMode: InventoryDisplayMode
   @Binding var selectedCredentialID: CredentialRow.ID?
-  let isEmptyMode: Bool
+  let emptyState: InventoryEmptyState
   let footerReserveHeight: CGFloat
   let artworkRootURL: URL
   let manageKeychainAction: () -> Void
@@ -99,14 +150,10 @@ struct InventoryContentView: View {
 
       if rows.isEmpty {
         EmptyStatePanel(
-          title: "No credentials",
-          systemImage: "tray",
-          description: isEmptyMode
-            ? "This dataset is intentionally empty."
-            : "No matching rows for the selected scope.",
-          secondaryText: isEmptyMode
-            ? "Scan sources or add metadata to populate credentials."
-            : "Try adjusting your scope or search query."
+          title: emptyState.title,
+          systemImage: emptyState.systemImage,
+          description: emptyState.description,
+          secondaryText: emptyState.secondaryText
         )
       }
     }

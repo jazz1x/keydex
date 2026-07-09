@@ -192,6 +192,17 @@ struct CredentialInventoryShellView: View {
     inventoryMode == .empty || (inventoryMode == .runtime && graph.credentialProjections.isEmpty)
   }
 
+  private var inventoryEmptyState: InventoryEmptyState {
+    switch (inventoryMode, projectedCredentials.isEmpty) {
+    case (.empty, _):
+      .explicitEmpty
+    case (.runtime, true):
+      .localInventory
+    default:
+      .filtered
+    }
+  }
+
   private var sidebarSelectionItems: [SidebarSelection] {
     let services = Set(graph.credentialProjections.map { $0.ref.service.value }).sorted()
     let tags = settingsConfig.tags
@@ -409,7 +420,7 @@ struct CredentialInventoryShellView: View {
         searchText: searchText,
         displayMode: settingsConfig.displayMode,
         selectedCredentialID: $selectedCredentialID,
-        isEmptyMode: isEmptyMode,
+        emptyState: inventoryEmptyState,
         footerReserveHeight: KeydexRailLayout.footerLaneHeight,
         artworkRootURL: artworkStore.rootURL
       ) {

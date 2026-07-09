@@ -45,6 +45,8 @@ Notes:
 - Normal app runs use the `Local` inventory source by default.
 - Evidence runs and explicit toolbar selection can still use graph-derived sample data or
   an empty dataset mode.
+- If Local has no indexed credentials yet, the empty state points to Settings and
+  Refresh rather than describing the explicit empty evidence fixture.
 - It does not store secrets and does not access the live keychain.
 - It now renders a native Doctor panel in the shell (`CredentialDoctor().inspect(graph)`) showing
   severity, credential, state, cause, and action for each detected issue.

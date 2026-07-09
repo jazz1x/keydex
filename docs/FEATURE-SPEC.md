@@ -117,7 +117,7 @@ User language maps to graph truth:
 | Doctor panel | Show repair queue. | Findings grouped by severity and include cause/action. |
 | List/card display | Switch between list and card inventory layouts. | The selected mode and projection are preserved across sidebar selection changes. |
 | Settings | Show permissions, appearance, and scan paths. | User can manage local Keychain permission preference, Keychain references, light/dark appearance mode, scan sources, scan paths, expiry reminder policy, and ignored/unmanaged source rules. |
-| Local inventory source | Use settings-driven graph input for normal app runs. | `Local` mode reads enabled non-secret local sources through `KeydexRuntime`; sample data remains only for evidence or explicit selection. |
+| Local inventory source | Use settings-driven graph input for normal app runs. | `Local` mode reads enabled non-secret local sources through `KeydexRuntime`; sample and intentional empty data remain only for evidence or explicit selection, while first-launch Local empty copy guides the user to Settings and Refresh. |
 
 ## Security
 

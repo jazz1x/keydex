@@ -84,6 +84,9 @@ for needle in \
   "Clear search" \
   "MusicSearchResultHeader" \
   "Search results for" \
+  "InventoryEmptyState" \
+  "No local credentials indexed yet" \
+  "Add scan paths or Keychain references in Settings, then refresh inventory." \
   "ContentUnavailableView"; do
   expect_app_contains "$needle"
 done
@@ -145,6 +148,8 @@ for needle in \
   "KeydexSettingsModalContentBlocker" \
   "KEYDEX_APP_SETTINGS_SCROLL_TARGET" \
   "Unsupported KEYDEX_APP_SETTINGS_SCROLL_TARGET" \
+  "KEYDEX_APP_SETTINGS_ROOT" \
+  "Unsupported KEYDEX_APP_SETTINGS_ROOT" \
   ".keydexContentDisabledBehindSettings(isShowingSettings)" \
   ".keydexDisabledBehindSettings(isShowingSettings)" \
   ".allowsHitTesting(!isShowingSettings)" \

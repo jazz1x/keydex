@@ -29,11 +29,24 @@ struct ShellSettingsStore {
   }
 
   private static func defaultRootURL(fileManager: FileManager) -> URL {
-    fileManager.homeDirectoryForCurrentUser
-      .appendingPathComponent("Library", isDirectory: true)
-      .appendingPathComponent("Application Support", isDirectory: true)
-      .appendingPathComponent("Keydex", isDirectory: true)
-      .appendingPathComponent("Settings", isDirectory: true)
+    let rootURL: URL
+    if let rawRoot = ProcessInfo.processInfo.environment["KEYDEX_APP_SETTINGS_ROOT"] {
+      if rawRoot.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        preconditionFailure(
+          "Unsupported KEYDEX_APP_SETTINGS_ROOT value: expected a non-empty path."
+        )
+      }
+
+      rootURL = URL(fileURLWithPath: rawRoot, isDirectory: true)
+    } else {
+      rootURL = fileManager.homeDirectoryForCurrentUser
+        .appendingPathComponent("Library", isDirectory: true)
+        .appendingPathComponent("Application Support", isDirectory: true)
+        .appendingPathComponent("Keydex", isDirectory: true)
+        .appendingPathComponent("Settings", isDirectory: true)
+    }
+
+    return rootURL
   }
 
   func load(defaults: ShellSettingsConfig) -> ShellSettingsLoadState {

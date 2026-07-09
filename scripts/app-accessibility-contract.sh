@@ -89,6 +89,9 @@ for label in \
   expect_file_contains "$app_sources" ".accessibilityLabel(\"$label\")"
 done
 
+echo "3a) empty state accessibility copy..."
+expect_file_contains "$app_sources" ".accessibilityValue(\"\\(title). \\(description). \\(secondaryText)\")"
+
 echo "4) required reusable accessibility labels..."
 for label in \
   "Add scan path" \

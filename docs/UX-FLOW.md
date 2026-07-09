@@ -25,6 +25,8 @@ uncertainty to the next concrete action without making them decode implementatio
   action away.
 - Empty inventory is not a blank canvas. It must explain that no credentials are indexed
   and point to settings or registration as the next action.
+- Local runtime empty state must not read as an intentional fixture. It must point to
+  Settings and Refresh so the user can move from first launch to a populated inventory.
 - Details must answer why before how. State and sources come before action buttons.
 - Detail artwork does not carry a fake selected/focus stroke. Keyboard focus belongs to
   actual controls, not decorative identity artwork.
@@ -84,7 +86,7 @@ uncertainty to the next concrete action without making them decode implementatio
 | Default artwork | `CredentialArtworkPreset`, `CredentialDefaultArtwork`, `CredentialArtworkPanel`. |
 | Custom artwork | `CredentialArtworkStore`, `artworkRootURL`, `CredentialCustomArtwork`, `CredentialArtworkActionGroup`, `keydex.artwork.choose`, `keydex.artwork.reset`. |
 | Search narrowing | `MusicSearchField`, `Clear search`, `MusicSearchResultHeader`. |
-| Empty state | `ContentUnavailableView`. |
+| Empty state | `InventoryEmptyState`, `EmptyStatePanel`, `ContentUnavailableView`. |
 | Detail and return | `CredentialMusicDetailView`, `keydex.card-detail.back`. |
 | Explicit actions | `keydexActionButton`, `keydex.inspector.manage-keychain`, `keydex.inspector.manage-tags`, `keydex.card-detail.manage-keychain`, `keydex.card-detail.manage-tags`. |
 | Repair queue | `DoctorPanel`, `keydex.doctor.review-next`, `reviewDoctorIssue`, `Cause:`, `Action:`. |
