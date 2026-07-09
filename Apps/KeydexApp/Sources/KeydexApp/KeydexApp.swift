@@ -647,30 +647,6 @@ struct CredentialInventoryShellView: View {
     isRefreshingRuntimeInventory = false
   }
 
-  private func shouldPromptBeforeLiveKeychainScan(_ config: ShellSettingsConfig) -> Bool {
-    config.requestPrompt
-      && runtimeRequest(from: config).enabledSourceIDs.contains(LocalInventorySourceID.keychain)
-  }
-
-  private func runtimeRequest(from config: ShellSettingsConfig) -> LocalInventoryGraphRequest {
-    var enabledSourceIDs = Set(
-      config.scanSources.filter(\.enabled).map(\.persistenceID)
-    )
-    if !config.keychainAccess {
-      enabledSourceIDs.remove(LocalInventorySourceID.keychain)
-    }
-
-    return LocalInventoryGraphRequest(
-      enabledSourceIDs: enabledSourceIDs,
-      scanPathValues: config.scanPaths.map(\.value),
-      keychainReferenceValues: config.keychainReferences.map(\.value),
-      ignoredSourceValues: Set(config.ignoredSources.map(\.value)),
-      unmanagedSourceValues: Set(config.unmanagedSources.map(\.value)),
-      environment: ProcessInfo.processInfo.environment,
-      reconcilesKeychainReferences: true
-    )
-  }
-
   private func importArtwork(from sourceURL: URL, for row: CredentialRow) {
     let result = artworkStore.importArtwork(
       from: sourceURL,
